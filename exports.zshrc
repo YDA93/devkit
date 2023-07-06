@@ -1,4 +1,3 @@
-
 # Python Path
 export PATH="$(brew --prefix)/opt/python@3/libexec/bin:$PATH"
 

@@ -1,4 +1,3 @@
-
 # Update Software and Packages
 update_software_and_packages() {
     update_package(){
