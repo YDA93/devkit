@@ -1,8 +1,14 @@
-source '/Users/yousefalmutairi/macOS/external_completions.zshrc'
-source '/Users/yousefalmutairi/macOS/exports.zshrc'
-source '/Users/yousefalmutairi/macOS/updates.zshrc'
+# Current Directory
+source '/Users/yousefalmutairi/macOS/external_completions.sh'
+source '/Users/yousefalmutairi/macOS/exports.sh'
+source '/Users/yousefalmutairi/macOS/replacements.sh'
+source '/Users/yousefalmutairi/macOS/updates.sh'
+source '/Users/yousefalmutairi/macOS/code.sh'
 
-source '/Users/yousefalmutairi/macOS/aliases/replacements.zshrc'
-source '/Users/yousefalmutairi/macOS/aliases/django.zshrc'
-source '/Users/yousefalmutairi/macOS/aliases/flutter.zshrc'
-source '/Users/yousefalmutairi/macOS/aliases/projects.zshrc'
+# Django
+source '/Users/yousefalmutairi/macOS/django/aliases.sh'
+source '/Users/yousefalmutairi/macOS/django/functions.sh'
+source '/Users/yousefalmutairi/macOS/django/projects.sh'
+
+# Flutter
+source '/Users/yousefalmutairi/macOS/flutter/aliases.sh'
