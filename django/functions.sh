@@ -28,7 +28,7 @@ django-translations-make() {
 
         # Search for locale directory
         if [ -d "locale" ]; then
-            django-admin makemessages -l ar && echo "Translation made to folder: $d"
+            echo -e $(django-admin makemessages -l ar)" in $d"
         fi
 
         cd ..
@@ -44,7 +44,7 @@ django-translations-compile() {
 
         # Search for locale directory
         if [ -d "locale" ]; then
-            django-admin compilemessages && echo "Translation complied to folder: $d"
+            echo -e $(django-admin compilemessages)" in $d"
         fi
 
         cd ..
