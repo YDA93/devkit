@@ -20,6 +20,7 @@ update_software_and_packages() {
         brew update
         brew upgrade
         brew autoremove
+        brew cleanup
     }
     update_package "Brew and its packages" pass_commands
 
@@ -38,29 +39,30 @@ update_software_and_packages() {
 
     # NPM
     pass_commands(){
-        sudo npm install -g npm@latest
+        npm install -g npm@latest
         sudo npm-check -u
-        sudo npm audit fix --force
+        npm audit fix --force
     }
     update_package "NPM and its dependencies" pass_commands
 
     # Firebase CLI
     pass_commands(){
-        sudo npm install -g firebase-tools
-        sudo npm audit fix --force
+        npm install -g firebase-tools
+        npm audit fix --force
     }
     update_package "Firebase CLI" pass_commands
 
     # Rosetta
     pass_commands(){
-        sudo softwareupdate --install-rosetta --agree-to-license
+        softwareupdate --install-rosetta --agree-to-license
     }
     update_package "Rosetta" pass_commands
     
     # Cocoapods
     pass_commands(){
-        sudo gem update
-        sudo gem update cocoapods
+        gem update --system
+        gem update cocoapods
+        gem cleanup
     }
     update_package "Gems and Cocoapods" pass_commands
 
@@ -73,7 +75,7 @@ update_software_and_packages() {
 
     # macOS
     pass_commands(){
-        sudo softwareupdate -ia --verbose
+        softwareupdate -ia --verbose
     }
     update_package "macOS" pass_commands
 }

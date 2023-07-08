@@ -6,3 +6,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 11)
 
 # Flutter Path
 export PATH="$PATH:/Users/yousefalmutairi/flutter/bin"
+
+# Gems
+export GEM_HOME=$HOME/gems
+export PATH=$HOME/gems/bin:$PATH
