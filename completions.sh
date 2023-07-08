@@ -4,8 +4,9 @@ source '/Users/yousefalmutairi/macOS/external_completions.sh'
 source '/Users/yousefalmutairi/macOS/exports.sh'
 # Replacements
 source '/Users/yousefalmutairi/macOS/replacements.sh'
-# Quick Updates
-source '/Users/yousefalmutairi/macOS/updates.sh'
+# macOS
+source '/Users/yousefalmutairi/macOS/aliases.sh'
+source '/Users/yousefalmutairi/macOS/functions.sh'
 # VS Code - Open Files
 source '/Users/yousefalmutairi/macOS/code.sh'
 # Django
