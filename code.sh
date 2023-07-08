@@ -1,7 +1,7 @@
 # FeSale
-alias fesale-code-django='code Desktop/dev/fesale-django/'
-alias fesale-code-flutter='code Desktop/dev/fesale_flutter/'
+alias code-fesale-django='code Desktop/dev/fesale-django/'
+alias code-fesale-flutter='code Desktop/dev/fesale_flutter/'
 
 # FeCare
-alias fecare-code-django='code Desktop/dev/fecare-django/'
-alias fecare-code-flutter='code Desktop/dev/fecare_flutter/'
+alias code-fecare-django='code Desktop/dev/fecare-django/'
+alias code-fecare-flutter='code Desktop/dev/fecare_flutter/'
