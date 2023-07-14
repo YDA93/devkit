@@ -17,10 +17,11 @@ update_software_and_packages() {
     
     # Brew
     pass_commands(){
-        brew update
-        brew upgrade
-        brew autoremove
-        brew cleanup
+        echo -e "Brew doctor: "$(brew doctor)
+        echo -e "Brew update: "$(brew update)
+        echo -e "Brew upgrade: "$(brew upgrade)
+        echo -e "Brew autoremove: "$(brew autoremove)
+        echo -e "Brew cleanup: "$(brew cleanup)
     }
     update_package "Brew and its packages" pass_commands
 
@@ -39,16 +40,16 @@ update_software_and_packages() {
 
     # NPM
     pass_commands(){
-        npm install -g npm@latest
-        sudo npm-check -u
-        npm audit fix --force
+        echo -e "NPM install latest: "$(npm install -g npm@latest)
+        echo -e "NPM check for depencies updates: "$(sudo npm-check -u)
+        echo -e "NPM audit fix: "$(npm audit fix --force)
     }
     update_package "NPM and its dependencies" pass_commands
 
     # Firebase CLI
     pass_commands(){
-        npm install -g firebase-tools
-        npm audit fix --force
+        echo -e "Firebase install latest from npm: "$(npm install -g firebase-tools)
+        echo -e "NPM audit fix: "$(npm audit fix --force)
     }
     update_package "Firebase CLI" pass_commands
 
@@ -60,16 +61,17 @@ update_software_and_packages() {
     
     # Cocoapods
     pass_commands(){
-        gem update --system
-        gem update cocoapods
-        gem cleanup
+        echo -e "Gem update system: "$(gem update --system)
+        echo -e "Gem update cocoapods: "$(gem update cocoapods)
+        echo -e "Gem update ffi: "$(gem update ffi)
+        echo -e "Gem cleanup: "$(gem cleanup)
     }
     update_package "Gems and Cocoapods" pass_commands
 
     # App Store
     pass_commands(){
-        mas outdated
-        mas upgrade
+        echo -e "Check app store outdated apps: "$(mas outdated)
+        echo -e "Update app store apps: "$(mas upgrade)   
     }
     update_package "App Store apps" pass_commands
 
