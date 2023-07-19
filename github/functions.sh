@@ -7,7 +7,7 @@ github-commit-and-push() {
             git push
         else
             git add .
-            git commit -m "$@"
+            git commit -m $@
             git push
 
     fi
