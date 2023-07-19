@@ -15,3 +15,5 @@ source '/Users/yousefalmutairi/macOS/django/functions.sh'
 source '/Users/yousefalmutairi/macOS/django/projects.sh'
 # Flutter
 source '/Users/yousefalmutairi/macOS/flutter/aliases.sh'
+# Github
+source '/Users/yousefalmutairi/macOS/github/functions.sh'

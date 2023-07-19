@@ -41,7 +41,7 @@ update_software_and_packages() {
     # NPM
     pass_commands(){
         echo -e "NPM install latest: "$(npm install -g npm@latest)
-        echo -e "NPM check for depencies updates: "$(sudo npm-check -u)
+        sudo npm-check -u
         echo -e "NPM audit fix: "$(npm audit fix --force)
     }
     update_package "NPM and its dependencies" pass_commands
