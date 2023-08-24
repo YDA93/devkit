@@ -1,4 +1,4 @@
-postgres_database_delete() {
+function postgres_database_delete() {
     echo -n "Enter the PostgreSQL password: "
     read -s pg_password
     echo
@@ -37,3 +37,24 @@ postgres_database_delete() {
 
     unset PGPASSWORD
 }
+
+function postgres_list_all_databases() {
+    echo -n "Enter the PostgreSQL password: "
+    read -s pg_password
+    echo
+
+    export PGPASSWORD="$pg_password"
+
+    # Get a list of all databases
+    databases=$(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | sed -e 's/ //g' -e '/^$/d')
+
+    echo "List of databases:"
+    echo "------------------"
+    echo "$databases"
+    echo "------------------"
+    echo "Total databases: $(echo "$databases" | wc -l)"
+
+    unset PGPASSWORD
+}
+
+list_all_databases

@@ -1,5 +1,5 @@
 # Run Server
-github-commit-and-push() {
+function github-commit-and-push() {
     if [ $# -eq 0 ]
         then
             git add .

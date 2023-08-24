@@ -1,5 +1,5 @@
 # Run Server
-django-run-server() {
+function django-run-server() {
     if [ $# -eq 0 ]
         then
             python manage.py runserver 0.0.0.0:8000
@@ -10,17 +10,17 @@ django-run-server() {
 }
 
 # Make Migrations
-django-make-migrations() {
+function django-make-migrations() {
     python manage.py makemigrations $@
 }
 
 # Migrate
-django-migrate() {
+function django-migrate() {
     python manage.py migrate $@
 }
 
 # Make Translations
-django-translations-make() {
+function django-translations-make() {
     # Loop through directories    
     for d in */ ; do
         # Go to directory
@@ -36,7 +36,7 @@ django-translations-make() {
 }
 
 # Compile Translations
-django-translations-compile() {
+function django-translations-compile() {
     # Loop through directories    
     for d in */ ; do
         # Go to directory
@@ -53,7 +53,7 @@ django-translations-compile() {
 
 
 # Delete migrations
-django_delete_migrations_and_cache() {
+function django_delete_migrations_and_cache() {
     # Get the current directory
     project_directory="$PWD"
 
@@ -66,7 +66,7 @@ django_delete_migrations_and_cache() {
     echo "Deleted all Django migration files and __pycache__ folders (excluding venv)."
 }
 
-django_new_project_migrations() {
+function django_new_project_migrations() {
 
     project_directory="$PWD"
 
@@ -190,7 +190,7 @@ django_new_project_migrations() {
 
         # Reset database sequences for all installed apps
         echo "Resetting database sequences..."
-        apps=$(python "$project_directory"/manage.py shell -c "from django.apps import apps; print(' '.join([app.label for app in apps.get_app_configs()]))")
+        function apps=$(python "$project_directory"/manage.py shell -c "from django.apps import apps; print(' '.join([app.label for app in apps.get_app_configs()]))")
         echo "$apps"
         echo "$apps" | xargs -n 1 python "$project_directory"/manage.py sqlsequencereset | python "$project_directory"/manage.py dbshell
         echo "Database sequences reset."
@@ -209,13 +209,13 @@ django_new_project_migrations() {
 }
 
 # Start Project
-django-start-project() {
+function django-start-project() {
     site_name=$1 # First Aurgment
     django-admin startproject $site_name
 }
 
 # Start App
-django-start-app() {
+function django-start-app() {
     app_name=$1 # First Aurgment
     python manage.py startapp $app_name
 }
