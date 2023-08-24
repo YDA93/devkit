@@ -17,3 +17,5 @@ source '/Users/yousefalmutairi/macOS/django/projects.sh'
 source '/Users/yousefalmutairi/macOS/flutter/aliases.sh'
 # Github
 source '/Users/yousefalmutairi/macOS/github/functions.sh'
+# Postgres
+source '/Users/yousefalmutairi/macOS/postgres/functions.sh'

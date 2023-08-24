@@ -105,7 +105,7 @@ django_new_project_migrations() {
     if [ "$backup_restore_choice" = "yes" ]; then
         # Perform data backup using dumpdata
         echo "Performing data backup using 'dumpdata'..."
-        python "$project_directory"/manage.py dumpdata > data.json
+        python "$project_directory"/manage.py dumpdata --natural-foreign --natural-primary --indent 2 > data.json
         echo "Data backup complete."
         sleep 2
         backup_performed=true
@@ -184,7 +184,7 @@ django_new_project_migrations() {
     if [ "$backup_performed" = true ]; then
         # Perform restoration using loaddata
         echo "Restoring data using 'loaddata'..."
-        python "$project_directory"/manage.py loaddata data.json
+        python "$project_directory"/manage.py loaddata data.json --traceback
         echo "Data restoration complete."
         sleep 2
 
