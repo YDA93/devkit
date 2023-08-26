@@ -1,1 +1,5 @@
 alias ip-address="ipconfig getifaddr en0"
+alias restart="sudo shutdown -r now"
+alias shutdown="sudo shutdown -h now"
+alias reset_zsh="exec zsh"
+alias reset_bash="exec bash"
