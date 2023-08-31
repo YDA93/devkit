@@ -92,6 +92,7 @@ function check_if_virtual_environment_activated() {
 
 function restore_and_reset_db() {
     local project_directory=$1
+    local backup_file=$2
 
     # Check if project_directory is provided
     if [ -z "$project_directory" ]; then
@@ -99,9 +100,14 @@ function restore_and_reset_db() {
         return 1
     fi
 
+    # Use default backup file if none provided
+    if [ -z "$backup_file" ]; then
+        backup_file="data.json"
+    fi
+
     # Perform restoration using loaddata
-    echo "Restoring django data using 'loaddata'..."
-    python "$project_directory"/manage.py loaddata data.json --traceback
+    echo "Restoring django data using 'loaddata' from $backup_file..."
+    python "$project_directory"/manage.py loaddata "$backup_file" --traceback
     echo "Data restoration complete."
     sleep 2
 
@@ -179,9 +185,9 @@ function django_migrate_to_new_database() {
         return 0
     fi
 
-    # Prompt user for backup and restore permission
+    # Prompt user for backup
     backup_performed=false
-    if prompt_confirmation "Do you want to backup and restore data?"; then
+    if prompt_confirmation "Do you want to backup data?"; then
         if ! backup_django_data "$project_directory"; then
             return 0
         fi
@@ -220,10 +226,18 @@ function django_migrate_to_new_database() {
     # Run migrate
     python "$project_directory"/manage.py migrate
 
-    # Check if data backup was performed
+    # Restore data logic
     if [ "$backup_performed" = true ]; then
-        if ! restore_and_reset_db "$project_directory"; then
+        if ! restore_and_reset_db "$project_directory"; then  # Using the default "data.json"
             return 0
+        fi
+    else
+        if prompt_confirmation "Do you want to restore data from a backup file?"; then
+            echo "Please provide the path to the backup file:"
+            read backup_file
+            if ! restore_and_reset_db "$project_directory" "$backup_file"; then  # Using the user-specified backup file
+                return 0
+            fi
         fi
     fi
 
