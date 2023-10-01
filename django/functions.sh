@@ -228,14 +228,14 @@ function django_migrate_to_new_database() {
 
     # Restore data logic
     if [ "$backup_performed" = true ]; then
-        if ! restore_and_reset_db "$project_directory"; then  # Using the default "data.json"
+        if ! restore_and_reset_db "$project_directory"; then # Using the default "data.json"
             return 0
         fi
     else
         if prompt_confirmation "Do you want to restore data from a backup file?"; then
             echo "Please provide the path to the backup file:"
             read backup_file
-            if ! restore_and_reset_db "$project_directory" "$backup_file"; then  # Using the user-specified backup file
+            if ! restore_and_reset_db "$project_directory" "$backup_file"; then # Using the user-specified backup file
                 return 0
             fi
         fi
@@ -250,6 +250,19 @@ function django_migrate_to_new_database() {
 
     echo "Project reset and migration complete."
 
-    # Redirect output back to console
+    # Now redirect output back to console
     exec >&/dev/tty 2>&/dev/tty
+}
+
+django-run-tests() {
+    django-settings-test
+
+    if [ -z "$1" ]; then
+        # If no argument provided, run all tests
+        coverage run -m pytest -n auto
+    else
+        # If an argument is provided, run tests for that specific app
+        coverage run -m pytest -n auto $1
+    fi
+    coverage report
 }
