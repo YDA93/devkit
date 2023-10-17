@@ -11,8 +11,8 @@ alias django-shell-dev='django-environment-activate && django-settings-dev && py
 # Environment
 alias django-environment-create="python -m venv venv && source venv/bin/activate && echo 'environment created. & activated.'"
 alias django-environment-activate='if [ -z "$VIRTUAL_ENV" ]; then source venv/bin/activate && echo "Environment activated."; else echo "Environment already activated."; fi'
-alias django-delete-environment='if [ -d "venv" ]; then rm -rf venv; echo "Deleted environment"; fi'
-alias django-environment-setup='django-delete-environment && django-environment-create && django-environment-activate && django-pip-install-all'
+alias django-environment-delete='if [ -d "venv" ]; then rm -rf venv; echo "Deleted environment"; fi'
+alias django-environment-setup='django-environment-delete && django-environment-create && django-environment-activate && django-pip-install-all'
 alias django-project-setup='django-environment-setup && django-pip-install-all && django_migrate_to_new_database'
 
 # Pip
