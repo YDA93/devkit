@@ -9,3 +9,6 @@ export PATH="$PATH:/Users/yousefalmutairi/flutter/bin"
 
 # Ruby Path
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+
+# Pub Path
+export PATH="$PATH":"$HOME/.pub-cache/bin"
