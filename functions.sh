@@ -64,7 +64,7 @@ function update_software_and_packages() {
         echo -e "Gem update system: "$(gem update --system)
         echo -e "Gem update cocoapods: "$(gem update cocoapods)
         echo -e "Gem update ffi: "$(gem update ffi)
-        echo -e "Gem cleanup: "$(gem cleanup)
+        echo -e "Gem cleanup: "$(sudo gem cleanup)
     }
     update_package "Gems and Cocoapods" pass_commands
 
