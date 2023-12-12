@@ -259,10 +259,10 @@ django-run-tests() {
 
     if [ -z "$1" ]; then
         # If no argument provided, run all tests
-        coverage run -m pytest -n auto
+        coverage run -m pytest -v -n auto
     else
         # If an argument is provided, run tests for that specific app
-        coverage run -m pytest -n auto $1
+        coverage run -m pytest -v -n auto $1
     fi
     coverage report
 }
