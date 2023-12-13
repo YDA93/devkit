@@ -5,7 +5,7 @@ alias django-settings-prod='python-environment-activate && echo "Production sett
 alias django-settings-test='python-environment-activate && echo "Test settings activated" && export DJANGO_SETTINGS_MODULE=project.settings.test'
 
 # Environment
-alias django-project-setup='python-environment-setup && pip-install-all && django_migrate_to_new_database'
+alias django-project-setup='python-environment-setup && pip-install-all && django-migrate-to-new-database'
 
 # Find templates
 alias django-find-templates='python-environment-activate && python -c "import django; print(django.__path__)"'

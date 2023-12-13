@@ -51,7 +51,7 @@ function django-translations-compile() {
 }
 
 # Delete migrations
-function django_delete_migrations_and_cache() {
+function django-delete-migrations-and-cache() {
     # Get the current directory
     project_directory="$PWD"
 
@@ -90,7 +90,7 @@ function check_if_virtual_environment_activated() {
     fi
 }
 
-function restore_and_reset_db() {
+function django-loaddata() {
     local project_directory=$1
     local backup_file=$2
 
@@ -122,7 +122,7 @@ function restore_and_reset_db() {
     sleep 2
 }
 
-function backup_django_data() {
+function django-dumpdata() {
     local project_directory=$1
 
     # Check if project_directory is provided
@@ -138,7 +138,7 @@ function backup_django_data() {
     sleep 2
 }
 
-function django_migrate_to_new_database() {
+function django-migrate-to-new-database() {
     # Stop executing the script on any error
     set -e
 
@@ -188,7 +188,7 @@ function django_migrate_to_new_database() {
     # Prompt user for backup
     backup_performed=false
     if prompt_confirmation "Do you want to backup data?"; then
-        if ! backup_django_data "$project_directory"; then
+        if ! django-dumpdata "$project_directory"; then
             return 0
         fi
         backup_performed=true
@@ -205,7 +205,7 @@ function django_migrate_to_new_database() {
         return 0
     fi
 
-    django_delete_migrations_and_cache
+    django-delete-migrations-and-cache
 
     # Store the original content of the urls.py
     original_content=$(cat ./project/urls.py)
@@ -228,14 +228,14 @@ function django_migrate_to_new_database() {
 
     # Restore data logic
     if [ "$backup_performed" = true ]; then
-        if ! restore_and_reset_db "$project_directory"; then # Using the default "data.json"
+        if ! django-loaddata "$project_directory"; then # Using the default "data.json"
             return 0
         fi
     else
         if prompt_confirmation "Do you want to restore data from a backup file?"; then
             echo "Please provide the path to the backup file:"
             read backup_file
-            if ! restore_and_reset_db "$project_directory" "$backup_file"; then # Using the user-specified backup file
+            if ! django-loaddata "$project_directory" "$backup_file"; then # Using the user-specified backup file
                 return 0
             fi
         fi
@@ -254,15 +254,15 @@ function django_migrate_to_new_database() {
     exec >&/dev/tty 2>&/dev/tty
 }
 
-django-run-tests() {
+function django-run-pytest() {
     django-settings-test
 
-    if [ -z "$1" ]; then
-        # If no argument provided, run all tests
-        coverage run -m pytest -v -n auto
-    else
-        # If an argument is provided, run tests for that specific app
-        coverage run -m pytest -v -n auto $1
-    fi
+    coverage run -m pytest -v -n auto $1
     coverage report
+}
+
+function django-run-test() {
+    django-settings-test
+
+    python manage.py test $1
 }
