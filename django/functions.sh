@@ -257,12 +257,28 @@ function django-migrate-to-new-database() {
 function django-run-pytest() {
     django-settings-test
 
-    coverage run -m pytest -v -n auto $1
+    # Replace '/' with '.', remove '.py::', and replace '::' with '.'
+    modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
+    if [[ -n "$modified_arg" ]]; then
+        echo "Testing: $modified_arg"
+    else
+        echo "Testing: All"
+    fi
+
+    coverage run -m pytest -v -n auto $modified_arg
     coverage report
 }
 
 function django-run-test() {
     django-settings-test
 
-    python manage.py test $1
+    # Replace '/' with '.', remove '.py::', and replace '::' with '.'
+    modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
+    if [[ -n "$modified_arg" ]]; then
+        echo "Testing: $modified_arg"
+    else
+        echo "Testing: All"
+    fi
+
+    python manage.py test $modified_arg
 }
