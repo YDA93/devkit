@@ -33,7 +33,7 @@ function update_software_and_packages() {
 
     # Flutter
     function pass_commands() {
-        flutter upgrade
+        flutter upgrade --force
         flutter doctor -v
     }
     update_package "Flutter" pass_commands
