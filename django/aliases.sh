@@ -10,3 +10,5 @@ alias django-project-setup='python-environment-setup && pip-install-all && djang
 # Find templates
 alias django-find-templates='python-environment-activate && python -c "import django; print(django.__path__)"'
 alias django-format-documents='isort . && black --line-length 80 .'
+
+alias django-collect-static='python-environment-activate && python manage.py collectstatic --clear --noinput'
