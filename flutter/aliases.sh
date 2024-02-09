@@ -20,12 +20,12 @@ alias flutter-upload-crashlytics-symbols='firebase crashlytics:symbols:upload --
 
 # Flutter
 alias flutter-dart-fix='dart fix --apply'
-alias flutter-clean='flutter-flutterfire-activate; flutter-update-firebase-functions; flutter clean && flutter pub upgrade && flutter pub outdated && flutter pub upgrade --major-versions; flutter-dart-fix'
+alias flutter-clean='flutter clean && flutter pub upgrade && flutter pub outdated && flutter pub upgrade --major-versions; flutter-dart-fix'
 alias flutter-pub-repair-cache='flutter pub cache repair'
 alias flutter-ios-reinstall-podfile='cd ios && rm Podfile.lock; pod install --repo-update; cd .. && flutter-clean'
 alias flutter-update-icon='dart run flutter_launcher_icons:main'
 alias flutter-update-splash='dart run flutter_native_splash:remove && dart run flutter_native_splash:create'
 alias flutter-update-fontawesome='cd assets/font_awesome_flutter && flutter-clean && flutter-dart-fix && cd util && sh ./configurator.sh && cd ../../..'
 alias flutter-update-firebase-functions='cd firebase/functions && flutter-firebase-environment-setup && cd ../..'
-alias flutter-clean-deep='flutter-update-fontawesome && flutter-ios-reinstall-podfile && flutter-update-icon && flutter-update-splash && flutter-build-runner'
+alias flutter-clean-deep='flutter-flutterfire-activate; flutter-update-firebase-functions; flutter-update-fontawesome && flutter-ios-reinstall-podfile && flutter-update-icon && flutter-update-splash && flutter-build-runner'
 alias flutter-open-xcode='open ios/Runner.xcworkspace'
