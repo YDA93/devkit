@@ -168,7 +168,7 @@ function django-migrate-to-new-database() {
     fi
 
     # Extracting value of LOCAL_DB_PASSWORD from .env file
-    local_db_password=$(grep "LOCAL_DB_PASSWORD=" .env | cut -d '=' -f2)
+    local_db_password=$(grep "LOCAL_DB_PASSWORD=" .env | cut -d '=' -f2 | tr -d '"')
 
     # Set the PGPASSWORD environment variable
     export PGPASSWORD="$local_db_password"
