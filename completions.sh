@@ -27,6 +27,7 @@ source '/Users/yousefalmutairi/macOS/django/projects.sh'
 
 # Flutter
 source '/Users/yousefalmutairi/macOS/flutter/aliases.sh'
+source '/Users/yousefalmutairi/macOS/flutter/functions.sh'
 
 # Github
 source '/Users/yousefalmutairi/macOS/github/functions.sh'
