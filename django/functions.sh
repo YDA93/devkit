@@ -20,6 +20,7 @@ function django-migrate() {
 
 # Make Translations
 function django-translations-make() {
+    echo -e $(django-admin makemessages -l ar --ignore="venv/*" --ignore="static/*")" in main directory"
     # Loop through directories
     for d in */; do
         # Go to directory
@@ -27,7 +28,7 @@ function django-translations-make() {
 
         # Search for locale directory
         if [ -d "locale" ]; then
-            echo -e $(django-admin makemessages -l ar)" in $d"
+            echo -e $(django-admin makemessages -l ar)" in ${d::-1}"
         fi
 
         cd ..
