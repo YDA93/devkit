@@ -8,7 +8,7 @@ alias flutter-flutterfire-configure='flutterfire configure;'
 alias flutter-flutterfire-init='firebase login; flutter-flutterfire-activate; flutterfire configure;'
 
 # Flutter Build
-alias flutter-build-ios='flutter build ipa --bundle-sksl-path flutter_01_ios.sksl.json'
+alias flutter-build-ios-warm-up='flutter build ipa --bundle-sksl-path flutter_01_ios.sksl.json'
 alias flutter-build-android-warm-up='flutter build appbundle --bundle-sksl-path flutter_01_android.sksl.json'
 alias flutter-build-android='flutter build appbundle'
 alias flutter-build-runner='dart run build_runner build --delete-conflicting-outputs'
