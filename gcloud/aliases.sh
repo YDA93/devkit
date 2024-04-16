@@ -1,0 +1,11 @@
+alias gcloud-init='gcloud init'
+alias gcloud-login-cli='gcloud auth login'                     # CLI: Command Line Interface
+alias gcloud-login-adc='gcloud auth application-default login' # ADC: Application Default Credentials
+alias gcloud-logout='gcloud auth revoke'
+alias gcloud-info='gcloud info'
+alias gcloud-projects-list='gcloud projects list'
+alias gcloud-project-describe='gcloud projects describe $1'
+alias gcloud-project-set='gcloud config set project $1'
+alias gcloud-account-list='gcloud auth list'
+alias gcloud-account-set='gcloud config set account $1'
+alias gcloud-update='gcloud components update'

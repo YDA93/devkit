@@ -34,3 +34,6 @@ source '/Users/yousefalmutairi/macOS/github/functions.sh'
 
 # Prompt
 source '/Users/yousefalmutairi/macOS/prompts.sh'
+
+# Gcloud
+source '/Users/yousefalmutairi/macOS/gcloud/aliases.sh'
