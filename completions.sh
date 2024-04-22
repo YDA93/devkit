@@ -23,7 +23,6 @@ source '/Users/yousefalmutairi/macOS/python/aliases.sh'
 # Django
 source '/Users/yousefalmutairi/macOS/django/aliases.sh'
 source '/Users/yousefalmutairi/macOS/django/functions.sh'
-source '/Users/yousefalmutairi/macOS/django/projects.sh'
 
 # Flutter
 source '/Users/yousefalmutairi/macOS/flutter/aliases.sh'
@@ -37,3 +36,4 @@ source '/Users/yousefalmutairi/macOS/prompts.sh'
 
 # Gcloud
 source '/Users/yousefalmutairi/macOS/gcloud/aliases.sh'
+source '/Users/yousefalmutairi/macOS/gcloud/functions.sh'
