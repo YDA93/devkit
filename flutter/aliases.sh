@@ -1,5 +1,5 @@
 # Firebase Functions
-alias flutter-firebase-environment-create="python3.11 -m venv venv && source venv/bin/activate && echo 'environment created. & activated.'"
+alias flutter-firebase-environment-create="python3.12 -m venv venv && source venv/bin/activate && echo 'environment created. & activated.'"
 alias flutter-firebase-environment-setup='python-environment-delete && flutter-firebase-environment-create && pip-update'
 
 # Flutterfire
