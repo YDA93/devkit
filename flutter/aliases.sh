@@ -22,7 +22,7 @@ alias flutter-upload-crashlytics-symbols='firebase crashlytics:symbols:upload --
 # Flutter
 alias flutter-dart-fix='dart fix --apply'
 alias flutter-clean='flutter clean && flutter pub upgrade && flutter pub outdated && flutter pub upgrade --major-versions; flutter-dart-fix'
-alias flutter-pub-repair-cache='flutter pub cache repair'
+alias flutter-pub-repair-cache='cd ios && pod cache clean --all; cd ..; flutter pub cache repair;'
 alias flutter-ios-reinstall-podfile='cd ios && rm Podfile.lock; pod install --repo-update; cd .. && flutter-clean'
 alias flutter-update-icon='dart run flutter_launcher_icons'
 alias flutter-update-splash='dart run flutter_native_splash:remove && dart run flutter_native_splash:create'
