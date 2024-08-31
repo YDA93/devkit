@@ -72,3 +72,76 @@ function flutter-adb-connect() {
 
     echo "Updated .vscode/launch.json with new port for IP $IP_ADDRESS."
 }
+
+function flutter-flutterfire-init() {
+    firebase login
+    flutter-flutterfire-activate
+    flutterfire configure
+}
+
+function flutter-firebase-environment-create() {
+    python3.12 -m venv venv
+    source venv/bin/activate
+    echo 'environment created. & activated.'
+}
+
+function flutter-firebase-environment-setup() {
+    python-environment-delete
+    flutter-firebase-environment-create
+    pip-update
+}
+
+function flutter-clean() {
+    flutter clean
+    flutter pub upgrade
+    flutter pub outdated
+    flutter pub upgrade --major-versions
+    flutter-dart-fix
+}
+
+function flutter-pub-repair-cache() {
+    cd ios
+    pod cache clean --all
+    cd ..
+    flutter pub cache repair
+}
+
+function flutter-ios-reinstall-podfile() {
+    cd ios
+    rm Podfile.lock
+    pod install --repo-update
+    cd ..
+    flutter-clean
+}
+
+function flutter-update-slash() {
+    dart run flutter_native_splash:remove
+    dart run flutter_native_splash:create
+}
+
+function flutter-update-fontawesome() {
+    cd assets/font_awesome_flutter
+    flutter-clean
+    flutter-dart-fix
+    cd util
+    sh ./configurator.sh
+    cd ../../..
+}
+
+function flutter-update-firebase-functions() {
+    cd firebase/functions
+    flutter-firebase-environment-setup
+    cd ../..
+}
+
+function flutter-clean-deep() {
+    {
+        flutter-flutterfire-activate
+        flutter-update-firebase-functions
+        flutter-update-fontawesome
+        flutter-ios-reinstall-podfile
+        flutter-update-icon
+        flutter-update-splash
+        flutter-build-runner
+    } | tee -a ./flutter-clean-deep.log
+}
