@@ -99,11 +99,14 @@ function flutter-clean() {
     flutter-dart-fix
 }
 
-function flutter-pub-repair-cache() {
+function flutter-cache-reset() {
+    echo "Clearing cache of Pod, Flutter, and Ccache..."
     cd ios
     pod cache clean --all
     cd ..
     flutter pub cache repair
+    ccache -z
+    ccache -C
 }
 
 function flutter-ios-reinstall-podfile() {
