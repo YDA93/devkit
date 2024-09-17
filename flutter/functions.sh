@@ -117,7 +117,7 @@ function flutter-ios-reinstall-podfile() {
     flutter-clean
 }
 
-function flutter-update-slash() {
+function flutter-update-splash() {
     dart run flutter_native_splash:remove
     dart run flutter_native_splash:create
 }
