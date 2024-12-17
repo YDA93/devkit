@@ -1,14 +1,17 @@
-# Python Path
+# Python version 3.11 Path
 export PATH="/opt/homebrew/opt/python@3.11/libexec/bin:$PATH"
+
+# Node version 22 Path
+export PATH="/opt/homebrew/opt/node@22/bin:$PATH"
 
 # Java Path
 export JAVA_HOME=$(/usr/libexec/java_home -v 11)
 
-# Flutter Path
-export PATH="$PATH:/Users/yousefalmutairi/flutter/bin"
-
 # Ruby Path
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+
+# Flutter Path
+export PATH="$PATH:/Users/yousefalmutairi/flutter/bin"
 
 # Pub Path (for Dart & Flutter)
 export PATH="$PATH:$HOME/.pub-cache/bin"
