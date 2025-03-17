@@ -37,3 +37,8 @@ source '/Users/yousefalmutairi/macOS/prompts.sh'
 # Gcloud
 source '/Users/yousefalmutairi/macOS/gcloud/aliases.sh'
 source '/Users/yousefalmutairi/macOS/gcloud/functions.sh'
+source '/Users/yousefalmutairi/macOS/gcloud/functions_storage_buckets.sh'
+source '/Users/yousefalmutairi/macOS/gcloud/functions_cloud_sql.sh'
+source '/Users/yousefalmutairi/macOS/gcloud/functions_cloud_run.sh'
+source '/Users/yousefalmutairi/macOS/gcloud/functions_secret_manager.sh'
+source '/Users/yousefalmutairi/macOS/gcloud/functions_artifact_registry.sh'

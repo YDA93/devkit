@@ -1,159 +1,154 @@
-# Function to load and validate configuration values from gcloud_project.sh
-function gcloud_load_and_validate_config() {
+# Function to ask the user if they want to continue or abort, with a custom message
+function ask_continue_with_message() {
+    local message="$1" # Message describing the next step
+    echo "➡️  Next: $message"
+    echo -n "Do you want to continue? (yes/no): "
+    read CONFIRMATION
 
-    # Define an associative array to hold the variable names and their extracted values
-    declare -A config_values
+    # Convert input to lowercase
+    CONFIRMATION=$(echo "$CONFIRMATION" | tr '[:upper:]' '[:lower:]')
 
-    # List of expected configuration variables
-    local variables=(
-        "project_id"
-        "sql_region"
-        "sql_id"
-        "bucket_static_name"
-        "bucket_media_name"
-        "run_name"
-        "run_region"
-    )
+    if [[ "$CONFIRMATION" != "yes" ]]; then
+        echo "❌ Skipping this step."
+        return 1 # Stop execution of the calling function
+    fi
+}
 
-    # Loop through each expected variable to load and validate it
-    for var in "${variables[@]}"; do
-        # Extract the value, ignoring lines starting with '#' and removing spaces around '='
-        config_values[$var]=$(grep -E "^[[:space:]]*$var=" gcloud_project.sh | cut -d'=' -f2 | xargs)
+# Function to load and validate the configuration from the .env file
+function gcloud_config_load_and_validate() {
+    local env_file=".env"
+    local secrets_dir="/tmp/env_secrets"
+    local exported_vars=() # List to track exported variables
 
-        # Check if the variable is set
-        if [ -z "${config_values[$var]}" ]; then
-            echo "Error: '$var' is not set in gcloud_project.sh."
-            return 1
+    # Ensure the secrets directory exists
+    mkdir -p "$secrets_dir"
+    chmod 700 "$secrets_dir"
+
+    # Check if .env file exists
+    if [ ! -f "$env_file" ]; then
+        echo "❌ Error: .env file not found."
+        return 1
+    fi
+
+    # Read the .env file line by line
+    while IFS='=' read -r key value || [[ -n "$key" ]]; do
+        # Skip empty lines or comments
+        [[ -z "$key" || "$key" =~ ^# ]] && continue
+
+        # Strip potential surrounding quotes
+        value="${value%\"}"
+        value="${value#\"}"
+
+        # Detect if value contains a multi-line pattern
+        if [[ "$value" == *"\n"* || "$value" == "{"* || "$value" == "-----BEGIN "* ]]; then
+            secret_file="$secrets_dir/$key.pem"
+
+            # Ensure clean filename (no special characters)
+            secret_file=$(echo "$secret_file" | tr -d '[:space:][:cntrl:]')
+
+            # Convert escaped `\n` into actual newlines and write to file
+            printf "%b" "${value//\\n/$'\n'}" >"$secret_file"
+
+            # Secure the file
+            chmod 600 "$secret_file"
+
+            # Read content into an environment variable
+            export "$key"="$(cat "$secret_file")"
+
+            # Delete the temporary file
+            rm -f "$secret_file"
+
+            # Track exported variables
+            exported_vars+=("$key (exported directly, file deleted)")
+        else
+            # Export normal key-value pairs directly
+            export "$key=$value"
+            exported_vars+=("$key (exported directly)")
         fi
-    done
-
-    # Export the variables so they can be used globally in the script
-    for var in "${variables[@]}"; do
-        export $var="${config_values[$var]}"
-    done
-
-    gcloud config set project $project_id
+    done <"$env_file"
 }
 
-# Function to run the cloud-sql-proxy with the loaded configuration
-function gcloud_proxy() {
-    # Call the configuration loading function
-    if ! gcloud_load_and_validate_config; then
-        return 1 # Exit if configuration is not valid
-    fi
-    # If the configuration loads and validates, run the cloud-sql-proxy
-    ./cloud-sql-proxy --port 3306 "${project_id}:${sql_region}:${sql_id}"
-}
-
-# Function to sync static files to the static bucket
-function gcloud_sync_static() {
-    # Call the configuration loading function
-    if ! gcloud_load_and_validate_config; then
-        return 1 # Exit if configuration is not valid
-    fi
-    # Sync static files to the static bucket
-    gsutil -o "GSUtil:parallel_process_count=1" -m rsync -r -j html,txt,css,js ./static gs://$bucket_static_name/
-}
-
-# Function to set public read permissions to the static and media buckets
-function gcloud_set_public_read_to_buckets() {
-    # Call the configuration loading function
-    if ! gcloud_load_and_validate_config; then
-        return 1 # Exit if configuration is not valid
-    fi
-    # Set public read permissions to the static bucket
-    gsutil defacl set public-read gs://$bucket_static_name
-    # Set public read permissions to the media bucket
-    gsutil defacl set public-read gs://$bucket_media_name
-}
-
-# Function to set cross-origin policy to the static and media buckets
-function gcloud_set_cross_origin() {
-    # Call the configuration loading function
-    if ! gcloud_load_and_validate_config; then
-        return 1 # Exit if configuration is not valid
-    fi
-    # Set cross-origin policy to the static bucket
-    gsutil cors set cross-origin.json gs://$bucket_static_name
-    # Set cross-origin policy to the media bucket
-    gsutil cors set cross-origin.json gs://$bucket_media_name
-}
-
-# Function to build image
-function gcloud_build_image() {
-    # Call the configuration loading function
-    if ! gcloud_load_and_validate_config; then
-        return 1 # Exit if configuration is not valid
-    fi
-    # Build the image
-    gcloud builds submit --config cloudmigrate.yaml \
-        --substitutions _INSTANCE_NAME=$sql_id,_REGION=$sql_region
-}
-
-# Function to deploy the service to Cloud Run for the first time
-function gcloud_run_deploy_first_time() {
-    # Call the configuration loading function
-    if ! gcloud_load_and_validate_config; then
-        return 1 # Exit if configuration is not valid
-    fi
-    # Deploy the service to Cloud Run for the first time
-    gcloud run deploy $run_name \
-        --platform managed \
-        --region $run_region \
-        --image gcr.io/$project_id/$run_name \
-        --add-cloudsql-instances $project_id:$sql_region:$sql_id \
-        --allow-unauthenticated
-}
-
-# Function to redeploy the service to Cloud Run
-function gcloud_run_redeploy() {
-    # Call the configuration loading function
-    if ! gcloud_load_and_validate_config; then
-        return 1 # Exit if configuration is not valid
-    fi
-    # Redeploy the service to Cloud Run
-    gcloud run deploy $run_name \
-        --platform managed \
-        --region $run_region \
-        --image gcr.io/$project_id/$run_name
-}
-
-# Function to update the service URL environment variable in Cloud Run
-function gcloud_run_update_service_url_env() {
-    # Call the configuration loading function
-    if ! gcloud_load_and_validate_config; then
+# Function to setup the Django project on Google Cloud Platform
+function gcloud_django_setup {
+    # Step 1: Load Configuration and Validate
+    if ! gcloud_config_load_and_validate; then
         return 1 # Exit if configuration is not valid
     fi
 
-    # Get the service URL
-    SERVICE_URL=$(gcloud run services describe $run_name --platform managed \
-        --region $run_region --format "value(status.url)")
+    # Step 2: Create a new Cloud SQL for PostgreSQL instance
+    ask_continue_with_message "Create a new Cloud SQL instance for PostgreSQL." || return 1
+    gcloud_sql_instance_create
 
-    # Update the service URL environment variable in Cloud Run
-    gcloud run services update $run_name \
-        --platform managed \
-        --region $run_region \
-        --set-env-vars CLOUDRUN_SERVICE_URL=$SERVICE_URL
+    # Step 3: Create database and user in Cloud SQL for PostgreSQL
+    ask_continue_with_message "Create a new database and user in Cloud SQL for PostgreSQL." || return 1
+    gcloud_sql_db_and_user_create
+
+    # Step 4: Create Artifact Registry repository
+    ask_continue_with_message "Create a new Artifact Registry repository." || return 1
+    gcloud_artifact_registry_repository_create
+
+    # Step 5: Create Cloud Storage buckets
+    ask_continue_with_message "Create new Cloud Storage buckets." || return 1
+    gcloud_storage_buckets_create
+
+    # Step 6: Create Cloud Secret Manager secret
+    ask_continue_with_message "Create a new Secret Manager secret." || return 1
+    gcloud_secret_manager_env_create
+
+    # Step 7: Create Cloud Run service
+    ask_continue_with_message "Build and deploy the service to Cloud Run for the first time." || return 1
+    gcloud_run_build_and_deploy_initial
+
+    # Step 8: Start the Cloud SQL Proxy in a separate terminal and apply migrations and initial data to the database
+    ask_continue_with_message "Start the Cloud SQL Proxy in a separate terminal, then apply database migrations and populate the database with initial data." || return 1
+    gcloud_sql_proxy_and_django_setup
 }
 
-# Function to build the image and deploy the service to Cloud Run for the first time
-function gcloud_run_app_release() {
-    # Call the configuration loading function
-    if ! gcloud_load_and_validate_config; then
+# Function to delete the Django project from Google Cloud Platform
+function gcloud_django_teardown {
+    # Step 1: Load Configuration and Validate
+    if ! gcloud_config_load_and_validate; then
         return 1 # Exit if configuration is not valid
     fi
-    echo "Building the image and deploying the service to Cloud Run for the first time..."
-    # Build the image, deploy the service for the first time, and update the service URL environment variable
-    gcloud_build_image && gcloud_run_deploy_first_time && gcloud_run_update_service_url_env
+
+    # Step 2: Delete Cloud Run service
+    ask_continue_with_message "Delete the Cloud Run service." || return 1
+    gcloud_run_service_delete
+
+    # Step 3: Delete Cloud Secret Manager secret
+    ask_continue_with_message "Delete the Secret Manager secret." || return 1
+    gcloud_secret_manager_env_delete
+
+    # Step 4: Delete Cloud Storage buckets
+    ask_continue_with_message "Delete the Cloud Storage buckets." || return 1
+    gcloud_storage_buckets_delete
+
+    # Step 5: Delete Artifact Registry repository
+    ask_continue_with_message "Delete the Artifact Registry repository." || return 1
+    gcloud_artifact_registry_repository_delete
+
+    # Step 6: Delete Cloud SQL for PostgreSQL instance
+    ask_continue_with_message "Delete the Cloud SQL instance." || return 1
+    gcloud_sql_instance_delete
+
 }
 
-# Function to build the image and redeploy the service to Cloud Run
-function gcloud_run_app_update() {
-    # Call the configuration loading function
-    if ! gcloud_load_and_validate_config; then
+# Function to update the Django project on Google Cloud Platform
+function gcloud_django_update {
+    # Step 1: Load Configuration and Validate
+    if ! gcloud_config_load_and_validate; then
         return 1 # Exit if configuration is not valid
     fi
-    echo "Building the image and redeploying the service to Cloud Run..."
-    # Build the image, redeploy the service, and update the service URL environment variable
-    gcloud_build_image && gcloud_run_redeploy && gcloud_run_update_service_url_env
+
+    # Step 2: Build and deploy the latest image to Cloud Run
+    ask_continue_with_message "Build and deploy the latest image to Cloud Run." || return 1
+    gcloud_run_build_and_deploy_latest
+
+    # Step 3: Update Cloud Secret Manager secret
+    ask_continue_with_message "Update the Secret Manager secret." || return 1
+    gcloud_secret_manager_env_update
+
+    # Step 4: Update Cloud Storage buckets
+    ask_continue_with_message "Update the Cloud Storage buckets." || return 1
+    gcloud_storage_buckets_sync_static
 }
