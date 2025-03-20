@@ -1,25 +1,32 @@
-# Function to create Artifact Registry
+# Function to create an Artifact Registry repository for storing Docker images
+# This is necessary for deploying applications with Cloud Run or Kubernetes
 function gcloud_artifact_registry_repository_create() {
-    # Call the configuration loading function
-    if ! gcloud_config_load_and_validate; then
-        return 1 # Exit if configuration is not valid
-    fi
+    gcloud_config_load_and_validate || return 1
 
-    # Create Artifact Registry
+    confirm_action "Are you sure you want to create a new Artifact Registry repository?" "$@" || return 1
+
+    echo "🔹 Creating a new Artifact Registry repository..."
+
+    # Create the Artifact Registry repository for Docker images
     gcloud artifacts repositories create $GS_ARTIFACT_REGISTRY_NAME \
         --repository-format=docker \
         --location=$GS_ARTIFACT_REGISTRY_REGION \
-        --description="Artifact Registry for $OFFICIAL_DOMAIN"
+        --description="Artifact Registry for $OFFICIAL_DOMAIN" \
+        --quiet
 }
 
-# Function to delete Artifact Registry
+# Function to delete an existing Artifact Registry repository
+# This permanently removes the repository and its contents
 function gcloud_artifact_registry_repository_delete() {
-    # Call the configuration loading function
-    if ! gcloud_config_load_and_validate; then
-        return 1 # Exit if configuration is not valid
-    fi
+    gcloud_config_load_and_validate || return 1
 
-    # Delete Artifact Registry
+    confirm_action "Are you sure you want to delete the Artifact Registry repository?
+This action is irreversible and will permanently delete the repository." "$@" || return 1
+
+    echo "🔹 Deleting the Artifact Registry repository..."
+
+    # Delete the Artifact Registry repository
     gcloud artifacts repositories delete $GS_ARTIFACT_REGISTRY_NAME \
-        --location=$GS_ARTIFACT_REGISTRY_REGION
+        --location=$GS_ARTIFACT_REGISTRY_REGION \
+        --quiet
 }

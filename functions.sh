@@ -153,3 +153,58 @@ function prompt_confirmation() {
         esac
     done
 }
+
+# Function to prompt user for confirmation unless --quiet is provided
+function confirm_action() {
+    local message="$1"
+    shift # Remove the first argument (message) from the list
+
+    # Check if --quiet flag is present
+    if [[ " $* " != *" --quiet "* ]]; then
+        # Use correct read syntax for different shells
+        if [[ -n "$BASH_VERSION" ]]; then
+            read -p "$message (yes/no): " CONFIRM
+        else
+            read "?$message (yes/no): " CONFIRM
+        fi
+
+        if [[ "$CONFIRM" != "yes" ]]; then
+            echo "Aborting action."
+            return 1
+        fi
+    fi
+}
+
+# Function to open a project from ~/Desktop/dev with auto-completion
+function open_code_project() {
+    local BASE_PATH="$HOME/Desktop/dev"
+    local PROJECT_NAME=$1 # Get the first argument as project name
+
+    # If no project is provided, list available projects
+    if [[ -z "$PROJECT_NAME" ]]; then
+        echo "📂 Available projects in $BASE_PATH:"
+        ls -1 "$BASE_PATH"
+        return 1
+    fi
+
+    # Define project path
+    local PROJECT_PATH="$BASE_PATH/$PROJECT_NAME"
+
+    # Check if the directory exists
+    if [[ -d "$PROJECT_PATH" ]]; then
+        echo "🚀 Opening project: $PROJECT_NAME"
+        code "$PROJECT_PATH"
+    else
+        echo "❌ Project not found: $PROJECT_PATH"
+        return 1
+    fi
+}
+
+# Auto-completion for open_code_project function
+function _open_code_project_completions() {
+    local BASE_PATH="$HOME/Desktop/dev"
+    COMPREPLY=($(compgen -W "$(ls -1 "$BASE_PATH")" -- "${COMP_WORDS[1]}"))
+}
+
+# Enable auto-completion for open_code_project
+complete -F _open_code_project_completions open_code_project

@@ -154,19 +154,13 @@ function django-migrate-to-new-database() {
     # Get the current directory
     project_directory="$PWD"
 
-    if ! check_if_virtual_environment_activated; then
-        return 0
-    fi
+    check_if_virtual_environment_activated || return 0
 
     django-settings-local
 
-    if ! check_env_variable_exists LOCAL_DB_NAME; then
-        return 0
-    fi
+    check_env_variable_exists LOCAL_DB_NAME || return 0
 
-    if ! check_env_variable_exists LOCAL_DB_PASSWORD; then
-        return 0
-    fi
+    check_env_variable_exists LOCAL_DB_PASSWORD || return 0
 
     # Extracting value of LOCAL_DB_PASSWORD from .env file
     local_db_password=$(grep "LOCAL_DB_PASSWORD=" .env | cut -d '=' -f2 | tr -d '"')
@@ -174,9 +168,7 @@ function django-migrate-to-new-database() {
     # Set the PGPASSWORD environment variable
     export PGPASSWORD="$local_db_password"
 
-    if ! check_postgresql_password; then
-        return 0
-    fi
+    check_postgresql_password || return 0
 
     # Prompt user for confirmation
     if prompt_confirmation "This action will reset the project to its initial state. Proceed?"; then
@@ -189,22 +181,17 @@ function django-migrate-to-new-database() {
     # Prompt user for backup
     backup_performed=false
     if prompt_confirmation "Do you want to backup data?"; then
-        if ! django-dumpdata "$project_directory"; then
-            return 0
-        fi
+        django-dumpdata "$project_directory" || return 0
+
         backup_performed=true
     else
         echo "Skipping data backup..."
     fi
 
-    if ! prompt_and_manage_database_creation; then
-        return 0
-    fi
+    prompt_and_manage_database_creation || return 0
 
     # Update the .env file with the correct database name
-    if ! update_env_key_value "LOCAL_DB_NAME" "$db_name"; then
-        return 0
-    fi
+    update_env_key_value "LOCAL_DB_NAME" "$db_name" || return 0
 
     django-delete-migrations-and-cache
 
@@ -229,16 +216,13 @@ function django-migrate-to-new-database() {
 
     # Restore data logic
     if [ "$backup_performed" = true ]; then
-        if ! django-loaddata "$project_directory"; then # Using the default "data.json"
-            return 0
-        fi
+        django-loaddata "$project_directory" || return 0 # Using the default "data.json"
+
     else
         if prompt_confirmation "Do you want to restore data from a backup file?"; then
             echo "Please provide the path to the backup file:"
             read backup_file
-            if ! django-loaddata "$project_directory" "$backup_file"; then # Using the user-specified backup file
-                return 0
-            fi
+            django-loaddata "$project_directory" "$backup_file" || return 0 # Using the user-specified backup file
         fi
     fi
 

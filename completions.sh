@@ -11,9 +11,6 @@ source '/Users/yousefalmutairi/macOS/replacements.sh'
 source '/Users/yousefalmutairi/macOS/aliases.sh'
 source '/Users/yousefalmutairi/macOS/functions.sh'
 
-# VS Code - Open Files
-source '/Users/yousefalmutairi/macOS/code.sh'
-
 # Postgres
 source '/Users/yousefalmutairi/macOS/postgres/functions.sh'
 
@@ -42,3 +39,4 @@ source '/Users/yousefalmutairi/macOS/gcloud/functions_cloud_sql.sh'
 source '/Users/yousefalmutairi/macOS/gcloud/functions_cloud_run.sh'
 source '/Users/yousefalmutairi/macOS/gcloud/functions_secret_manager.sh'
 source '/Users/yousefalmutairi/macOS/gcloud/functions_artifact_registry.sh'
+source '/Users/yousefalmutairi/macOS/gcloud/functions_compute_engine.sh'
