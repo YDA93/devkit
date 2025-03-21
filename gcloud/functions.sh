@@ -60,8 +60,8 @@ function gcloud_project_django_setup {
 
     confirm_or_abort "Set up a Django project in Google Cloud?" "$@" || return 1
 
-    # gcloud-login-cli || return 1
-    # gcloud-login-adc || return 1
+    gcloud-login-cli || return 1
+    gcloud-login-adc || return 1
 
     # Step 1: Create a new Cloud SQL for PostgreSQL instance
     if ! gcloud_sql_instance_create --quiet; then
@@ -122,8 +122,8 @@ function gcloud_project_django_teardown {
 
     confirm_or_abort "Tear down the Django project in Google Cloud?" "$@" || return 1
 
-    # gcloud-login-cli || return 1
-    # gcloud-login-adc || return 1
+    gcloud-login-cli || return 1
+    gcloud-login-adc || return 1
 
     # Step 1: Delete Cloud Load Balancer
     gcloud_compute_engine_cloud_load_balancer_teardown --quiet || echo "❌ Error deleting the Cloud Load Balancer."

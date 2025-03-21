@@ -1,3 +1,85 @@
+# ------------------------------------------------------------------------------
+# ⚙️ FlutterFire Utilities
+# ------------------------------------------------------------------------------
+
+function flutter-flutterfire-init() {
+    firebase login
+    flutter-flutterfire-activate
+    flutterfire configure
+}
+
+function flutter-firebase-environment-create() {
+    python3.12 -m venv venv
+    source venv/bin/activate
+    echo 'environment created. & activated.'
+}
+
+function flutter-firebase-environment-setup() {
+    python-environment-delete
+    flutter-firebase-environment-create
+    pip-update
+}
+
+function flutter-firebase-update-functions() {
+    cd firebase/functions
+    flutter-firebase-environment-setup
+    cd ../..
+}
+
+# ------------------------------------------------------------------------------
+# ⚙️ Flutter Utility Commands
+# ------------------------------------------------------------------------------
+
+function flutter-adb-connect() {
+    # Assign the first and second argument to variables
+    IP_ADDRESS=$1
+    PORT=$2
+
+    # Step 1: List the devices
+    adb devices
+
+    # Step 2: Connect to the device using adb
+    adb connect "$IP_ADDRESS:$PORT"
+
+    # Step 3: Verify the connection
+    adb devices
+
+    # Step 4: Update .vscode/launch.json with the new port for the provided IP address
+    # Navigate to the directory containing launch.json if necessary
+    # cd /path/to/your/project
+
+    # Define the pattern to search for and the replacement string
+    SEARCH_PATTERN="$IP_ADDRESS:[0-9]+"
+    REPLACE_PATTERN="$IP_ADDRESS:$PORT"
+
+    # Update launch.json in place with the new port
+    sed -i '' -E "s/$SEARCH_PATTERN/$REPLACE_PATTERN/g" .vscode/launch.json
+
+    echo "Updated .vscode/launch.json with new port for IP $IP_ADDRESS."
+}
+
+# ------------------------------------------------------------------------------
+# ⚙️ Flutter Update Commands
+# ------------------------------------------------------------------------------
+
+function flutter-update-splash() {
+    dart run flutter_native_splash:remove
+    dart run flutter_native_splash:create
+}
+
+function flutter-update-fontawesome() {
+    cd assets/font_awesome_flutter
+    flutter-clean
+    flutter-dart-fix
+    cd util
+    sh ./configurator.sh
+    cd ../../..
+}
+
+# ------------------------------------------------------------------------------
+# ⚙️ Flutter Clean-Up Commands
+# ------------------------------------------------------------------------------
+
 function flutter-delete-unused-strings() {
     dart pub global activate l10nization_cli
 
@@ -45,60 +127,6 @@ function flutter-delete-unused-strings() {
     echo "Cleanup completed."
 }
 
-function flutter-adb-connect() {
-    # Assign the first and second argument to variables
-    IP_ADDRESS=$1
-    PORT=$2
-
-    # Step 1: List the devices
-    adb devices
-
-    # Step 2: Connect to the device using adb
-    adb connect "$IP_ADDRESS:$PORT"
-
-    # Step 3: Verify the connection
-    adb devices
-
-    # Step 4: Update .vscode/launch.json with the new port for the provided IP address
-    # Navigate to the directory containing launch.json if necessary
-    # cd /path/to/your/project
-
-    # Define the pattern to search for and the replacement string
-    SEARCH_PATTERN="$IP_ADDRESS:[0-9]+"
-    REPLACE_PATTERN="$IP_ADDRESS:$PORT"
-
-    # Update launch.json in place with the new port
-    sed -i '' -E "s/$SEARCH_PATTERN/$REPLACE_PATTERN/g" .vscode/launch.json
-
-    echo "Updated .vscode/launch.json with new port for IP $IP_ADDRESS."
-}
-
-function flutter-flutterfire-init() {
-    firebase login
-    flutter-flutterfire-activate
-    flutterfire configure
-}
-
-function flutter-firebase-environment-create() {
-    python3.12 -m venv venv
-    source venv/bin/activate
-    echo 'environment created. & activated.'
-}
-
-function flutter-firebase-environment-setup() {
-    python-environment-delete
-    flutter-firebase-environment-create
-    pip-update
-}
-
-function flutter-clean() {
-    flutter clean
-    flutter pub upgrade
-    flutter pub outdated
-    flutter pub upgrade --major-versions
-    flutter-dart-fix
-}
-
 function flutter-cache-reset() {
     echo "Clearing cache of Pod, Flutter, and Ccache..."
     cd ios
@@ -117,30 +145,18 @@ function flutter-ios-reinstall-podfile() {
     flutter-clean
 }
 
-function flutter-update-splash() {
-    dart run flutter_native_splash:remove
-    dart run flutter_native_splash:create
-}
-
-function flutter-update-fontawesome() {
-    cd assets/font_awesome_flutter
-    flutter-clean
+function flutter-clean() {
+    flutter clean
+    flutter pub upgrade
+    flutter pub outdated
+    flutter pub upgrade --major-versions
     flutter-dart-fix
-    cd util
-    sh ./configurator.sh
-    cd ../../..
-}
-
-function flutter-update-firebase-functions() {
-    cd firebase/functions
-    flutter-firebase-environment-setup
-    cd ../..
 }
 
 function flutter-clean-deep() {
     {
         flutter-flutterfire-activate
-        flutter-update-firebase-functions
+        flutter-firebase-update-functions
         flutter-update-fontawesome
         flutter-ios-reinstall-podfile
         flutter-update-icon

@@ -20,6 +20,17 @@ alias python-environment-delete='[[ -d venv ]] && rm -rf venv && echo "🗑️ E
 
 alias python-environment-setup='python-environment-delete && python-environment-create && python-environment-activate && pip-install-all'
 
+function python-environment-is-activated() {
+    # Check if a virtual environment is currently activated
+    if [[ -z "$VIRTUAL_ENV" ]]; then
+        echo "❌ Virtual environment is not activated."
+        return 1
+    else
+        echo "✅ Virtual environment is active: $VIRTUAL_ENV"
+        return 0
+    fi
+}
+
 # ------------------------------------------------------------------------------
 # 📦 Pip Dependency Management
 # ------------------------------------------------------------------------------

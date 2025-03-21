@@ -3,7 +3,7 @@
 function gcloud_compute_engine_ipv4_create {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to create a new static IPv4 address?" "$@" || return 1
+    confirm_or_abort "Are you sure you want to create a new static IPv4 address?" || return 1
 
     echo "🔹 Creating a global static IPv4 address for the Load Balancer..."
 

@@ -1,4 +1,6 @@
-# Run Server
+# ------------------------------------------------------------------------------
+# ⚙️ Django Server Shortcuts
+# ------------------------------------------------------------------------------
 function django-run-server() {
     if [ $# -eq 0 ]; then
         python manage.py runserver 0.0.0.0:8000
@@ -8,15 +10,9 @@ function django-run-server() {
     fi
 }
 
-# Make Migrations
-function django-make-migrations() {
-    python manage.py makemigrations $@
-}
-
-# Migrate
-function django-migrate() {
-    python manage.py migrate $@
-}
+# ------------------------------------------------------------------------------
+# ⚙️ Django Translations Shortcuts
+# ------------------------------------------------------------------------------
 
 # Make Translations
 function django-translations-make() {
@@ -51,46 +47,25 @@ function django-translations-compile() {
     done
 }
 
-# Delete migrations
-function django-delete-migrations-and-cache() {
-    # Get the current directory
-    project_directory="$PWD"
-
-    # Change to the project directory
-    cd "$project_directory"
-
-    # Delete migration files in Django apps (excluding venv)
-    find . -path "*/migrations/*.py" -not -name "__init__.py" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); echo "Deleted $app_name -> $(basename "{}")"; rm "{}"' \; 2>/dev/null || true
-
-    # Delete migration cache in Django apps (excluding venv)
-    find . -type d -name "__pycache__" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); [ "$app_name" != "." ] && echo "Deleted $app_name -> $(basename "$(dirname "{}")")/__pycache__" || echo "Deleted $(basename "$(dirname "{}")")/__pycache__"; rm -r "{}"' \; 2>/dev/null || true
-
-    echo "Deleted all Django migration files and __pycache__ folders (excluding venv)."
-
-    # Return to the original directory
-    cd "$OLDPWD"
-}
+# ------------------------------------------------------------------------------
+# ⚙️ Django Project Management Shortcuts
+# ------------------------------------------------------------------------------
 
 # Start Project
-function django-start-project() {
+function django-project-start() {
     site_name=$1 # First Aurgment
     django-admin startproject $site_name
 }
 
 # Start App
-function django-start-app() {
+function django-app-start() {
     app_name=$1 # First Aurgment
     python manage.py startapp $app_name
 }
 
-function check_if_virtual_environment_activated() {
-    # Check if a virtual environment is activated
-    if [ -z "$VIRTUAL_ENV" ]; then
-        echo "Error: No virtual environment activated!"
-        return 1
-    fi
-}
-
+# ------------------------------------------------------------------------------
+# ⚙️ Django Database Management Shortcuts
+# ------------------------------------------------------------------------------
 function django-loaddata() {
     local project_directory=$1
     local backup_file=$2
@@ -139,6 +114,36 @@ function django-dumpdata() {
     sleep 2
 }
 
+# Make Migrations
+function django-make-migrations() {
+    python manage.py makemigrations $@
+}
+
+# Migrate
+function django-migrate() {
+    python manage.py migrate $@
+}
+
+# Delete migrations
+function django-delete-migrations-and-cache() {
+    # Get the current directory
+    project_directory="$PWD"
+
+    # Change to the project directory
+    cd "$project_directory"
+
+    # Delete migration files in Django apps (excluding venv)
+    find . -path "*/migrations/*.py" -not -name "__init__.py" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); echo "Deleted $app_name -> $(basename "{}")"; rm "{}"' \; 2>/dev/null || true
+
+    # Delete migration cache in Django apps (excluding venv)
+    find . -type d -name "__pycache__" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); [ "$app_name" != "." ] && echo "Deleted $app_name -> $(basename "$(dirname "{}")")/__pycache__" || echo "Deleted $(basename "$(dirname "{}")")/__pycache__"; rm -r "{}"' \; 2>/dev/null || true
+
+    echo "Deleted all Django migration files and __pycache__ folders (excluding venv)."
+
+    # Return to the original directory
+    cd "$OLDPWD"
+}
+
 function django-migrate-to-new-database() {
     # Stop executing the script on any error
     set -e
@@ -154,7 +159,7 @@ function django-migrate-to-new-database() {
     # Get the current directory
     project_directory="$PWD"
 
-    check_if_virtual_environment_activated || return 0
+    python-environment-is-activated || return 0
 
     django-settings-local
 
@@ -238,6 +243,10 @@ function django-migrate-to-new-database() {
     # Now redirect output back to console
     exec >&/dev/tty 2>&/dev/tty
 }
+
+# ------------------------------------------------------------------------------
+# ⚙️ Django Test Shortcuts
+# ------------------------------------------------------------------------------
 
 function django-run-pytest() {
     django-settings-test
