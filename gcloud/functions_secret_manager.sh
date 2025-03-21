@@ -6,15 +6,15 @@ function gcloud_secret_manager_env_create() {
 
     confirm_or_abort "Are you sure you want to create a new secret in Secret Manager?" "$@" || return 1
 
-    echo "🔹 Creating a new secret '$GCP_SECRET_FILE_NAME' in Secret Manager..."
+    echo "🔹 Creating a new secret '$GCP_SECRET_NAME' in Secret Manager..."
 
     # Create .env file in Secret Manager with the contents of the local .env file and specified region
-    gcloud secrets create $GCP_SECRET_FILE_NAME \
+    gcloud secrets create $GCP_SECRET_NAME \
         --data-file=".env" \
         --replication-policy="user-managed" \
         --locations=$GCP_REGION \
         --quiet &&
-        gcloud secrets add-iam-policy-binding $GCP_SECRET_FILE_NAME \
+        gcloud secrets add-iam-policy-binding $GCP_SECRET_NAME \
             --member serviceAccount:$GCP_PROJECT_NUMBER-compute@developer.gserviceaccount.com \
             --role roles/secretmanager.secretAccessor \
             --quiet
@@ -28,13 +28,13 @@ function gcloud_secret_manager_env_update() {
 
     confirm_or_abort "Are you sure you want to update the secret in Secret Manager?" "$@" || return 1
 
-    echo "🔹 Updating the secret '$GCP_SECRET_FILE_NAME' in Secret Manager..."
+    echo "🔹 Updating the secret '$GCP_SECRET_NAME' in Secret Manager..."
 
     # Add a new version of the secret in Secret Manager with the updated .env file
-    gcloud secrets versions add $GCP_SECRET_FILE_NAME --data-file=".env" --quiet
+    gcloud secrets versions add $GCP_SECRET_NAME --data-file=".env" --quiet
 
     # Get the list of all versions (excluding the latest one)
-    PREVIOUS_VERSIONS=$(gcloud secrets versions list $GCP_SECRET_FILE_NAME --quiet --format="csv(name,state)" | tail -n +3)
+    PREVIOUS_VERSIONS=$(gcloud secrets versions list $GCP_SECRET_NAME --quiet --format="csv(name,state)" | tail -n +3)
 
     if [[ ! -z "$PREVIOUS_VERSIONS" ]]; then
         while IFS="," read -r version state; do
@@ -44,7 +44,7 @@ function gcloud_secret_manager_env_update() {
 
             # Only disable previous versions that are still ENABLED
             if [[ "$state" == "ENABLED" ]]; then
-                gcloud secrets versions disable "$version" --secret="$GCP_SECRET_FILE_NAME" --quiet
+                gcloud secrets versions disable "$version" --secret="$GCP_SECRET_NAME" --quiet
             fi
         done <<<"$PREVIOUS_VERSIONS"
     fi
@@ -59,8 +59,8 @@ function gcloud_secret_manager_env_delete() {
     confirm_or_abort "Are you sure you want to delete the secret from Secret Manager
 This action is irreversible and will permanently delete the secret." "$@" || return 1
 
-    echo "🔹 Deleting the secret '$GCP_SECRET_FILE_NAME' from Secret Manager..."
+    echo "🔹 Deleting the secret '$GCP_SECRET_NAME' from Secret Manager..."
 
     # Delete the secret
-    gcloud secrets delete $GCP_SECRET_FILE_NAME --quiet
+    gcloud secrets delete $GCP_SECRET_NAME --quiet
 }
