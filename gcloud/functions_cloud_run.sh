@@ -25,38 +25,38 @@ function gcloud_run_build_image() {
     echo "🔹 Building the Docker image and pushing it to Artifact Registry..."
 
     # Construct the full image path
-    GS_RUN_FULL_IMAGE_NAME="$GS_RUN_REGION-docker.pkg.dev/$GS_PROJECT_ID/$GS_ARTIFACT_REGISTRY_NAME/$GS_EXTENDED_IMAGE_NAME"
+    GCP_RUN_FULL_IMAGE_NAME="$GCP_RUN_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_EXTENDED_IMAGE_NAME"
 
     # Open Docker Desktop
     docker_daemon_start &&
 
         # Authenticate Docker to push the image
-        gcloud auth configure-docker $GS_RUN_REGION-docker.pkg.dev --quiet &&
+        gcloud auth configure-docker $GCP_RUN_REGION-docker.pkg.dev --quiet &&
         # Build the docker image
-        docker build -t $GS_EXTENDED_IMAGE_NAME -f builder.Dockerfile . &&
+        docker build -t $GCP_EXTENDED_IMAGE_NAME -f builder.Dockerfile . &&
 
         # Tag and push the image
-        docker tag $GS_EXTENDED_IMAGE_NAME $GS_RUN_FULL_IMAGE_NAME &&
-        docker push $GS_RUN_FULL_IMAGE_NAME &&
+        docker tag $GCP_EXTENDED_IMAGE_NAME $GCP_RUN_FULL_IMAGE_NAME &&
+        docker push $GCP_RUN_FULL_IMAGE_NAME &&
 
         # Grant Cloud Run Developer role
-        gcloud projects add-iam-policy-binding $GS_PROJECT_ID \
-            --member="serviceAccount:$GS_PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+        gcloud projects add-iam-policy-binding $GCP_PROJECT_ID \
+            --member="serviceAccount:$GCP_PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
             --role="roles/run.developer" \
             --quiet &&
 
         # Grant Service Account User role
-        gcloud projects add-iam-policy-binding $GS_PROJECT_ID \
-            --member="serviceAccount:$GS_PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
+        gcloud projects add-iam-policy-binding $GCP_PROJECT_ID \
+            --member="serviceAccount:$GCP_PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
             --role="roles/iam.serviceAccountUser" \
             --quiet &&
 
         # Build the image
         gcloud builds submit --config cloudmigrate.yaml \
-            --substitutions _INSTANCE_NAME=$GS_SQL_INSTANCE_ID,_REGION=$GS_SQL_INSTANCE_REGION --region $GS_RUN_REGION \
+            --substitutions _INSTANCE_NAME=$GCP_SQL_INSTANCE_ID,_REGION=$GCP_SQL_INSTANCE_REGION --region $GCP_RUN_REGION \
             --default-buckets-behavior=regional-user-owned-bucket \
-            --gcs-source-staging-dir=gs://$GS_PROJECT_ID-cloudbuild-artifacts/source \
-            --gcs-log-dir=gs://$GS_PROJECT_ID-cloudbuild-artifacts/logs \
+            --gcs-source-staging-dir=gs://$GCP_PROJECT_ID-cloudbuild-artifacts/source \
+            --gcs-log-dir=gs://$GCP_PROJECT_ID-cloudbuild-artifacts/logs \
             --quiet
 }
 
@@ -71,10 +71,10 @@ function gcloud_run_deploy_initial() {
     echo "🔹 Deploying the service to Cloud Run for the first time..."
 
     # Deploy the service to Cloud Run for the first time
-    gcloud run deploy $GS_RUN_NAME \
-        --region $GS_RUN_REGION \
-        --image $GS_RUN_REGION-docker.pkg.dev/$GS_PROJECT_ID/$GS_ARTIFACT_REGISTRY_NAME/$GS_RUN_NAME \
-        --add-cloudsql-instances $GS_PROJECT_ID:$GS_SQL_INSTANCE_REGION:$GS_SQL_INSTANCE_ID \
+    gcloud run deploy $GCP_RUN_NAME \
+        --region $GCP_RUN_REGION \
+        --image $GCP_RUN_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_RUN_NAME \
+        --add-cloudsql-instances $GCP_PROJECT_ID:$GCP_SQL_INSTANCE_REGION:$GCP_SQL_INSTANCE_ID \
         --allow-unauthenticated \
         --cpu=1 \
         --memory=1Gi \
@@ -93,9 +93,9 @@ function gcloud_run_deploy_latest() {
     echo "🔹 Redeploying the service to Cloud Run..."
 
     # Redeploy the service to Cloud Run
-    gcloud run deploy $GS_RUN_NAME \
-        --region $GS_RUN_REGION \
-        --image $GS_RUN_REGION-docker.pkg.dev/$GS_PROJECT_ID/$GS_ARTIFACT_REGISTRY_NAME/$GS_RUN_NAME \
+    gcloud run deploy $GCP_RUN_NAME \
+        --region $GCP_RUN_REGION \
+        --image $GCP_RUN_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_RUN_NAME \
         --cpu=1 \
         --memory=1Gi \
         --min-instances=0 \
@@ -113,14 +113,14 @@ function gcloud_run_set_service_urls_env() {
     echo "🔹 Updating the service URLs environment variable in Cloud Run..."
 
     # Get the service URL
-    CLOUDRUN_SERVICE_URLS=$(gcloud run services describe $GS_RUN_NAME \
-        --region $GS_RUN_REGION \
+    CLOUDRUN_SERVICE_URLS=$(gcloud run services describe $GCP_RUN_NAME \
+        --region $GCP_RUN_REGION \
         --format "value(metadata.annotations[\"run.googleapis.com/urls\"])" | tr -d '"[]') \
         --quiet
 
     # Update the service URL environment variable in Cloud Run
-    gcloud run services update $GS_RUN_NAME \
-        --region $GS_RUN_REGION \
+    gcloud run services update $GCP_RUN_NAME \
+        --region $GCP_RUN_REGION \
         --update-env-vars "^##^CLOUDRUN_SERVICE_URLS=$CLOUDRUN_SERVICE_URLS" \
         --quiet
 
@@ -159,10 +159,10 @@ function gcloud_run_service_delete() {
     confirm_or_abort "Are you sure you want to delete the Cloud Run service and job?" "$@" || return 1
 
     # Delete the service
-    echo "🔹 Deleting the Cloud Run service '$GS_RUN_NAME'..."
-    gcloud run services delete "$GS_RUN_NAME" --region "$GS_RUN_REGION" --quiet
+    echo "🔹 Deleting the Cloud Run service '$GCP_RUN_NAME'..."
+    gcloud run services delete "$GCP_RUN_NAME" --region "$GCP_RUN_REGION" --quiet
 
     # Delete the Cloud Run job
     echo "🔹 Deleting the Cloud Run job 'migrate-job'..."
-    gcloud run jobs delete migrate-job --region="$GS_RUN_REGION" --quiet
+    gcloud run jobs delete migrate-job --region="$GCP_RUN_REGION" --quiet
 }

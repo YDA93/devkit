@@ -7,7 +7,7 @@ function gcloud_storage_buckets_create() {
 
     confirm_or_abort "Are you sure you want to create new storage buckets?" "$@" || return 1
 
-    echo "🔹 Creating Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GS_PROJECT_ID-cloudbuild-artifacts"
+    echo "🔹 Creating Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GCP_PROJECT_ID-cloudbuild-artifacts"
 
     # Create a new static bucket with Fine-grained access control
     gsutil mb -b on -c standard -l $GS_BUCKET_REGION gs://$GS_BUCKET_STATIC/ &&
@@ -19,7 +19,7 @@ function gcloud_storage_buckets_create() {
         gcloud_storage_buckets_sync_static --quiet &&
 
         # Create a new bucket for Cloud Build artifacts
-        gsutil mb -l $GS_BUCKET_REGION gs://$GS_PROJECT_ID-cloudbuild-artifacts/
+        gsutil mb -l $GS_BUCKET_REGION gs://$GCP_PROJECT_ID-cloudbuild-artifacts/
 }
 
 # Function to delete the static and media buckets forcefully with confirmation
@@ -30,11 +30,11 @@ function gcloud_storage_buckets_delete() {
 
     confirm_or_abort "Are you sure you want to delete all storage buckets and their contents?" "$@" || return 1
 
-    echo "🔹 Deleting the Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GS_PROJECT_ID-cloudbuild-artifacts..."
+    echo "🔹 Deleting the Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GCP_PROJECT_ID-cloudbuild-artifacts..."
 
     # Delete all objects from all buckets in parallel and remove the buckets
     # Will remove three buckets: static, media, and Cloud Build artifacts
-    gsutil -m rm -r gs://$GS_BUCKET_STATIC/ gs://$GS_BUCKET_NAME/ gs://$GS_PROJECT_ID-cloudbuild-artifacts/
+    gsutil -m rm -r gs://$GS_BUCKET_STATIC/ gs://$GS_BUCKET_NAME/ gs://$GCP_PROJECT_ID-cloudbuild-artifacts/
 
 }
 

@@ -8,9 +8,9 @@ function gcloud_artifact_registry_repository_create() {
     echo "🔹 Creating a new Artifact Registry repository..."
 
     # Create the Artifact Registry repository for Docker images
-    gcloud artifacts repositories create $GS_ARTIFACT_REGISTRY_NAME \
+    gcloud artifacts repositories create $GCP_ARTIFACT_REGISTRY_NAME \
         --repository-format=docker \
-        --location=$GS_ARTIFACT_REGISTRY_REGION \
+        --location=$GCP_ARTIFACT_REGISTRY_REGION \
         --description="Artifact Registry for $OFFICIAL_DOMAIN" \
         --quiet
 }
@@ -26,7 +26,7 @@ This action is irreversible and will permanently delete the repository." "$@" ||
     echo "🔹 Deleting the Artifact Registry repository..."
 
     # Delete the Artifact Registry repository
-    gcloud artifacts repositories delete $GS_ARTIFACT_REGISTRY_NAME \
-        --location=$GS_ARTIFACT_REGISTRY_REGION \
+    gcloud artifacts repositories delete $GCP_ARTIFACT_REGISTRY_NAME \
+        --location=$GCP_ARTIFACT_REGISTRY_REGION \
         --quiet
 }

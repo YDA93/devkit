@@ -17,10 +17,10 @@ function gcloud_sql_instance_create() {
     gcloud services enable servicenetworking.googleapis.com --quiet &&
 
         # Create the Cloud SQL for PostgreSQL instance (Sandbox)
-        gcloud sql instances create "$GS_SQL_INSTANCE_ID" \
-            --database-version="$GS_SQL_DB_VERSION" \
+        gcloud sql instances create "$GCP_SQL_INSTANCE_ID" \
+            --database-version="$GCP_SQL_DB_VERSION" \
             --tier="$TIER" \
-            --region="$GS_SQL_INSTANCE_REGION" \
+            --region="$GCP_SQL_INSTANCE_REGION" \
             --storage-size="$STORAGE_SIZE" \
             --storage-type=SSD \
             --availability-type=ZONAL \
@@ -35,11 +35,11 @@ function gcloud_sql_instance_create() {
             --assign-ip \
             --storage-auto-increase \
             --edition=ENTERPRISE \
-            --root-password="$GS_SQL_INSTANCE_PASSWORD" \
+            --root-password="$GCP_SQL_INSTANCE_PASSWORD" \
             --quiet &&
 
         # Output the instance details
-        gcloud sql instances describe "$GS_SQL_INSTANCE_ID" --quiet
+        gcloud sql instances describe "$GCP_SQL_INSTANCE_ID" --quiet
 }
 
 # Function to delete a Cloud SQL instance
@@ -47,9 +47,9 @@ function gcloud_sql_instance_create() {
 function gcloud_sql_instance_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to delete the Cloud SQL instance '$GS_SQL_INSTANCE_ID'?" "$@" || return 1
+    confirm_or_abort "Are you sure you want to delete the Cloud SQL instance '$GCP_SQL_INSTANCE_ID'?" "$@" || return 1
 
-    INSTANCE_NAME=$GS_SQL_INSTANCE_ID
+    INSTANCE_NAME=$GCP_SQL_INSTANCE_ID
 
     echo "🔹 Deleting Cloud SQL instance: $INSTANCE_NAME ..."
 
@@ -66,8 +66,8 @@ function gcloud_sql_proxy_start() {
 
     echo "🔹 Starting Cloud SQL Proxy..."
     # If the configuration loads and validates, run the cloud-sql-proxy
-    # The port is set to GS_PROXY_PORT to avoid conflicts with the default port 3306 & 5432
-    ./cloud-sql-proxy --port $GS_PROXY_PORT "${GS_PROJECT_ID}:${GS_SQL_INSTANCE_REGION}:${GS_SQL_INSTANCE_ID}"
+    # The port is set to GCP_SQL_PROXY_PORT to avoid conflicts with the default port 3306 & 5432
+    ./cloud-sql-proxy --port $GCP_SQL_PROXY_PORT "${GCP_PROJECT_ID}:${GCP_SQL_INSTANCE_REGION}:${GCP_SQL_INSTANCE_ID}"
 }
 
 # Function to connect to a gcloud PostgreSQL instance
@@ -80,7 +80,7 @@ function gcloud_sql_postgres_connect() {
     echo "🔹 Connecting to the Cloud SQL PostgreSQL instance..."
 
     # Step 2: Run Expect to automate password entry and execute SQL commands
-    gcloud sql connect "$GS_SQL_INSTANCE_ID" --user=postgres --quiet
+    gcloud sql connect "$GCP_SQL_INSTANCE_ID" --user=postgres --quiet
 }
 
 # Function to create a new database and user in gcloud PostgreSQL
@@ -96,7 +96,7 @@ function gcloud_sql_db_and_user_create() {
 
     # Step 2: Run Expect to automate password entry and execute SQL commands
     expect <<EOF
-    spawn gcloud sql connect "$GS_SQL_INSTANCE_ID" --user=postgres
+    spawn gcloud sql connect "$GCP_SQL_INSTANCE_ID" --user=postgres
     set timeout 120
 
     expect {
@@ -105,46 +105,46 @@ function gcloud_sql_db_and_user_create() {
             exp_continue
         }
         "*Password:*" {
-            send -- "$GS_SQL_INSTANCE_PASSWORD\r"
+            send -- "$GCP_SQL_INSTANCE_PASSWORD\r"
             exp_continue
         }
         "postgres=>" {
             sleep 2
 
             # Step 5: Create the user (ignore errors if already exists)
-            send -- "CREATE USER \"$GS_SQL_DB_USERNAME\" WITH PASSWORD '$GS_SQL_DB_PASSWORD';\r"
+            send -- "CREATE USER \"$GCP_SQL_DB_USERNAME\" WITH PASSWORD '$GCP_SQL_DB_PASSWORD';\r"
             expect "postgres=>"
 
             sleep 2
 
             # Step 6: Create the database (ignore errors if already exists)
-            send -- "CREATE DATABASE \"$GS_SQL_DB_NAME\";\r"
+            send -- "CREATE DATABASE \"$GCP_SQL_DB_NAME\";\r"
             expect "postgres=>"
 
             sleep 2
 
             # Step 7: Properly send the \c command to switch databases
-            send -- "\\\\c \"$GS_SQL_DB_NAME\"\r"
+            send -- "\\\\c \"$GCP_SQL_DB_NAME\"\r"
             expect {
                 "*Password*" {
-                    send -- "$GS_SQL_INSTANCE_PASSWORD\r"
-                    expect "$GS_SQL_DB_NAME=>"
+                    send -- "$GCP_SQL_INSTANCE_PASSWORD\r"
+                    expect "$GCP_SQL_DB_NAME=>"
                 }
-                "$GS_SQL_DB_NAME=>" { }
+                "$GCP_SQL_DB_NAME=>" { }
                 timeout { puts "❌ ERROR: Switching databases failed."; exit 1 }
             }
 
             sleep 2
 
             # Step 8: Grant privileges on the database to the user
-            send -- "GRANT ALL PRIVILEGES ON DATABASE \"$GS_SQL_DB_NAME\" TO \"$GS_SQL_DB_USERNAME\";\r"
-            expect "$GS_SQL_DB_NAME=>"
+            send -- "GRANT ALL PRIVILEGES ON DATABASE \"$GCP_SQL_DB_NAME\" TO \"$GCP_SQL_DB_USERNAME\";\r"
+            expect "$GCP_SQL_DB_NAME=>"
 
             sleep 2
 
             # Step 9: Grant privileges on the public schema to the user
-            send -- "GRANT ALL ON SCHEMA public TO \"$GS_SQL_DB_USERNAME\";\r"
-            expect "$GS_SQL_DB_NAME=>"
+            send -- "GRANT ALL ON SCHEMA public TO \"$GCP_SQL_DB_USERNAME\";\r"
+            expect "$GCP_SQL_DB_NAME=>"
 
             sleep 1
 
@@ -162,13 +162,13 @@ EOF
 function gcloud_sql_db_and_user_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to delete the database and user '$GS_SQL_DB_USERNAME'?" "$@" || return 1
+    confirm_or_abort "Are you sure you want to delete the database and user '$GCP_SQL_DB_USERNAME'?" "$@" || return 1
 
     echo "🔹 Deleting the database and user in Cloud SQL for PostgreSQL..."
 
     # Run Expect to automate password entry and execute SQL commands
     expect <<EOF
-    spawn gcloud sql connect "$GS_SQL_INSTANCE_ID" --user=postgres
+    spawn gcloud sql connect "$GCP_SQL_INSTANCE_ID" --user=postgres
     set timeout 120
 
     expect {
@@ -177,27 +177,27 @@ function gcloud_sql_db_and_user_delete() {
             exp_continue
         }
         "*Password:*" {
-            send -- "$GS_SQL_INSTANCE_PASSWORD\r"
+            send -- "$GCP_SQL_INSTANCE_PASSWORD\r"
             exp_continue
         }
         "postgres=>" {
             # Step 1: Revoke all privileges on the database from the user
             sleep 2
-            send -- "REVOKE ALL PRIVILEGES ON DATABASE \"$GS_SQL_DB_NAME\" FROM \"$GS_SQL_DB_USERNAME\";\r"
+            send -- "REVOKE ALL PRIVILEGES ON DATABASE \"$GCP_SQL_DB_NAME\" FROM \"$GCP_SQL_DB_USERNAME\";\r"
             expect "postgres=>"
 
             # Step 2: Revoke all privileges on the public schema from the user
             sleep 2
-            send -- "REVOKE ALL PRIVILEGES ON SCHEMA public FROM \"$GS_SQL_DB_USERNAME\";\r"
+            send -- "REVOKE ALL PRIVILEGES ON SCHEMA public FROM \"$GCP_SQL_DB_USERNAME\";\r"
             expect "postgres=>"
 
 
             # Step 3: Drop the database (No IF EXISTS, will fail if it doesn't exist or has active connections)
             sleep 2
-            send -- "DROP DATABASE \"$GS_SQL_DB_NAME\";\r"
+            send -- "DROP DATABASE \"$GCP_SQL_DB_NAME\";\r"
             expect {
                 "ERROR: database .* is being accessed by other users" {
-                    send_user "\n❌ ERROR: Cannot drop database \"$GS_SQL_DB_NAME\" because it is in use.\n"
+                    send_user "\n❌ ERROR: Cannot drop database \"$GCP_SQL_DB_NAME\" because it is in use.\n"
                     exit 1
                 }
                 "postgres=>"
@@ -205,10 +205,10 @@ function gcloud_sql_db_and_user_delete() {
 
             # Step 4: Drop the user (No IF EXISTS, will fail if it doesn't exist)
             sleep 2
-            send -- "DROP USER \"$GS_SQL_DB_USERNAME\";\r"
+            send -- "DROP USER \"$GCP_SQL_DB_USERNAME\";\r"
             expect {
                 "ERROR: role .* does not exist" {
-                    send_user "\n❌ ERROR: Cannot drop user \"$GS_SQL_DB_USERNAME\" because it does not exist.\n"
+                    send_user "\n❌ ERROR: Cannot drop user \"$GCP_SQL_DB_USERNAME\" because it does not exist.\n"
                     exit 1
                 }
                 "postgres=>"
@@ -217,7 +217,7 @@ function gcloud_sql_db_and_user_delete() {
 
             # Step 5: Confirm deletion
             sleep 2
-            send_user "\n✅ Dropped database \"$GS_SQL_DB_NAME\" and user \"$GS_SQL_DB_USERNAME\".\n"
+            send_user "\n✅ Dropped database \"$GCP_SQL_DB_NAME\" and user \"$GCP_SQL_DB_USERNAME\".\n"
 
             # Step 6: Exit PostgreSQL
             send -- "\\\\q\r"
@@ -246,7 +246,7 @@ tell application "Terminal"
 end tell
 EOF
 
-    echo "⏳ Waiting for Cloud SQL Proxy to start on port $GS_PROXY_PORT..."
+    echo "⏳ Waiting for Cloud SQL Proxy to start on port $GCP_SQL_PROXY_PORT..."
 
     # Retry logic to check if the proxy is running
     local retries=15 # Max wait time (15 seconds)
@@ -254,10 +254,10 @@ EOF
 
     while true; do
         # First, check if the port is being used by Cloud SQL Proxy using `lsof`
-        if lsof -iTCP -sTCP:LISTEN -nP | grep -q ":$GS_PROXY_PORT"; then
+        if lsof -iTCP -sTCP:LISTEN -nP | grep -q ":$GCP_SQL_PROXY_PORT"; then
             # Second, confirm the port is actually responding using `nc`
-            if nc -z 127.0.0.1 $GS_PROXY_PORT 2>/dev/null; then
-                echo "✅ Cloud SQL Proxy is running on 127.0.0.1:$GS_PROXY_PORT!"
+            if nc -z 127.0.0.1 $GCP_SQL_PROXY_PORT 2>/dev/null; then
+                echo "✅ Cloud SQL Proxy is running on 127.0.0.1:$GCP_SQL_PROXY_PORT!"
                 break
             fi
         fi

@@ -7,12 +7,12 @@ function gcloud_compute_engine_ipv4_create {
 
     echo "🔹 Creating a global static IPv4 address for the Load Balancer..."
 
-    gcloud compute addresses create $GS_PROJECT_ID-ipv4 \
+    gcloud compute addresses create $GCP_PROJECT_ID-ipv4 \
         --global \
         --ip-version=IPV4 \
         --network-tier=PREMIUM \
         --quiet &&
-        gcloud compute addresses describe $GS_PROJECT_ID-ipv4 --global --format="get(address)" --quiet
+        gcloud compute addresses describe $GCP_PROJECT_ID-ipv4 --global --format="get(address)" --quiet
 }
 
 # Function to delete the reserved IPv4 address from Google Compute Engine
@@ -24,7 +24,7 @@ function gcloud_compute_engine_ipv4_delete() {
 
     echo "🔹 Deleting the static IPv4 address..."
 
-    gcloud compute addresses delete $GS_PROJECT_ID-ipv4 --global --quiet
+    gcloud compute addresses delete $GCP_PROJECT_ID-ipv4 --global --quiet
 }
 
 # Function to create a new SSL certificate for Google Compute Engine
@@ -36,11 +36,11 @@ function gcloud_compute_engine_ssl_certificate_create() {
 
     echo "🔹 Creating Google-managed SSL certificate..."
 
-    gcloud compute ssl-certificates create $GS_PROJECT_ID-ssl-certificate \
+    gcloud compute ssl-certificates create $GCP_PROJECT_ID-ssl-certificate \
         --domains="$ADMIN_DOMAIN,www.$ADMIN_DOMAIN" \
         --global \
         --quiet &&
-        gcloud compute ssl-certificates describe $GS_PROJECT_ID-ssl-certificate --global --format="get(managed.status)" --quiet
+        gcloud compute ssl-certificates describe $GCP_PROJECT_ID-ssl-certificate --global --format="get(managed.status)" --quiet
 }
 
 # Function to delete an existing SSL certificate from Google Compute Engine
@@ -52,7 +52,7 @@ function gcloud_compute_engine_ssl_certificate_delete() {
 
     echo "🔹 Deleting the SSL certificate..."
 
-    gcloud compute ssl-certificates delete $GS_PROJECT_ID-ssl-certificate --global --quiet
+    gcloud compute ssl-certificates delete $GCP_PROJECT_ID-ssl-certificate --global --quiet
 }
 
 # Function to create a new Network Endpoint Group for Google Compute Engine
@@ -65,10 +65,10 @@ function gcloud_compute_engine_network_endpoint_group_create() {
 
     echo "🔹 Creating Network Endpoint Group (NEG) for Cloud Run..."
 
-    gcloud compute network-endpoint-groups create $GS_PROJECT_ID-neg \
-        --region=$GS_RUN_REGION \
+    gcloud compute network-endpoint-groups create $GCP_PROJECT_ID-neg \
+        --region=$GCP_RUN_REGION \
         --network-endpoint-type=serverless \
-        --cloud-run-service=$GS_RUN_NAME \
+        --cloud-run-service=$GCP_RUN_NAME \
         --quiet
 
 }
@@ -82,7 +82,7 @@ function gcloud_compute_engine_network_endpoint_group_delete() {
 
     echo "🔹 Deleting Network Endpoint Group (NEG)..."
 
-    gcloud compute network-endpoint-groups delete $GS_PROJECT_ID-neg --region=$GS_RUN_REGION --quiet
+    gcloud compute network-endpoint-groups delete $GCP_PROJECT_ID-neg --region=$GCP_RUN_REGION --quiet
 }
 
 # Function to create a new backend service for Google Compute Engine and attach the Network Endpoint Group (NEG)
@@ -95,15 +95,15 @@ function gcloud_compute_engine_backend_service_create() {
 
     echo "🔹 Creating backend service and attaching Network Endpoint Group (NEG) to it..."
 
-    gcloud compute backend-services create $GS_PROJECT_ID-backend-service \
+    gcloud compute backend-services create $GCP_PROJECT_ID-backend-service \
         --global \
         --load-balancing-scheme=EXTERNAL_MANAGED \
         --protocol=HTTP \
         --quiet &&
-        gcloud compute backend-services add-backend $GS_PROJECT_ID-backend-service \
+        gcloud compute backend-services add-backend $GCP_PROJECT_ID-backend-service \
             --global \
-            --network-endpoint-group=$GS_PROJECT_ID-neg \
-            --network-endpoint-group-region=$GS_RUN_REGION \
+            --network-endpoint-group=$GCP_PROJECT_ID-neg \
+            --network-endpoint-group-region=$GCP_RUN_REGION \
             --quiet
 }
 
@@ -116,12 +116,12 @@ function gcloud_compute_engine_backend_service_delete() {
 
     echo "🔹 Removing the Network Endpoint Group (NEG) from the backend service and deleting the backend service..."
 
-    gcloud compute backend-services remove-backend $GS_PROJECT_ID-backend-service \
+    gcloud compute backend-services remove-backend $GCP_PROJECT_ID-backend-service \
         --global \
-        --network-endpoint-group=$GS_PROJECT_ID-neg \
-        --network-endpoint-group-region=$GS_RUN_REGION \
+        --network-endpoint-group=$GCP_PROJECT_ID-neg \
+        --network-endpoint-group-region=$GCP_RUN_REGION \
         --quiet
-    gcloud compute backend-services delete $GS_PROJECT_ID-backend-service --global --quiet
+    gcloud compute backend-services delete $GCP_PROJECT_ID-backend-service --global --quiet
 }
 
 # Function to create a new URL Map for Google Compute Engine
@@ -134,8 +134,8 @@ function gcloud_compute_engine_url_map_create() {
     echo "🔹 Creating URL map..."
 
     # Create the URL map
-    gcloud compute url-maps create $GS_PROJECT_ID-url-map \
-        --default-service=$GS_PROJECT_ID-backend-service \
+    gcloud compute url-maps create $GCP_PROJECT_ID-url-map \
+        --default-service=$GCP_PROJECT_ID-backend-service \
         --global \
         --quiet
 
@@ -150,7 +150,7 @@ function gcloud_compute_engine_url_map_delete() {
 
     echo "🔹 Deleting URL map..."
 
-    gcloud compute url-maps delete $GS_PROJECT_ID-url-map --global --quiet
+    gcloud compute url-maps delete $GCP_PROJECT_ID-url-map --global --quiet
 }
 
 # Function to create a new Target HTTPS Proxy and attach the SSL certificate for Google Compute Engine
@@ -163,15 +163,15 @@ function gcloud_compute_engine_target_https_proxy_and_attach_ssl_certificate() {
     echo "🔹 Creating HTTPS target proxy and attaching SSL certificate..."
 
     # Create HTTP Proxy for redirecting HTTP traffic to HTTPS (NO SSL required)
-    gcloud compute target-http-proxies create $GS_PROJECT_ID-target-http-proxy \
+    gcloud compute target-http-proxies create $GCP_PROJECT_ID-target-http-proxy \
         --global \
-        --url-map=$GS_PROJECT_ID-url-map \
+        --url-map=$GCP_PROJECT_ID-url-map \
         --quiet &&
         # Create HTTPS Proxy
-        gcloud compute target-https-proxies create $GS_PROJECT_ID-target-https-proxy \
+        gcloud compute target-https-proxies create $GCP_PROJECT_ID-target-https-proxy \
             --global \
-            --url-map=$GS_PROJECT_ID-url-map \
-            --ssl-certificates=$GS_PROJECT_ID-ssl-certificate \
+            --url-map=$GCP_PROJECT_ID-url-map \
+            --ssl-certificates=$GCP_PROJECT_ID-ssl-certificate \
             --quiet
 
 }
@@ -186,9 +186,9 @@ function gcloud_compute_engine_target_https_proxy_delete() {
     echo "🔹 Deleting the Target HTTPS Proxy..."
 
     # Delete the Target HTTP Proxy
-    gcloud compute target-http-proxies delete $GS_PROJECT_ID-target-http-proxy --global --quiet
+    gcloud compute target-http-proxies delete $GCP_PROJECT_ID-target-http-proxy --global --quiet
     # Delete the Target HTTPS Proxy
-    gcloud compute target-https-proxies delete $GS_PROJECT_ID-target-https-proxy --global --quiet
+    gcloud compute target-https-proxies delete $GCP_PROJECT_ID-target-https-proxy --global --quiet
 
 }
 
@@ -203,22 +203,22 @@ function gcloud_compute_engine_global_forwarding_rule_create() {
     echo "🔹 Creating global forwarding rule..."
 
     # Forward HTTP requests (port 80) to the HTTP proxy (which redirects to HTTPS)
-    gcloud compute forwarding-rules create $GS_PROJECT_ID-http-forwarding-rule \
+    gcloud compute forwarding-rules create $GCP_PROJECT_ID-http-forwarding-rule \
         --global \
         --load-balancing-scheme=EXTERNAL_MANAGED \
         --network-tier=PREMIUM \
-        --address=$GS_PROJECT_ID-ipv4 \
-        --target-http-proxy=$GS_PROJECT_ID-target-http-proxy \
+        --address=$GCP_PROJECT_ID-ipv4 \
+        --target-http-proxy=$GCP_PROJECT_ID-target-http-proxy \
         --ports=80 \
         --quiet &&
 
         # Forward HTTPS requests (port 443) to the HTTPS proxy
-        gcloud compute forwarding-rules create $GS_PROJECT_ID-https-forwarding-rule \
+        gcloud compute forwarding-rules create $GCP_PROJECT_ID-https-forwarding-rule \
             --global \
             --load-balancing-scheme=EXTERNAL_MANAGED \
             --network-tier=PREMIUM \
-            --address=$GS_PROJECT_ID-ipv4 \
-            --target-https-proxy=$GS_PROJECT_ID-target-https-proxy \
+            --address=$GCP_PROJECT_ID-ipv4 \
+            --target-https-proxy=$GCP_PROJECT_ID-target-https-proxy \
             --ports=443 \
             --quiet
 
@@ -234,10 +234,10 @@ function gcloud_compute_engine_global_forwarding_rule_delete() {
     echo "🔹 Deleting global forwarding rule..."
 
     # Delete the HTTP Forwarding Rule
-    gcloud compute forwarding-rules delete $GS_PROJECT_ID-http-forwarding-rule --global --quiet
+    gcloud compute forwarding-rules delete $GCP_PROJECT_ID-http-forwarding-rule --global --quiet
 
     # Delete the HTTPS Forwarding Rule
-    gcloud compute forwarding-rules delete $GS_PROJECT_ID-https-forwarding-rule --global --quiet
+    gcloud compute forwarding-rules delete $GCP_PROJECT_ID-https-forwarding-rule --global --quiet
 
 }
 
