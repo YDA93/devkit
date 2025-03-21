@@ -3,7 +3,7 @@
 function gcloud_artifact_registry_repository_create() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_action "Are you sure you want to create a new Artifact Registry repository?" "$@" || return 1
+    confirm_or_abort "Are you sure you want to create a new Artifact Registry repository?" "$@" || return 1
 
     echo "🔹 Creating a new Artifact Registry repository..."
 
@@ -20,7 +20,7 @@ function gcloud_artifact_registry_repository_create() {
 function gcloud_artifact_registry_repository_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_action "Are you sure you want to delete the Artifact Registry repository?
+    confirm_or_abort "Are you sure you want to delete the Artifact Registry repository?
 This action is irreversible and will permanently delete the repository." "$@" || return 1
 
     echo "🔹 Deleting the Artifact Registry repository..."

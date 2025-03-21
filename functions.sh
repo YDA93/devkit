@@ -1,107 +1,110 @@
-# Update Software and Packages
+# A helper function to standardize the update process for various tools.
+
+function _log_update_step() {
+    local name="$1" # First argument: display name for logging
+    shift           # Remaining arguments: command to execute
+
+    echo "\n--------------------------------------------------"
+    echo -e "🔧 Starting update: $name"
+    echo "--------------------------------------------------"
+
+    # Run the update command(s)
+    if "$@"; then
+        echo "--------------------------------------------------"
+        echo "✅ Update successful: $name"
+    else
+        echo "--------------------------------------------------"
+        echo "❌ Update failed: $name"
+    fi
+
+    echo "--------------------------------------------------"
+}
+
+# Updates system tools, SDKs, CLIs, and packages (Homebrew, Flutter, NPM, etc.)
+# with nice output formatting and modular execution.
+# ------------------------------------------------------------------------------
 function update_software_and_packages() {
-    function update_package() {
-        name=$1 # First Aurgment
-        shift   # Remove first aurgment
-        echo "--------------------------------------------------"
-        echo "Updating $name.."
-        echo "--------------------------------------------------"
-        $@ # All Aurgments
-        echo "--------------------------------------------------"
-        echo "$name updated."
-        echo "--------------------------------------------------\n"
-    }
+    # Run sudo upfront and clear terminal
+    sudo -v && clear
 
-    # Clear Terminal and run sudo to avoid entering password multiple times
-    sudo clear
+    # --- Brew ---
+    _log_update_step "Homebrew and Packages" bash -c '
+        brew doctor
+        brew update
+        brew upgrade
+        brew autoremove
+        brew cleanup
+    '
 
-    # Brew
-    function pass_commands() {
-        echo -e "Brew doctor: "$(brew doctor)
-        echo -e "Brew update: "$(brew update)
-        echo -e "Brew upgrade: "$(brew upgrade)
-        echo -e "Brew autoremove: "$(brew autoremove)
-        echo -e "Brew cleanup: "$(brew cleanup)
-    }
-    update_package "Brew and its packages" pass_commands
+    # --- gcloud ---
+    _log_update_step "gcloud CLI" gcloud components update
 
-    # gcloud
-    function pass_commands() {
-        gcloud components update
-    }
-    update_package "gcloud CLI" pass_commands
-
-    # Flutter
-    function pass_commands() {
+    # --- Flutter ---
+    _log_update_step "Flutter SDK" bash -c '
         flutter upgrade --force
         flutter doctor -v
-    }
-    update_package "Flutter" pass_commands
+    '
 
-    # NPM
-    function pass_commands() {
-        echo -e "NPM install latest: "$(npm install -g npm@latest)
+    # --- NPM ---
+    _log_update_step "NPM and Dependencies" bash -c '
+        npm install -g npm@latest
         sudo npm-check -u
-        echo -e "NPM audit fix: "$(npm audit fix --force)
-    }
-    update_package "NPM and its dependencies" pass_commands
+        npm audit fix --force
+    '
 
-    # Firebase CLI
-    function pass_commands() {
-        echo -e "Firebase install latest from npm: "$(npm install -g firebase-tools)
-        echo -e "NPM audit fix: "$(npm audit fix --force)
-    }
-    update_package "Firebase CLI" pass_commands
+    # --- Firebase CLI ---
+    _log_update_step "Firebase CLI" bash -c '
+        npm install -g firebase-tools
+        npm audit fix --force
+    '
 
-    # Rosetta
-    function pass_commands() {
-        softwareupdate --install-rosetta --agree-to-license
-    }
-    update_package "Rosetta" pass_commands
+    # --- Rosetta ---
+    _log_update_step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license
 
-    # App Store
-    function pass_commands() {
-        echo -e "Check app store outdated apps: "$(mas outdated)
-        echo -e "Update app store apps: "$(mas upgrade)
-    }
-    update_package "App Store apps" pass_commands
+    # --- App Store Apps ---
+    _log_update_step "App Store Apps (via mas-cli)" bash -c '
+        mas outdated
+        mas upgrade
+    '
 
-    # macOS
-    function pass_commands() {
-        softwareupdate -ia --verbose
-    }
-    update_package "macOS" pass_commands
+    # --- macOS Software Updates ---
+    _log_update_step "macOS System Updates" softwareupdate -ia --verbose
 }
 
-function check_env_variable_exists() {
-    # Check if .env file exists
-    if [[ ! -f .env ]]; then
-        echo "Error: .env file does not exist!"
+# Checks if a specific environment variable exists and is non-empty in a .env file.
+#
+# Usage:
+#   environment_variable_exists [variable_name] [env_file]
+function environment_variable_exists() {
+    local var_name="$1"
+    local env_file="${2:-.env}"
+
+    # Check if file exists
+    if [[ ! -f "$env_file" ]]; then
+        echo "❌ Error: File not found – $env_file"
         return 1
     fi
 
-    local variable_name="$1"
-    local file_path="$2"
-
-    # Default to .env if no file_path is provided
-    if [ -z "$file_path" ]; then
-        file_path=".env"
-    fi
-
-    # Check if the variable is set in the given file
-    if ! grep -q "${variable_name}=" "$file_path"; then
-        echo "Error: ${variable_name} is not set in ${file_path}!"
+    # Check if the variable is present
+    if ! grep -q "^${var_name}=" "$env_file"; then
+        echo "❌ Error: $var_name is not defined in $env_file"
         return 1
     fi
 
-    # Check if the variable is not just empty
-    if grep -q "^${variable_name}=$" "$file_path"; then
-        echo "Error: ${variable_name} is set but is empty in ${file_path}!"
+    # Check if the variable is not empty
+    if grep -q "^${var_name}=$" "$env_file"; then
+        echo "❌ Error: $var_name is defined but empty in $env_file"
         return 1
     fi
+
+    return 0
 }
 
-function update_env_key_value() {
+# Updates or adds a key-value pair in the .env file.
+#
+# Usage:
+#   environment_variable_set [key] [value]
+function environment_variable_set() {
     local key=$1
     local value=$2
 
@@ -126,57 +129,50 @@ function update_env_key_value() {
     sleep 2
 }
 
-function prompt_confirmation() {
-    local message=$1
-
-    # Check if message is provided
-    if [ -z "$message" ]; then
-        echo "Error: No message provided for confirmation prompt!"
-        return 1
-    fi
-
-    # Prompt user for confirmation
-    while true; do
-        echo -n "$message (yes/no): "
-        read confirm
-        case $confirm in
-        [Yy][Ee][Ss])
-            return 0
-            ;;
-        [Nn][Oo])
-            echo "Operation canceled."
-            return 1
-            ;;
-        *)
-            echo "Please answer yes or no."
-            ;;
-        esac
-    done
-}
-
 # Function to prompt user for confirmation unless --quiet is provided
-function confirm_action() {
+#
+# Usage:
+#   confirm_or_abort [message] [--quiet]
+function confirm_or_abort() {
     local message="$1"
     shift # Remove the first argument (message) from the list
 
     # Check if --quiet flag is present
-    if [[ " $* " != *" --quiet "* ]]; then
-        # Use correct read syntax for different shells
+    for arg in "$@"; do
+        if [[ "$arg" == "--quiet" ]]; then
+            return 0
+        fi
+    done
+
+    local CONFIRM=""
+    while true; do
+        # Cross-shell compatible prompt
         if [[ -n "$BASH_VERSION" ]]; then
             read -p "$message (yes/no): " CONFIRM
         else
             read "?$message (yes/no): " CONFIRM
         fi
 
-        if [[ "$CONFIRM" != "yes" ]]; then
+        case "$CONFIRM" in
+        yes)
+            return 0
+            ;;
+        no)
             echo "Aborting action."
             return 1
-        fi
-    fi
+            ;;
+        *)
+            echo "❌ Please type 'yes' or 'no'."
+            ;;
+        esac
+    done
 }
 
-# Function to open a project from ~/Desktop/dev with auto-completion
-function open_code_project() {
+# Opens a project folder from ~/Desktop/dev using VS Code.
+# Supports auto-completion for available project names.
+# Usage:
+#   code_project [project_name]
+function code_project() {
     local BASE_PATH="$HOME/Desktop/dev"
     local PROJECT_NAME=$1 # Get the first argument as project name
 
@@ -200,11 +196,11 @@ function open_code_project() {
     fi
 }
 
-# Auto-completion for open_code_project function
-function _open_code_project_completions() {
+# Auto-completion for code_project function
+function _code_project_completions() {
     local BASE_PATH="$HOME/Desktop/dev"
     COMPREPLY=($(compgen -W "$(ls -1 "$BASE_PATH")" -- "${COMP_WORDS[1]}"))
 }
 
-# Enable auto-completion for open_code_project
-complete -F _open_code_project_completions open_code_project
+# Enable tab completion for code_project
+complete -F _code_project_completions code_project

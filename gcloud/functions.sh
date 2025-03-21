@@ -58,7 +58,7 @@ function gcloud_config_load_and_validate() {
 function gcloud_project_django_setup {
     gcloud_config_load_and_validate || return 1
 
-    confirm_action "Set up a Django project in Google Cloud?" "$@" || return 1
+    confirm_or_abort "Set up a Django project in Google Cloud?" "$@" || return 1
 
     # gcloud-login-cli || return 1
     # gcloud-login-adc || return 1
@@ -93,15 +93,15 @@ function gcloud_project_django_setup {
         return 1
     fi
 
-    # Step 6: Create Cloud Run service
-    if ! gcloud_run_build_and_deploy_initial --quiet; then
-        echo "❌ Error building and deploying the service to Cloud Run."
+    # Step 6: Start the Cloud SQL Proxy in a separate terminal and apply migrations and initial data to the database
+    if ! gcloud_sql_proxy_and_django_setup --quiet; then
+        echo "❌ Error starting the Cloud SQL Proxy and applying migrations."
         return 1
     fi
 
-    # Step 7: Start the Cloud SQL Proxy in a separate terminal and apply migrations and initial data to the database
-    if ! gcloud_sql_proxy_and_django_setup --quiet; then
-        echo "❌ Error starting the Cloud SQL Proxy and applying migrations."
+    # Step 7: Build and deploy the service to Cloud Run
+    if ! gcloud_run_build_and_deploy_initial --quiet; then
+        echo "❌ Error building and deploying the service to Cloud Run."
         return 1
     fi
 
@@ -110,6 +110,9 @@ function gcloud_project_django_setup {
         echo "❌ Error setting up the Cloud Load Balancer."
         return 1
     fi
+
+    echo "🎉 Django project in Google Cloud has been successfully set up!"
+
 }
 
 # Function to tear down the Django setup in Google Cloud
@@ -117,7 +120,7 @@ function gcloud_project_django_setup {
 function gcloud_project_django_teardown {
     gcloud_config_load_and_validate || return 1
 
-    confirm_action "Tear down the Django project in Google Cloud?" "$@" || return 1
+    confirm_or_abort "Tear down the Django project in Google Cloud?" "$@" || return 1
 
     # gcloud-login-cli || return 1
     # gcloud-login-adc || return 1
@@ -147,7 +150,7 @@ function gcloud_project_django_teardown {
 function gcloud_project_django_update {
     gcloud_config_load_and_validate || return 1
 
-    confirm_action "Update an existing Django deployment in Google Cloud?" "$@" || return 1
+    confirm_or_abort "Update an existing Django deployment in Google Cloud?" "$@" || return 1
 
     gcloud-login-cli || return 1
     gcloud-login-adc || return 1

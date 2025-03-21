@@ -158,9 +158,9 @@ function django-migrate-to-new-database() {
 
     django-settings-local
 
-    check_env_variable_exists LOCAL_DB_NAME || return 0
+    environment_variable_exists LOCAL_DB_NAME || return 0
 
-    check_env_variable_exists LOCAL_DB_PASSWORD || return 0
+    environment_variable_exists LOCAL_DB_PASSWORD || return 0
 
     # Extracting value of LOCAL_DB_PASSWORD from .env file
     local_db_password=$(grep "LOCAL_DB_PASSWORD=" .env | cut -d '=' -f2 | tr -d '"')
@@ -171,7 +171,7 @@ function django-migrate-to-new-database() {
     check_postgresql_password || return 0
 
     # Prompt user for confirmation
-    if prompt_confirmation "This action will reset the project to its initial state. Proceed?"; then
+    if confirm_or_abort "This action will reset the project to its initial state. Proceed?"; then
         echo "Confirmed!"
     else
         echo "Canceled!"
@@ -180,7 +180,7 @@ function django-migrate-to-new-database() {
 
     # Prompt user for backup
     backup_performed=false
-    if prompt_confirmation "Do you want to backup data?"; then
+    if confirm_or_abort "Do you want to backup data?"; then
         django-dumpdata "$project_directory" || return 0
 
         backup_performed=true
@@ -191,7 +191,7 @@ function django-migrate-to-new-database() {
     prompt_and_manage_database_creation || return 0
 
     # Update the .env file with the correct database name
-    update_env_key_value "LOCAL_DB_NAME" "$db_name" || return 0
+    environment_variable_set "LOCAL_DB_NAME" "$db_name" || return 0
 
     django-delete-migrations-and-cache
 
@@ -219,7 +219,7 @@ function django-migrate-to-new-database() {
         django-loaddata "$project_directory" || return 0 # Using the default "data.json"
 
     else
-        if prompt_confirmation "Do you want to restore data from a backup file?"; then
+        if confirm_or_abort "Do you want to restore data from a backup file?"; then
             echo "Please provide the path to the backup file:"
             read backup_file
             django-loaddata "$project_directory" "$backup_file" || return 0 # Using the user-specified backup file

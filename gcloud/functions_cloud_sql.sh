@@ -4,7 +4,7 @@
 function gcloud_sql_instance_create() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_action "Are you sure you want to create a new Cloud SQL instance?" "$@" || return 1
+    confirm_or_abort "Are you sure you want to create a new Cloud SQL instance?" "$@" || return 1
 
     echo "🔹 Creating a new Cloud SQL instance for PostgreSQL..."
 
@@ -47,7 +47,7 @@ function gcloud_sql_instance_create() {
 function gcloud_sql_instance_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_action "Are you sure you want to delete the Cloud SQL instance '$GS_SQL_INSTANCE_ID'?" "$@" || return 1
+    confirm_or_abort "Are you sure you want to delete the Cloud SQL instance '$GS_SQL_INSTANCE_ID'?" "$@" || return 1
 
     INSTANCE_NAME=$GS_SQL_INSTANCE_ID
 
@@ -90,7 +90,7 @@ function gcloud_sql_db_and_user_create() {
     # Step 1: Load Configuration and Validate
     gcloud_config_load_and_validate || return 1
 
-    confirm_action "Are you sure you want to create a new database and user?" "$@" || return 1
+    confirm_or_abort "Are you sure you want to create a new database and user?" "$@" || return 1
 
     echo "🔹 Creating a new database and user in Cloud SQL for PostgreSQL..."
 
@@ -162,7 +162,7 @@ EOF
 function gcloud_sql_db_and_user_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_action "Are you sure you want to delete the database and user '$GS_SQL_DB_USERNAME'?" "$@" || return 1
+    confirm_or_abort "Are you sure you want to delete the database and user '$GS_SQL_DB_USERNAME'?" "$@" || return 1
 
     echo "🔹 Deleting the database and user in Cloud SQL for PostgreSQL..."
 
@@ -231,7 +231,7 @@ EOF
 # This function launches the Cloud SQL Proxy in a new terminal tab, waits for it to be available,
 # and then executes Django setup commands, including migrations and database population.
 function gcloud_sql_proxy_and_django_setup() {
-    confirm_action "Are you sure you want to start the Cloud SQL Proxy and run Django setup?" "$@" || return 1
+    confirm_or_abort "Are you sure you want to start the Cloud SQL Proxy and run Django setup?" "$@" || return 1
 
     echo "🔹 Starting the Cloud SQL Proxy in a new terminal window, then start Django in Development 
     settings, apply migrations, and populate the database..."
