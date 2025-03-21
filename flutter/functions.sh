@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# ⚙️ FlutterFire Utilities
+# 🔥 FlutterFire Utilities
 # ------------------------------------------------------------------------------
 
 function flutter-flutterfire-init() {
@@ -27,7 +27,7 @@ function flutter-firebase-update-functions() {
 }
 
 # ------------------------------------------------------------------------------
-# ⚙️ Flutter Utility Commands
+# 🛠️ Flutter Utility Commands
 # ------------------------------------------------------------------------------
 
 function flutter-adb-connect() {
@@ -59,7 +59,7 @@ function flutter-adb-connect() {
 }
 
 # ------------------------------------------------------------------------------
-# ⚙️ Flutter Update Commands
+# 🔄 Flutter Update Commands
 # ------------------------------------------------------------------------------
 
 function flutter-update-splash() {
@@ -77,7 +77,7 @@ function flutter-update-fontawesome() {
 }
 
 # ------------------------------------------------------------------------------
-# ⚙️ Flutter Clean-Up Commands
+# 🧹 Flutter Clean-Up Commands
 # ------------------------------------------------------------------------------
 
 function flutter-delete-unused-strings() {

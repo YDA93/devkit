@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# ⚙️ Django Server Shortcuts
+# 🚀 Django Server Shortcuts
 # ------------------------------------------------------------------------------
 function django-run-server() {
     if [ $# -eq 0 ]; then
@@ -11,10 +11,9 @@ function django-run-server() {
 }
 
 # ------------------------------------------------------------------------------
-# ⚙️ Django Translations Shortcuts
+# 🌍 Django Translations Shortcuts
 # ------------------------------------------------------------------------------
 
-# Make Translations
 function django-translations-make() {
     echo -e $(django-admin makemessages -l ar --ignore="venv/*" --ignore="static/*")" in main directory"
     # Loop through directories
@@ -31,7 +30,6 @@ function django-translations-make() {
     done
 }
 
-# Compile Translations
 function django-translations-compile() {
     # Loop through directories
     for d in */; do
@@ -48,23 +46,21 @@ function django-translations-compile() {
 }
 
 # ------------------------------------------------------------------------------
-# ⚙️ Django Project Management Shortcuts
+# 🧱 Django Project Management Shortcuts
 # ------------------------------------------------------------------------------
 
-# Start Project
 function django-project-start() {
     site_name=$1 # First Aurgment
     django-admin startproject $site_name
 }
 
-# Start App
 function django-app-start() {
     app_name=$1 # First Aurgment
     python manage.py startapp $app_name
 }
 
 # ------------------------------------------------------------------------------
-# ⚙️ Django Database Management Shortcuts
+# 🗃️ Django Database Management Shortcuts
 # ------------------------------------------------------------------------------
 function django-loaddata() {
     local project_directory=$1
@@ -114,17 +110,14 @@ function django-dumpdata() {
     sleep 2
 }
 
-# Make Migrations
 function django-make-migrations() {
     python manage.py makemigrations $@
 }
 
-# Migrate
 function django-migrate() {
     python manage.py migrate $@
 }
 
-# Delete migrations
 function django-delete-migrations-and-cache() {
     # Get the current directory
     project_directory="$PWD"
@@ -245,7 +238,7 @@ function django-migrate-to-new-database() {
 }
 
 # ------------------------------------------------------------------------------
-# ⚙️ Django Test Shortcuts
+# 🧪 Django Test Shortcuts
 # ------------------------------------------------------------------------------
 
 function django-run-pytest() {
