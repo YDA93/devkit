@@ -173,7 +173,7 @@ function django-migrate-to-new-database() {
     # Set the PGPASSWORD environment variable
     export PGPASSWORD="$local_db_password"
 
-    check_postgresql_password || return 0
+    postgres_check_password || return 0
 
     # Prompt user for confirmation
     if confirm_or_abort "This action will reset the project to its initial state. Proceed?"; then
@@ -193,7 +193,7 @@ function django-migrate-to-new-database() {
         echo "Skipping data backup..."
     fi
 
-    prompt_and_manage_database_creation || return 0
+    postgres_manage_database_creation || return 0
 
     # Update the .env file with the correct database name
     environment_variable_set "LOCAL_DB_NAME" "$db_name" || return 0

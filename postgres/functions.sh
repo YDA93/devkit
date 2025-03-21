@@ -82,7 +82,7 @@ function postgres_database_create() {
     unset PGPASSWORD
 }
 
-function check_postgresql_password() {
+function postgres_check_password() {
     # Attempt to connect to PostgreSQL using the set PGPASSWORD
     if ! (psql -U postgres -h localhost -c "\q" 2>/dev/null || true); then
         echo "Error: Invalid PostgreSQL password!\n Please check the LOCAL_DB_PASSWORD value in .env file."
@@ -91,7 +91,7 @@ function check_postgresql_password() {
     fi
 }
 
-function prompt_and_manage_database_creation() {
+function postgres_manage_database_creation() {
     # List available databases before deletion prompt
     databases=$(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | sed -e 's/ //g' -e '/^$/d')
     echo "Available databases:"

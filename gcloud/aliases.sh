@@ -6,7 +6,6 @@ alias gcloud-init='gcloud init'
 alias gcloud-login-cli='gcloud auth login'                     # CLI: User account login
 alias gcloud-login-adc='gcloud auth application-default login' # ADC: Used by services and libraries
 alias gcloud-logout='gcloud auth revoke'
-
 alias gcloud-info='gcloud info'
 alias gcloud-update='gcloud components update'
 

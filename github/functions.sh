@@ -1,4 +1,7 @@
 function github-commit-and-push() {
+
+    confirm_or_abort "This action will commit all changes and push them to the remote repository. Continue?" "$@" || return 1
+
     # Check if a commit message is provided
     if [ $# -eq 0 ]; then
         # No commit message provided, use a default message
@@ -15,6 +18,9 @@ function github-commit-and-push() {
 }
 
 function github-clear-cache-and-recommit-all-files() {
+
+    confirm_or_abort "This action will reset the Git cache and recommit all files. Continue?" "$@" || return 1
+
     # Step 1: Remove all files from the Git index (cache) without deleting them from the working directory.
     git rm -r --cached .
 
@@ -29,6 +35,9 @@ function github-clear-cache-and-recommit-all-files() {
 }
 
 function github-undo-last-commit() {
+
+    confirm_or_abort "This action will revert the last commit on GitHub only. Continue?" "$@" || return 1
+
     # Step 1: Force push the current branch, resetting it to the previous commit on GitHub.
     # This will remove the last commit from the remote repository, effectively undoing it on GitHub.
     git push --force origin HEAD~1:main

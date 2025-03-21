@@ -53,6 +53,10 @@ function gcloud_config_load_and_validate() {
     done <"$env_file"
 }
 
+# ------------------------------------------------------------------------------
+# ☁️ Google Cloud Platform - Django Project Shortcuts
+# ------------------------------------------------------------------------------
+
 # Function to set up a Django application in Google Cloud
 # This function performs all required steps including creating a database, storage, and deploying the app
 function gcloud_project_django_setup {
