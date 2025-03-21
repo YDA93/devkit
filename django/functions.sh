@@ -10,6 +10,18 @@ function django-run-server() {
     fi
 }
 
+function django-secret-key-generate() {
+    raw_key=$(python3 -c "
+import secrets
+import string
+
+safe_chars = string.ascii_letters + string.digits + '!@#%^&*(-_=+)'
+print(''.join(secrets.choice(safe_chars) for _ in range(50)))
+")
+
+    environment_variable_set "DJANGO_SECRET_KEY" "$raw_key"
+}
+
 # ------------------------------------------------------------------------------
 # 🌍 Django Translations Shortcuts
 # ------------------------------------------------------------------------------

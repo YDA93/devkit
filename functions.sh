@@ -105,28 +105,37 @@ function environment_variable_exists() {
 # Usage:
 #   environment_variable_set [key] [value]
 function environment_variable_set() {
-    local key=$1
-    local value=$2
+    local key="$1"
+    local value="$2"
+    local env_file=".env"
 
     if [ -z "$key" ] || [ -z "$value" ]; then
-        echo "Error: Key or value is not provided!"
+        echo "❌ Error: Key or value is missing!"
+        echo "Usage: environment_variable_set [key] [value]"
         return 1
     fi
 
-    # Update the .env file with the given key and value
-    echo "Updating $key value in .env file to $value..."
-
-    # Check if the key exists in the .env file
-    if grep -q "^$key=" .env; then
-        # Key exists, update its value
-        sed -i '' "s/$key=\"[^\"]*\"/$key=\"$value\"/" .env
-    else
-        # Key doesn't exist, add it to the file
-        echo "$key=\"$value\"" >>.env
+    # Ensure .env file exists
+    if [ ! -f "$env_file" ]; then
+        echo "❌ Error: .env file not found."
+        return 1
     fi
 
-    echo "$key updated."
-    sleep 2
+    echo "🔹 Setting $key=\"$value\" in $env_file..."
+
+    # Escape forward slashes and ampersands for sed replacement
+    local escaped_value
+    escaped_value=$(printf '%s\n' "$value" | sed -e 's/[\/&]/\\&/g')
+
+    if grep -q "^$key=" "$env_file"; then
+        # Key exists, update it (handles values with or without quotes)
+        sed -i '' -E "s|^$key=.*|$key=\"$escaped_value\"|" "$env_file"
+    else
+        # Key doesn't exist, append it
+        echo "$key=\"$value\"" >>"$env_file"
+    fi
+
+    echo "✅ $key successfully set."
 }
 
 # Function to prompt user for confirmation unless --quiet is provided

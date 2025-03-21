@@ -20,7 +20,7 @@ function gcloud_sql_instance_create() {
         gcloud sql instances create "$GCP_SQL_INSTANCE_ID" \
             --database-version="$GCP_SQL_DB_VERSION" \
             --tier="$TIER" \
-            --region="$GCP_SQL_INSTANCE_REGION" \
+            --region="$GCP_REGION" \
             --storage-size="$STORAGE_SIZE" \
             --storage-type=SSD \
             --availability-type=ZONAL \
@@ -67,7 +67,7 @@ function gcloud_sql_proxy_start() {
     echo "🔹 Starting Cloud SQL Proxy..."
     # If the configuration loads and validates, run the cloud-sql-proxy
     # The port is set to GCP_SQL_PROXY_PORT to avoid conflicts with the default port 3306 & 5432
-    ./cloud-sql-proxy --port $GCP_SQL_PROXY_PORT "${GCP_PROJECT_ID}:${GCP_SQL_INSTANCE_REGION}:${GCP_SQL_INSTANCE_ID}"
+    ./cloud-sql-proxy --port $GCP_SQL_PROXY_PORT "${GCP_PROJECT_ID}:${GCP_REGION}:${GCP_SQL_INSTANCE_ID}"
 }
 
 # Function to connect to a gcloud PostgreSQL instance

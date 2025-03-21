@@ -66,7 +66,7 @@ function gcloud_compute_engine_network_endpoint_group_create() {
     echo "🔹 Creating Network Endpoint Group (NEG) for Cloud Run..."
 
     gcloud compute network-endpoint-groups create $GCP_PROJECT_ID-neg \
-        --region=$GCP_RUN_REGION \
+        --region=$GCP_REGION \
         --network-endpoint-type=serverless \
         --cloud-run-service=$GCP_RUN_NAME \
         --quiet
@@ -82,7 +82,7 @@ function gcloud_compute_engine_network_endpoint_group_delete() {
 
     echo "🔹 Deleting Network Endpoint Group (NEG)..."
 
-    gcloud compute network-endpoint-groups delete $GCP_PROJECT_ID-neg --region=$GCP_RUN_REGION --quiet
+    gcloud compute network-endpoint-groups delete $GCP_PROJECT_ID-neg --region=$GCP_REGION --quiet
 }
 
 # Function to create a new backend service for Google Compute Engine and attach the Network Endpoint Group (NEG)
@@ -103,7 +103,7 @@ function gcloud_compute_engine_backend_service_create() {
         gcloud compute backend-services add-backend $GCP_PROJECT_ID-backend-service \
             --global \
             --network-endpoint-group=$GCP_PROJECT_ID-neg \
-            --network-endpoint-group-region=$GCP_RUN_REGION \
+            --network-endpoint-group-region=$GCP_REGION \
             --quiet
 }
 
@@ -119,7 +119,7 @@ function gcloud_compute_engine_backend_service_delete() {
     gcloud compute backend-services remove-backend $GCP_PROJECT_ID-backend-service \
         --global \
         --network-endpoint-group=$GCP_PROJECT_ID-neg \
-        --network-endpoint-group-region=$GCP_RUN_REGION \
+        --network-endpoint-group-region=$GCP_REGION \
         --quiet
     gcloud compute backend-services delete $GCP_PROJECT_ID-backend-service --global --quiet
 }

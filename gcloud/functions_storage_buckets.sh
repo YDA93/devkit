@@ -10,16 +10,16 @@ function gcloud_storage_buckets_create() {
     echo "🔹 Creating Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GCP_PROJECT_ID-cloudbuild-artifacts"
 
     # Create a new static bucket with Fine-grained access control
-    gsutil mb -b on -c standard -l $GS_BUCKET_REGION gs://$GS_BUCKET_STATIC/ &&
+    gsutil mb -b on -c standard -l $GCP_REGION gs://$GS_BUCKET_STATIC/ &&
 
         # Create a new media bucket with Fine-grained access control
-        gsutil mb -b on -c standard -l $GS_BUCKET_REGION gs://$GS_BUCKET_NAME/ &&
+        gsutil mb -b on -c standard -l $GCP_REGION gs://$GS_BUCKET_NAME/ &&
         gcloud_storage_buckets_set_public_read --quiet &&
         gcloud_storage_buckets_set_cross_origin --quiet &&
         gcloud_storage_buckets_sync_static --quiet &&
 
         # Create a new bucket for Cloud Build artifacts
-        gsutil mb -l $GS_BUCKET_REGION gs://$GCP_PROJECT_ID-cloudbuild-artifacts/
+        gsutil mb -l $GCP_REGION gs://$GCP_PROJECT_ID-cloudbuild-artifacts/
 }
 
 # Function to delete the static and media buckets forcefully with confirmation

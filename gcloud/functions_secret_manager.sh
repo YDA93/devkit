@@ -12,7 +12,7 @@ function gcloud_secret_manager_env_create() {
     gcloud secrets create $GCP_SECRET_FILE_NAME \
         --data-file=".env" \
         --replication-policy="user-managed" \
-        --locations=$GCP_SECRET_MANAGER_REGION \
+        --locations=$GCP_REGION \
         --quiet &&
         gcloud secrets add-iam-policy-binding $GCP_SECRET_FILE_NAME \
             --member serviceAccount:$GCP_PROJECT_NUMBER-compute@developer.gserviceaccount.com \

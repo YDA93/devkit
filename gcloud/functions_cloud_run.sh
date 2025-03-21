@@ -25,13 +25,13 @@ function gcloud_run_build_image() {
     echo "🔹 Building the Docker image and pushing it to Artifact Registry..."
 
     # Construct the full image path
-    GCP_RUN_FULL_IMAGE_NAME="$GCP_RUN_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_EXTENDED_IMAGE_NAME"
+    GCP_RUN_FULL_IMAGE_NAME="$GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_EXTENDED_IMAGE_NAME"
 
     # Open Docker Desktop
     docker_daemon_start &&
 
         # Authenticate Docker to push the image
-        gcloud auth configure-docker $GCP_RUN_REGION-docker.pkg.dev --quiet &&
+        gcloud auth configure-docker $GCP_REGION-docker.pkg.dev --quiet &&
         # Build the docker image
         docker build -t $GCP_EXTENDED_IMAGE_NAME -f builder.Dockerfile . &&
 
@@ -53,7 +53,7 @@ function gcloud_run_build_image() {
 
         # Build the image
         gcloud builds submit --config cloudmigrate.yaml \
-            --substitutions _INSTANCE_NAME=$GCP_SQL_INSTANCE_ID,_REGION=$GCP_SQL_INSTANCE_REGION --region $GCP_RUN_REGION \
+            --substitutions _INSTANCE_NAME=$GCP_SQL_INSTANCE_ID,_REGION=$GCP_REGION --region $GCP_REGION \
             --default-buckets-behavior=regional-user-owned-bucket \
             --gcs-source-staging-dir=gs://$GCP_PROJECT_ID-cloudbuild-artifacts/source \
             --gcs-log-dir=gs://$GCP_PROJECT_ID-cloudbuild-artifacts/logs \
@@ -72,9 +72,9 @@ function gcloud_run_deploy_initial() {
 
     # Deploy the service to Cloud Run for the first time
     gcloud run deploy $GCP_RUN_NAME \
-        --region $GCP_RUN_REGION \
-        --image $GCP_RUN_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_RUN_NAME \
-        --add-cloudsql-instances $GCP_PROJECT_ID:$GCP_SQL_INSTANCE_REGION:$GCP_SQL_INSTANCE_ID \
+        --region $GCP_REGION \
+        --image $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_RUN_NAME \
+        --add-cloudsql-instances $GCP_PROJECT_ID:$GCP_REGION:$GCP_SQL_INSTANCE_ID \
         --allow-unauthenticated \
         --cpu=1 \
         --memory=1Gi \
@@ -94,8 +94,8 @@ function gcloud_run_deploy_latest() {
 
     # Redeploy the service to Cloud Run
     gcloud run deploy $GCP_RUN_NAME \
-        --region $GCP_RUN_REGION \
-        --image $GCP_RUN_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_RUN_NAME \
+        --region $GCP_REGION \
+        --image $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_RUN_NAME \
         --cpu=1 \
         --memory=1Gi \
         --min-instances=0 \
@@ -114,13 +114,13 @@ function gcloud_run_set_service_urls_env() {
 
     # Get the service URL
     CLOUDRUN_SERVICE_URLS=$(gcloud run services describe $GCP_RUN_NAME \
-        --region $GCP_RUN_REGION \
+        --region $GCP_REGION \
         --format "value(metadata.annotations[\"run.googleapis.com/urls\"])" | tr -d '"[]') \
         --quiet
 
     # Update the service URL environment variable in Cloud Run
     gcloud run services update $GCP_RUN_NAME \
-        --region $GCP_RUN_REGION \
+        --region $GCP_REGION \
         --update-env-vars "^##^CLOUDRUN_SERVICE_URLS=$CLOUDRUN_SERVICE_URLS" \
         --quiet
 
@@ -160,9 +160,9 @@ function gcloud_run_service_delete() {
 
     # Delete the service
     echo "🔹 Deleting the Cloud Run service '$GCP_RUN_NAME'..."
-    gcloud run services delete "$GCP_RUN_NAME" --region "$GCP_RUN_REGION" --quiet
+    gcloud run services delete "$GCP_RUN_NAME" --region "$GCP_REGION" --quiet
 
     # Delete the Cloud Run job
     echo "🔹 Deleting the Cloud Run job 'migrate-job'..."
-    gcloud run jobs delete migrate-job --region="$GCP_RUN_REGION" --quiet
+    gcloud run jobs delete migrate-job --region="$GCP_REGION" --quiet
 }
