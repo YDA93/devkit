@@ -53,6 +53,15 @@ function gcloud_config_load_and_validate() {
     done <"$env_file"
 }
 
+# 🧼 Converts $GCP_PROJECT_NAME into a safe, lowercase, GCP-friendly slug
+# - Removes spaces
+# - Lowercases everything
+# - Keeps only a-z, 0-9, _ and -
+# -----------------------------------------------------------------------------
+function gcloud_slugify_project_name() {
+    echo "$GCP_PROJECT_NAME" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_-]//g'
+}
+
 # ------------------------------------------------------------------------------
 # ☁️ Google Cloud Platform - Django Project Shortcuts
 # ------------------------------------------------------------------------------
@@ -115,6 +124,12 @@ function gcloud_project_django_setup {
         return 1
     fi
 
+    # Step 9: Create Cloud Scheduler jobs case exists
+    if ! gcloud_schedular_job_create --quiet; then
+        echo "❌ Error creating Cloud Scheduler job."
+        return 1
+    fi
+
     echo "🎉 Django project in Google Cloud has been successfully set up!"
 
 }
@@ -129,22 +144,25 @@ function gcloud_project_django_teardown {
     gcloud-login-cli || return 1
     gcloud-login-adc || return 1
 
-    # Step 1: Delete Cloud Load Balancer
+    # Step 1: Delete Cloud Scheduler job
+    gcloud_schedular_job_delete --quiet
+
+    # Step 2: Delete Cloud Load Balancer
     gcloud_compute_engine_cloud_load_balancer_teardown --quiet || echo "❌ Error deleting the Cloud Load Balancer."
 
-    # Step 2: Delete Cloud Run service
+    # Step 3: Delete Cloud Run service
     gcloud_run_service_delete --quiet || echo "❌ Error deleting the Cloud Run service."
 
-    # Step 3: Delete Cloud Secret Manager secret
+    # Step 4: Delete Cloud Secret Manager secret
     gcloud_secret_manager_env_delete --quiet || echo "❌ Error deleting the Secret Manager secret."
 
-    # Step 4: Delete Cloud Storage buckets
+    # Step 5: Delete Cloud Storage buckets
     gcloud_storage_buckets_delete --quiet || echo "❌ Error deleting Cloud Storage buckets."
 
-    # Step 5: Delete Artifact Registry repository
+    # Step 6: Delete Artifact Registry repository
     gcloud_artifact_registry_repository_delete --quiet || echo "❌ Error deleting Artifact Registry repository."
 
-    # Step 6: Delete Cloud SQL for PostgreSQL instance
+    # Step 7: Delete Cloud SQL for PostgreSQL instance
     gcloud_sql_instance_delete --quiet || echo "❌ Error deleting Cloud SQL instance."
 
 }

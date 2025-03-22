@@ -155,11 +155,13 @@ function confirm_or_abort() {
 
     local CONFIRM=""
     while true; do
-        # Cross-shell compatible prompt
+        # Properly print message first, then prompt on next line
+        printf "%s\n(yes/no): " "$message"
+
         if [[ -n "$BASH_VERSION" ]]; then
-            read -p "$message (yes/no): " CONFIRM
+            read CONFIRM
         else
-            read "?$message (yes/no): " CONFIRM
+            read "? " CONFIRM
         fi
 
         case "$CONFIRM" in

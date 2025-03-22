@@ -22,6 +22,82 @@ print(''.join(secrets.choice(safe_chars) for _ in range(50)))
     environment_variable_set "DJANGO_SECRET_KEY" "$raw_key"
 }
 
+# 🔍 Description:
+#   Finds and prints all "cron/" URL patterns in Django apps defined in
+#   INTERNAL_APPS (inside project/settings/base.py). Output is prefixed
+#   with the app name and formatted as a full URL.
+#
+# 💡 Usage:
+#   django-find-cron-urls [project_root]
+#   - If no argument is passed, it defaults to the current directory.
+#   - You can also capture the output:
+#       crons=($(django-find-cron-urls))
+#
+# 🧠 How it works:
+#   - Parses INTERNAL_APPS list using sed/grep.
+#   - Loops through each app directory to find `urls.py`.
+#   - Reads the entire file into a single line to handle multi-line path().
+#   - Breaks paths again at `)` to isolate each call.
+#   - Uses grep to find `path("cron/...")` patterns.
+#   - Ignores commented-out lines automatically (because comments don't match).
+#   - Extracts the cron path using sed and prefixes it with the app name.
+#
+# 📦 Output:
+#   ✅ Found 2 cron path(s):
+#     ➤ https://$ADMIN_DOMAIN/app_name/cron/your-path/
+#
+#   🧾 Return value:
+#     A list of fully formatted cron URLs.
+# -----------------------------------------------------------------------------
+function django-find-cron-urls() {
+    local project_root=${1:-.}
+    local settings_file="$project_root/project/settings/base.py"
+
+    echo "🚀 Searching for cron jobs in internal apps..."
+
+    # 🔍 Extract INTERNAL_APPS values from base.py (e.g. "logs", "store", ...)
+    local apps=($(sed -n '/INTERNAL_APPS *= *\[/,/]/p' "$settings_file" |
+        grep -Eo '"[^"]+"' | tr -d '"'))
+
+    local matches=()
+
+    # 🔁 Loop through each internal app
+    for app in "${apps[@]}"; do
+        local urls_file="$project_root/$app/urls.py"
+
+        # 📄 Only proceed if the app has a urls.py
+        if [[ -f "$urls_file" ]]; then
+
+            # 🧪 Read the entire file into one line to handle multi-line path() calls
+            # 🔎 Find lines matching path("cron/...")
+            local results=$(tr '\n' ' ' <"$urls_file" |
+                sed 's/)/)\n/g' |
+                grep 'path *( *["'\'']cron/' |
+                sed -E "s/.*path *\( *['\"](cron\/[^\"')]+)['\"].*/$app\/\1/")
+
+            # ➕ Add full URL paths to matches array
+            if [[ -n "$results" ]]; then
+                while IFS= read -r line; do
+                    matches+=("https://$ADMIN_DOMAIN/$line")
+                done <<<"$results"
+            fi
+        fi
+    done
+
+    # 🧾 Print the results
+    if [[ ${#matches[@]} -gt 0 ]]; then
+        echo "✅ Found ${#matches[@]} cron path(s):"
+        for match in "${matches[@]}"; do
+            echo "  ➤ $match"
+        done
+    else
+        echo "⚠️  No cron paths found."
+    fi
+
+    # 📤 Return the full URLs
+    printf '%s\n' "${matches[@]}"
+}
+
 # ------------------------------------------------------------------------------
 # 🌍 Django Translations Shortcuts
 # ------------------------------------------------------------------------------
