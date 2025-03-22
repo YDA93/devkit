@@ -175,17 +175,16 @@ function gcloud_schedular_job_update() {
 
     echo "🔍 Fetching cron URLs from Django..."
     local local_urls=($(django-find-cron-urls | grep '^https://'))
+    declare -A local_jobs
 
     if [[ ${#local_urls[@]} -eq 0 ]]; then
-        echo "⚠️  No local cron URLs found. Aborting update."
-        return 1
+        echo "⚠️  No local cron URLs found. Will only check for deletions..."
+    else
+        for url in "${local_urls[@]}"; do
+            local job_name=$(_gcloud_cron_generate_job_name "$url")
+            local_jobs[$job_name]="$url"
+        done
     fi
-
-    declare -A local_jobs
-    for url in "${local_urls[@]}"; do
-        local job_name=$(_gcloud_cron_generate_job_name "$url")
-        local_jobs[$job_name]="$url"  # ✅ proper Zsh associative array key
-    done
 
     echo "📡 Fetching existing Cloud Scheduler jobs..."
     local remote_jobs_output
@@ -222,7 +221,9 @@ function gcloud_schedular_job_update() {
             delete_descriptions+=("$job")
         done
         local delete_msg=$(printf "  • %s\n" "${delete_descriptions[@]}")
-        confirm_or_abort "⚠️  The following GCP cron jobs will be deleted:\n$delete_msg" || return 1
+        local full_msg
+        full_msg=$(printf "⚠️  The following GCP cron jobs will be deleted:\n%s" "$delete_msg")
+        confirm_or_abort "$full_msg" || return 1
     fi
 
     if [[ ${#to_create_urls[@]} -gt 0 ]]; then
@@ -258,5 +259,15 @@ function gcloud_schedular_job_update() {
             --quiet
     done
 
-    echo "✅ Update complete: ${#to_create_urls[@]} job(s) created, ${#to_delete_jobs[@]} job(s) deleted."
+    if [[ ${#to_create_urls[@]} -eq 0 && ${#to_delete_jobs[@]} -eq 0 ]]; then
+        echo "🟡 No changes needed. GCP Scheduler is already in sync with your local URLs."
+    else
+        echo "✅ Update complete:"
+        if [[ ${#to_create_urls[@]} -gt 0 ]]; then
+            echo "  ➕ ${#to_create_urls[@]} job(s) created"
+        fi
+        if [[ ${#to_delete_jobs[@]} -gt 0 ]]; then
+            echo "  🗑️  ${#to_delete_jobs[@]} job(s) deleted"
+        fi
+    fi
 }
