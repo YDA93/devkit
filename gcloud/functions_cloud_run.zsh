@@ -76,10 +76,10 @@ function gcloud_run_deploy_initial() {
         --image $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_RUN_NAME \
         --add-cloudsql-instances $GCP_PROJECT_ID:$GCP_REGION:$GCP_SQL_INSTANCE_ID \
         --allow-unauthenticated \
-        --cpu=1 \
-        --memory=1Gi \
-        --min-instances=0 \
-        --max-instances=5 \
+        --cpu=$GCP_RUN_CPU \
+        --memory=$GCP_RUN_MEMORY \
+        --min-instances=$GCP_RUN_MIN_INSTANCES \
+        --max-instances=$GCP_RUN_MAX_INSTANCES \
         --quiet
 }
 
@@ -96,10 +96,10 @@ function gcloud_run_deploy_latest() {
     gcloud run deploy $GCP_RUN_NAME \
         --region $GCP_REGION \
         --image $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_RUN_NAME \
-        --cpu=1 \
-        --memory=1Gi \
-        --min-instances=0 \
-        --max-instances=5 \
+        --cpu=$GCP_RUN_CPU \
+        --memory=$GCP_RUN_MEMORY \
+        --min-instances=$GCP_RUN_MIN_INSTANCES \
+        --max-instances=$GCP_RUN_MAX_INSTANCES \
         --quiet
 }
 
