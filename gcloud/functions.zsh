@@ -58,7 +58,7 @@ function gcloud_config_load_and_validate() {
 # - Lowercases everything
 # - Keeps only a-z, 0-9, _ and -
 # -----------------------------------------------------------------------------
-function gcloud_slugify_project_name() {
+function _gcloud_slugify_project_name() {
     echo "$GCP_PROJECT_NAME" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_-]//g'
 }
 
@@ -125,8 +125,8 @@ function gcloud_project_django_setup {
     fi
 
     # Step 9: Create Cloud Scheduler jobs case exists
-    if ! gcloud_schedular_job_create --quiet; then
-        echo "❌ Error creating Cloud Scheduler job."
+    if ! gcloud_scheduler_jobs_sync --quiet; then
+        echo "❌ Error syncing Cloud Scheduler job."
         return 1
     fi
 
@@ -145,7 +145,7 @@ function gcloud_project_django_teardown {
     gcloud-login-adc || return 1
 
     # Step 1: Delete Cloud Scheduler job
-    gcloud_schedular_job_delete --quiet
+    gcloud_scheduler_jobs_delete --quiet
 
     # Step 2: Delete Cloud Load Balancer
     gcloud_compute_engine_cloud_load_balancer_teardown --quiet || echo "❌ Error deleting the Cloud Load Balancer."
@@ -198,6 +198,12 @@ function gcloud_project_django_update {
     # Step 4: Update Cloud Storage buckets
     if ! gcloud_storage_buckets_sync_static --quiet; then
         echo "❌ Error updating Cloud Storage buckets."
+        return 1
+    fi
+
+    # Step 5: Sync Cloud Scheduler jobs
+    if ! gcloud_scheduler_jobs_sync --quiet; then
+        echo "❌ Error syncing Cloud Scheduler jobs."
         return 1
     fi
 }
