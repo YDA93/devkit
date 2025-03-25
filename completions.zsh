@@ -1,43 +1,67 @@
-# Current Directory
-source '/Users/yousefalmutairi/macOS/external_completions.zsh'
+# ─────────────────────────────────────────────
+# 🌍 Base Environment
+# ─────────────────────────────────────────────
+source "$HOME/macOS/external_completions.zsh" # CLI completions
+source "$HOME/macOS/exports.zsh"              # Environment variables
+source "$HOME/macOS/replacements.zsh"         # Command overrides
 
-# Exports
-source '/Users/yousefalmutairi/macOS/exports.zsh'
+# ─────────────────────────────────────────────
+# 🍏 macOS Essentials
+# ─────────────────────────────────────────────
+source "$HOME/macOS/aliases.zsh"
+source "$HOME/macOS/functions.zsh"
 
-# Replacements
-source '/Users/yousefalmutairi/macOS/replacements.zsh'
+# ─────────────────────────────────────────────
+# 🐘 Postgres
+# ─────────────────────────────────────────────
+source "$HOME/macOS/postgres/functions.zsh"
 
-# macOS
-source '/Users/yousefalmutairi/macOS/aliases.zsh'
-source '/Users/yousefalmutairi/macOS/functions.zsh'
+# ─────────────────────────────────────────────
+# 🐍 Python
+# ─────────────────────────────────────────────
+source "$HOME/macOS/python/aliases.zsh"
 
-# Postgres
-source '/Users/yousefalmutairi/macOS/postgres/functions.zsh'
+# ─────────────────────────────────────────────
+# 🌐 Django
+# ─────────────────────────────────────────────
+source "$HOME/macOS/django/aliases.zsh"
+source "$HOME/macOS/django/functions.zsh"
 
-# Python
-source '/Users/yousefalmutairi/macOS/python/aliases.zsh'
+# ─────────────────────────────────────────────
+# 🐦 Flutter
+# ─────────────────────────────────────────────
+source "$HOME/macOS/flutter/aliases.zsh"
+source "$HOME/macOS/flutter/functions.zsh"
 
-# Django
-source '/Users/yousefalmutairi/macOS/django/aliases.zsh'
-source '/Users/yousefalmutairi/macOS/django/functions.zsh'
+# ─────────────────────────────────────────────
+# 🐙 GitHub
+# ─────────────────────────────────────────────
+source "$HOME/macOS/github/functions.zsh"
 
-# Flutter
-source '/Users/yousefalmutairi/macOS/flutter/aliases.zsh'
-source '/Users/yousefalmutairi/macOS/flutter/functions.zsh'
+# ─────────────────────────────────────────────
+# 💻 Prompt Styling
+# ─────────────────────────────────────────────
+source "$HOME/macOS/prompts.zsh"
 
-# Github
-source '/Users/yousefalmutairi/macOS/github/functions.zsh'
+# ─────────────────────────────────────────────
+# ☁️ Google Cloud
+# ─────────────────────────────────────────────
+source "$HOME/macOS/gcloud/aliases.zsh"
+source "$HOME/macOS/gcloud/functions.zsh"
+source "$HOME/macOS/gcloud/functions_storage_buckets.zsh"
+source "$HOME/macOS/gcloud/functions_cloud_sql.zsh"
+source "$HOME/macOS/gcloud/functions_cloud_run.zsh"
+source "$HOME/macOS/gcloud/functions_secret_manager.zsh"
+source "$HOME/macOS/gcloud/functions_artifact_registry.zsh"
+source "$HOME/macOS/gcloud/functions_compute_engine.zsh"
+source "$HOME/macOS/gcloud/functions_cloud_scheduler.zsh"
 
-# Prompt
-source '/Users/yousefalmutairi/macOS/prompts.zsh'
+# ─────────────────────────────────────────────
+# 🧪 Dotenv Helpers
+# ─────────────────────────────────────────────
+source "$HOME/macOS/dotenv/functions.zsh"
 
-# Gcloud
-source '/Users/yousefalmutairi/macOS/gcloud/aliases.zsh'
-source '/Users/yousefalmutairi/macOS/gcloud/functions.zsh'
-source '/Users/yousefalmutairi/macOS/gcloud/functions_storage_buckets.zsh'
-source '/Users/yousefalmutairi/macOS/gcloud/functions_cloud_sql.zsh'
-source '/Users/yousefalmutairi/macOS/gcloud/functions_cloud_run.zsh'
-source '/Users/yousefalmutairi/macOS/gcloud/functions_secret_manager.zsh'
-source '/Users/yousefalmutairi/macOS/gcloud/functions_artifact_registry.zsh'
-source '/Users/yousefalmutairi/macOS/gcloud/functions_compute_engine.zsh'
-source '/Users/yousefalmutairi/macOS/gcloud/functions_cloud_scheduler.zsh'
+# ─────────────────────────────────────────────
+# 💻 Code Utilities
+# ─────────────────────────────────────────────
+source "$HOME/macOS/code/functions.zsh"

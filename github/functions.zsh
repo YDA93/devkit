@@ -1,3 +1,7 @@
+# 🚀 Commits all changes and pushes to remote
+# - Prompts for confirmation
+# - Uses default commit message if none is provided
+# - Example: github-commit-and-push "Refactored login logic"
 function github-commit-and-push() {
 
     confirm_or_abort "This action will commit all changes and push them to the remote repository. Continue?" "$@" || return 1
@@ -17,6 +21,10 @@ function github-commit-and-push() {
     git push
 }
 
+# 🔄 Clears Git cache and recommits all files
+# - Useful after .gitignore updates
+# - Prompts before resetting index
+# - Forcefully re-commits everything
 function github-clear-cache-and-recommit-all-files() {
 
     confirm_or_abort "This action will reset the Git cache and recommit all files. Continue?" "$@" || return 1
@@ -34,6 +42,9 @@ function github-clear-cache-and-recommit-all-files() {
     git push origin main
 }
 
+# ⏪ Reverts the last commit on GitHub (remote only)
+# - Local repo remains unchanged
+# - Force pushes to remove the last commit from remote
 function github-undo-last-commit() {
 
     confirm_or_abort "This action will revert the last commit on GitHub only. Continue?" "$@" || return 1

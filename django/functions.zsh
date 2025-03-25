@@ -1,6 +1,9 @@
 # ------------------------------------------------------------------------------
 # 🚀 Django Server Shortcuts
 # ------------------------------------------------------------------------------
+
+# 🚀 Runs Django dev server on 0.0.0.0 (default: port 8000)
+# 💡 Usage: django-run-server [port]
 function django-run-server() {
     if [ $# -eq 0 ]; then
         python manage.py runserver 0.0.0.0:8000
@@ -10,45 +13,25 @@ function django-run-server() {
     fi
 }
 
+# 🔐 Generates a new Django SECRET_KEY and sets it as an environment variable
+# 💡 Usage: django-secret-key-generate
 function django-secret-key-generate() {
     raw_key=$(python3 -c "
-import secrets
-import string
+    import secrets
+    import string
 
-safe_chars = string.ascii_letters + string.digits + '!@#%^&*(-_=+)'
-print(''.join(secrets.choice(safe_chars) for _ in range(50)))
-")
+    safe_chars = string.ascii_letters + string.digits + '!@#%^&*(-_=+)'
+    print(''.join(secrets.choice(safe_chars) for _ in range(50)))
+    ")
 
     environment_variable_set "DJANGO_SECRET_KEY" "$raw_key"
 }
 
-# 🔍 Description:
-#   Finds and prints all "cron/" URL patterns in Django apps defined in
-#   INTERNAL_APPS (inside project/settings/base.py). Output is prefixed
-#   with the app name and formatted as a full URL.
-#
-# 💡 Usage:
-#   django-find-cron-urls [project_root]
-#   - If no argument is passed, it defaults to the current directory.
-#   - You can also capture the output:
-#       crons=($(django-find-cron-urls))
-#
-# 🧠 How it works:
-#   - Parses INTERNAL_APPS list using sed/grep.
-#   - Loops through each app directory to find `urls.py`.
-#   - Reads the entire file into a single line to handle multi-line path().
-#   - Breaks paths again at `)` to isolate each call.
-#   - Uses grep to find `path("cron/...")` patterns.
-#   - Ignores commented-out lines automatically (because comments don't match).
-#   - Extracts the cron path using sed and prefixes it with the app name.
-#
-# 📦 Output:
-#   ✅ Found 2 cron path(s):
-#     ➤ https://$ADMIN_DOMAIN/app_name/cron/your-path/
-#
-#   🧾 Return value:
-#     A list of fully formatted cron URLs.
-# -----------------------------------------------------------------------------
+# 🔍 Finds all cron URL patterns in internal Django apps
+# - Looks for path("cron/...") inside each app's urls.py
+# - Uses INTERNAL_APPS from settings
+# - Returns full URLs like: https://your-domain.com/store/cron/...
+# 💡 Usage: django-find-cron-urls [project_root]
 function django-find-cron-urls() {
     local project_root=${1:-.}
     local settings_file="$project_root/project/settings/base.py"
@@ -102,6 +85,8 @@ function django-find-cron-urls() {
 # 🌍 Django Translations Shortcuts
 # ------------------------------------------------------------------------------
 
+# 🌐 Creates `.po` files for Arabic translations in all apps with a `locale` directory
+# 💡 Usage: django-translations-make
 function django-translations-make() {
     echo -e $(django-admin makemessages -l ar --ignore="venv/*" --ignore="static/*")" in main directory"
     # Loop through directories
@@ -118,6 +103,8 @@ function django-translations-make() {
     done
 }
 
+# 🛠️ Compiles `.po` translation files into `.mo` for all apps with a `locale` directory
+# 💡 Usage: django-translations-compile
 function django-translations-compile() {
     # Loop through directories
     for d in */; do
@@ -137,11 +124,15 @@ function django-translations-compile() {
 # 🧱 Django Project Management Shortcuts
 # ------------------------------------------------------------------------------
 
+# 🚀 Starts a new Django project
+# 💡 Usage: django-project-start <project_name>
 function django-project-start() {
     site_name=$1 # First Aurgment
     django-admin startproject $site_name
 }
 
+# 📦 Starts a new Django app inside the current project
+# 💡 Usage: django-app-start <app_name>
 function django-app-start() {
     app_name=$1 # First Aurgment
     python manage.py startapp $app_name
@@ -150,6 +141,8 @@ function django-app-start() {
 # ------------------------------------------------------------------------------
 # 🗃️ Django Database Management Shortcuts
 # ------------------------------------------------------------------------------
+# 💾 Loads data from a Django fixture and resets DB sequences
+# 💡 Usage: django-loaddata <project_dir> [backup_file]
 function django-loaddata() {
     local project_directory=$1
     local backup_file=$2
@@ -182,6 +175,8 @@ function django-loaddata() {
     sleep 2
 }
 
+# 📤 Dumps all Django data to data.json (for backup or migration)
+# 💡 Usage: django-dumpdata <project_dir>
 function django-dumpdata() {
     local project_directory=$1
 
@@ -198,14 +193,20 @@ function django-dumpdata() {
     sleep 2
 }
 
+# 🛠️ Runs makemigrations (passes through args)
+# 💡 Usage: django-make-migrations [args]
 function django-make-migrations() {
     python manage.py makemigrations $@
 }
 
+# 🧱 Applies migrations (passes through args)
+# 💡 Usage: django-migrate [args]
 function django-migrate() {
     python manage.py migrate $@
 }
 
+# 🧼 Deletes all app migration files and __pycache__ folders (excluding venv)
+# 💡 Usage: django-delete-migrations-and-cache
 function django-delete-migrations-and-cache() {
     # Get the current directory
     project_directory="$PWD"
@@ -225,6 +226,9 @@ function django-delete-migrations-and-cache() {
     cd "$OLDPWD"
 }
 
+# 🔁 Rebuilds the Django project on a new DB
+# - Confirms backups, deletes migrations, resets DB, restores data, etc.
+# 💡 Usage: django-migrate-to-new-database
 function django-migrate-to-new-database() {
     # Stop executing the script on any error
     set -e
@@ -329,6 +333,9 @@ function django-migrate-to-new-database() {
 # 🧪 Django Test Shortcuts
 # ------------------------------------------------------------------------------
 
+# 🧪 Runs pytest with coverage using the test settings
+# - Accepts optional test path (e.g., app/tests/test_views.py::TestView::test_get)
+# 💡 Usage: django-run-pytest [path/to/test.py::TestClass::test_method]
 function django-run-pytest() {
     django-settings-test
 
@@ -344,6 +351,9 @@ function django-run-pytest() {
     coverage report
 }
 
+# 🧪 Runs Django tests using manage.py and test settings
+# - Accepts optional test path in pytest-like format
+# 💡 Usage: django-run-test [path/to/test.py::TestClass::test_method]
 function django-run-test() {
     django-settings-test
 

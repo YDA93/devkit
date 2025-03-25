@@ -1,3 +1,7 @@
+# 🗑️ Deletes a PostgreSQL database after confirmation
+# - Lists available databases
+# - Prompts for database name and password
+# - Confirms before dropping
 function postgres_database_delete() {
     echo -n "Enter the PostgreSQL password: "
     read -s pg_password
@@ -45,6 +49,9 @@ function postgres_database_delete() {
     unset PGPASSWORD
 }
 
+# 📋 Lists all PostgreSQL databases
+# - Prompts for password
+# - Displays database names and total count
 function postgres_database_list() {
     echo -n "Enter the PostgreSQL password: "
     read -s pg_password
@@ -64,6 +71,8 @@ function postgres_database_list() {
     unset PGPASSWORD
 }
 
+# 🆕 Creates a new PostgreSQL database
+# - Prompts for password and new database name
 function postgres_database_create() {
     # Prompt for the PostgreSQL password and store in an environment variable
     echo -n "Enter the PostgreSQL password: "
@@ -82,6 +91,8 @@ function postgres_database_create() {
     unset PGPASSWORD
 }
 
+# 🔐 Checks if the current PGPASSWORD can connect
+# - Returns error if password is wrong
 function postgres_check_password() {
     # Attempt to connect to PostgreSQL using the set PGPASSWORD
     if ! (psql -U postgres -h localhost -c "\q" 2>/dev/null || true); then
@@ -91,6 +102,10 @@ function postgres_check_password() {
     fi
 }
 
+# 🔁 Manages creation of a PostgreSQL database
+# - Lists current databases
+# - If DB exists, prompts to drop it
+# - Then creates a new database with the same name
 function postgres_manage_database_creation() {
     # List available databases before deletion prompt
     databases=$(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | sed -e 's/ //g' -e '/^$/d')

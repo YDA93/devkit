@@ -1,5 +1,5 @@
-# A helper function to standardize the update process for various tools.
-
+# 📦 Runs a command with a clear start/success/failure message.
+# 💡 Usage: _log_update_step "Thing to update" <command>
 function _log_update_step() {
     local name="$1" # First argument: display name for logging
     shift           # Remaining arguments: command to execute
@@ -20,9 +20,8 @@ function _log_update_step() {
     echo "--------------------------------------------------"
 }
 
-# Updates system tools, SDKs, CLIs, and packages (Homebrew, Flutter, NPM, etc.)
-# with nice output formatting and modular execution.
-# ------------------------------------------------------------------------------
+# 🔄 Updates tools like Homebrew, gcloud, Flutter, NPM, etc.
+# Shows nice progress messages for each step.
 function update_software_and_packages() {
     # Run sudo upfront and clear terminal
     sudo -v && clear
@@ -71,77 +70,8 @@ function update_software_and_packages() {
     _log_update_step "macOS System Updates" softwareupdate -ia --verbose
 }
 
-# Checks if a specific environment variable exists and is non-empty in a .env file.
-#
-# Usage:
-#   environment_variable_exists [variable_name] [env_file]
-function environment_variable_exists() {
-    local var_name="$1"
-    local env_file="${2:-.env}"
-
-    # Check if file exists
-    if [[ ! -f "$env_file" ]]; then
-        echo "❌ Error: File not found – $env_file"
-        return 1
-    fi
-
-    # Check if the variable is present
-    if ! grep -q "^${var_name}=" "$env_file"; then
-        echo "❌ Error: $var_name is not defined in $env_file"
-        return 1
-    fi
-
-    # Check if the variable is not empty
-    if grep -q "^${var_name}=$" "$env_file"; then
-        echo "❌ Error: $var_name is defined but empty in $env_file"
-        return 1
-    fi
-
-    return 0
-}
-
-# Updates or adds a key-value pair in the .env file.
-#
-# Usage:
-#   environment_variable_set [key] [value]
-function environment_variable_set() {
-    local key="$1"
-    local value="$2"
-    local env_file=".env"
-
-    if [ -z "$key" ] || [ -z "$value" ]; then
-        echo "❌ Error: Key or value is missing!"
-        echo "Usage: environment_variable_set [key] [value]"
-        return 1
-    fi
-
-    # Ensure .env file exists
-    if [ ! -f "$env_file" ]; then
-        echo "❌ Error: .env file not found."
-        return 1
-    fi
-
-    echo "🔹 Setting $key=\"$value\" in $env_file..."
-
-    # Escape forward slashes and ampersands for sed replacement
-    local escaped_value
-    escaped_value=$(printf '%s\n' "$value" | sed -e 's/[\/&]/\\&/g')
-
-    if grep -q "^$key=" "$env_file"; then
-        # Key exists, update it (handles values with or without quotes)
-        sed -i '' -E "s|^$key=.*|$key=\"$escaped_value\"|" "$env_file"
-    else
-        # Key doesn't exist, append it
-        echo "$key=\"$value\"" >>"$env_file"
-    fi
-
-    echo "✅ $key successfully set."
-}
-
-# Function to prompt user for confirmation unless --quiet is provided
-#
-# Usage:
-#   confirm_or_abort [message] [--quiet]
+# 🛑 Asks the user to confirm before continuing (unless --quiet is passed).
+# 💡 Usage: confirm_or_abort "Are you sure?" [--quiet]
 function confirm_or_abort() {
     local message="$1"
     shift # Remove the first argument (message) from the list
@@ -178,40 +108,3 @@ function confirm_or_abort() {
         esac
     done
 }
-
-# Opens a project folder from ~/Desktop/dev using VS Code.
-# Supports auto-completion for available project names.
-# Usage:
-#   code_project [project_name]
-function code_project() {
-    local BASE_PATH="$HOME/Desktop/dev"
-    local PROJECT_NAME=$1 # Get the first argument as project name
-
-    # If no project is provided, list available projects
-    if [[ -z "$PROJECT_NAME" ]]; then
-        echo "📂 Available projects in $BASE_PATH:"
-        ls -1 "$BASE_PATH"
-        return 1
-    fi
-
-    # Define project path
-    local PROJECT_PATH="$BASE_PATH/$PROJECT_NAME"
-
-    # Check if the directory exists
-    if [[ -d "$PROJECT_PATH" ]]; then
-        echo "🚀 Opening project: $PROJECT_NAME"
-        code "$PROJECT_PATH"
-    else
-        echo "❌ Project not found: $PROJECT_PATH"
-        return 1
-    fi
-}
-
-# Auto-completion for code_project function
-function _code_project_completions() {
-    local BASE_PATH="$HOME/Desktop/dev"
-    COMPREPLY=($(compgen -W "$(ls -1 "$BASE_PATH")" -- "${COMP_WORDS[1]}"))
-}
-
-# Enable tab completion for code_project
-complete -F _code_project_completions code_project

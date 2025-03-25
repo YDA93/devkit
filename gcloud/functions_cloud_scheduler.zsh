@@ -88,6 +88,8 @@ function gcloud_scheduler_jobs_delete() {
 function gcloud_scheduler_jobs_sync() {
     gcloud_config_load_and_validate || return 1
 
+    echo "🔹 Syncing Cloud Scheduler with Django cron URLs..."
+
     echo "🔍 Fetching cron URLs from Django..."
     local local_urls=($(django-find-cron-urls | grep '^https://'))
     declare -A local_jobs
