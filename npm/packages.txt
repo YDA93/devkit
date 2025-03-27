@@ -1,0 +1,4 @@
+corepack
+firebase-tools
+npm-check
+npm

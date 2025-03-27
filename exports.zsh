@@ -15,16 +15,10 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 11)
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 
 # 🐦 Flutter SDK
-export PATH="$PATH:$HOME/flutter/bin"
+export PATH="$HOME/flutter/bin:$PATH"
 
 # 📦 Dart Pub (used by Flutter/Dart)
-export PATH="$PATH:$HOME/.pub-cache/bin"
+export PATH="$HOME/.pub-cache/bin:$PATH"
 
-# ─────────────────────────────────────────────
-# ⚙️  CCache Configuration
-# ─────────────────────────────────────────────
-export CCACHE_SLOPPINESS="clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros"
-export CCACHE_FILECLONE=true
-export CCACHE_DEPEND=true
-export CCACHE_INODECACHE=true
-export CCACHE_LOGFILE="$HOME/Desktop/dev/ccache.log"
+# 🐘 PostgreSQL 16
+export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"

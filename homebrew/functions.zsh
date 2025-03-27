@@ -57,4 +57,10 @@ function homebrew-prune-packages() {
 function homebrew-setup() {
     homebrew-prune-packages
     homebrew-install-packages
+    npm-setup
+}
+
+function homebrew-list-packages() {
+    echo "🍺 Installed Homebrew packages:"
+    brew list
 }

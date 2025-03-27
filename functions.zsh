@@ -114,63 +114,43 @@ function dev-status() {
     echo "🔧 Development Environment Status:"
     echo "────────────────────────────────────"
 
-    # Python
-    if command -v python3 &>/dev/null; then
-        echo "🐍 Python:      $(python3 --version)"
-    else
-        echo "🐍 Python:      Not installed"
-    fi
+    # Helper: check if command exists and print version
+    function print_version() {
+        local emoji="$1"
+        local name="$2"
+        local cmd="$3"
+        local version_cmd="$4"
 
-    # Pip
-    if command -v pip3 &>/dev/null; then
-        echo "📦 Pip:         $(pip3 --version | awk '{print $2}')"
-    else
-        echo "📦 Pip:         Not installed"
-    fi
+        # Pad label to 16 chars
+        local padded_label=$(printf "%-22s" "$name:")
 
-    # Node.js
-    if command -v node &>/dev/null; then
-        echo "🟢 Node.js:     $(node --version)"
-    else
-        echo "🟢 Node.js:     Not installed"
-    fi
+        if command -v "$cmd" &>/dev/null; then
+            local version=$(eval "$version_cmd")
+            echo "$emoji  $padded_label $version"
+        else
+            echo "$emoji  $padded_label Not installed"
+        fi
+    }
 
-    # NPM
-    if command -v npm &>/dev/null; then
-        echo "📦 NPM:         $(npm --version)"
-    else
-        echo "📦 NPM:         Not installed"
-    fi
-
-    # Java
-    if command -v java &>/dev/null; then
-        echo "☕ Java:        $(java -version 2>&1 | awk -F '"' '/version/ {print $2}')"
-    else
-        echo "☕ Java:        Not installed"
-    fi
-
-    # Flutter
-    if command -v flutter &>/dev/null; then
-        echo "💙 Flutter:     $(flutter --version | head -n 1)"
-    else
-        echo "💙 Flutter:     Not installed"
-    fi
-
-    # Dart
-    if command -v dart &>/dev/null; then
-        echo "🎯 Dart:        $(dart --version 2>&1)"
-    else
-        echo "🎯 Dart:        Not installed"
-    fi
-
-    # PostgreSQL
-    POSTGRES_VERSION=$(/opt/homebrew/opt/postgresql@16/bin/psql --version 2>/dev/null | awk '{print $3}')
-    echo "🐘 Postgres:    PostgreSQL $POSTGRES_VERSION (from @16)"
-
-    # Git
-    if command -v git &>/dev/null; then
-        echo "🔧 Git:         $(git --version)"
-    else
-        echo "🔧 Git:         Not installed"
-    fi
+    print_version "🐍" "Python" "python3" "python3 --version | awk '{print \$2}'"
+    print_version "📦" "Pip" "pip3" "pip3 --version | awk '{print \$2}'"
+    print_version "🟢" "Node.js" "node" "node --version | sed 's/v//'"
+    print_version "📦" "NPM" "npm" "npm --version"
+    print_version "☕" "Java" "java" "java -version 2>&1 | awk -F '\"' '/version/ {print \$2}'"
+    print_version "💙" "Flutter" "flutter" "flutter --version 2>/dev/null | head -n 1 | awk '{print \$2}'"
+    print_version "🎯" "Dart" "dart" "dart --version 2>&1 | awk '{print \$4}'"
+    print_version "🐘" "PostgreSQL" "psql" "psql --version | awk '{print \$3}'"
+    print_version "🛠 " "Git" "git" "git --version | awk '{print \$3}'"
+    print_version "💎" "Ruby" "ruby" "ruby --version | awk '{print \$2}'"
+    print_version "📦" "Gems" "gem" "gem --version"
+    print_version "🍎" "CocoaPods" "pod" "pod --version"
+    print_version "☁️ " "Google Cloud CLI" "gcloud" "gcloud --version | grep 'Google Cloud SDK' | awk '{print \$4}'"
+    print_version "🔥" "Firebase CLI" "firebase" "firebase --version"
+    print_version "♻️ " "ccache" "ccache" "ccache --version | head -n 1 | awk '{print \$3}'"
+    print_version "🧪" "Expect" "expect" "expect -v | awk '{print \$3}'"
+    print_version "🧱" "Gradle" "gradle" "gradle --version | awk '/Gradle / {print \$2}'"
+    print_version "🛍 " "MAS" "mas" "mas version"
+    print_version "🖨 " "WeasyPrint" "weasyprint" "weasyprint --version | awk '{print \$3}'"
+    print_version "💻" "Zsh" "zsh" "zsh --version | awk '{print \$2}'"
+    echo "────────────────────────────────────"
 }
