@@ -1,7 +1,7 @@
 # 📦 Saves a list of top-level global npm packages (excluding dependencies)
-# 📄 Output: ~/macOS/npm/packages.txt
+# 📄 Output: ~/devkit/npm/packages.txt
 function npm-save-packages() {
-    local output="$HOME/macOS/npm/packages.txt"
+    local output="$HOME/devkit/npm/packages.txt"
     echo "📦 Saving global npm packages to $output"
     mkdir -p "$(dirname "$output")"
 
@@ -14,9 +14,9 @@ function npm-save-packages() {
 }
 
 # 📦 Installs global npm packages from saved list
-# 📄 Input: ~/macOS/npm/packages.txt
+# 📄 Input: ~/devkit/npm/packages.txt
 function npm-install-packages() {
-    local input="$HOME/macOS/npm/packages.txt"
+    local input="$HOME/devkit/npm/packages.txt"
 
     if [[ ! -f "$input" ]]; then
         echo "❌ Package list not found at $input"
@@ -30,7 +30,7 @@ function npm-install-packages() {
 
 # 🔥 Uninstalls global npm packages not in packages.txt (with confirmation)
 function npm-prune-packages() {
-    local file="$HOME/macOS/npm/packages.txt"
+    local file="$HOME/devkit/npm/packages.txt"
 
     if [[ ! -f "$file" ]]; then
         echo "❌ Package list not found at $file"

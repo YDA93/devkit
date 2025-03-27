@@ -66,8 +66,8 @@ function update_software_and_packages() {
         mas upgrade
     '
 
-    # --- macOS Software Updates ---
-    _log_update_step "macOS System Updates" softwareupdate -ia --verbose
+    # --- devkit Software Updates ---
+    _log_update_step "devkit System Updates" softwareupdate -ia --verbose
 }
 
 # 🛑 Asks the user to confirm before continuing (unless --quiet is passed).

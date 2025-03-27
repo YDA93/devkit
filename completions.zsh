@@ -1,80 +1,80 @@
 # ─────────────────────────────────────────────
 # 🌍 Base Environment
 # ─────────────────────────────────────────────
-source "$HOME/macOS/exports.zsh"
+source "$HOME/devkit/exports.zsh"
 
 # ─────────────────────────────────────────────
-# 🍏 macOS Essentials
+# 🍏 devkit Essentials
 # ─────────────────────────────────────────────
-source "$HOME/macOS/aliases.zsh"
-source "$HOME/macOS/functions.zsh"
+source "$HOME/devkit/aliases.zsh"
+source "$HOME/devkit/functions.zsh"
 
 # ─────────────────────────────────────────────
 # 🐘 Postgres
 # ─────────────────────────────────────────────
-source "$HOME/macOS/postgres/functions.zsh"
+source "$HOME/devkit/postgres/functions.zsh"
 
 # ─────────────────────────────────────────────
 # 🐍 Python
 # ─────────────────────────────────────────────
-source "$HOME/macOS/python/aliases.zsh"
+source "$HOME/devkit/python/aliases.zsh"
 
 # ─────────────────────────────────────────────
 # 🌐 Django
 # ─────────────────────────────────────────────
-source "$HOME/macOS/django/aliases.zsh"
-source "$HOME/macOS/django/functions.zsh"
+source "$HOME/devkit/django/aliases.zsh"
+source "$HOME/devkit/django/functions.zsh"
 
 # ─────────────────────────────────────────────
 # 🐦 Flutter
 # ─────────────────────────────────────────────
-source "$HOME/macOS/flutter/aliases.zsh"
-source "$HOME/macOS/flutter/functions.zsh"
+source "$HOME/devkit/flutter/aliases.zsh"
+source "$HOME/devkit/flutter/functions.zsh"
 
 # ─────────────────────────────────────────────
 # 🐙 GitHub
 # ─────────────────────────────────────────────
-source "$HOME/macOS/github/functions.zsh"
+source "$HOME/devkit/github/functions.zsh"
 
 # ─────────────────────────────────────────────
 # 💻 Prompt Styling
 # ─────────────────────────────────────────────
-source "$HOME/macOS/prompts.zsh"
+source "$HOME/devkit/prompts.zsh"
 
 # ─────────────────────────────────────────────
 # ☁️ Google Cloud
 # ─────────────────────────────────────────────
-source "$HOME/macOS/gcloud/aliases.zsh"
-source "$HOME/macOS/gcloud/functions.zsh"
-source "$HOME/macOS/gcloud/functions_storage_buckets.zsh"
-source "$HOME/macOS/gcloud/functions_cloud_sql.zsh"
-source "$HOME/macOS/gcloud/functions_cloud_run.zsh"
-source "$HOME/macOS/gcloud/functions_secret_manager.zsh"
-source "$HOME/macOS/gcloud/functions_artifact_registry.zsh"
-source "$HOME/macOS/gcloud/functions_compute_engine.zsh"
-source "$HOME/macOS/gcloud/functions_cloud_scheduler.zsh"
+source "$HOME/devkit/gcloud/aliases.zsh"
+source "$HOME/devkit/gcloud/functions.zsh"
+source "$HOME/devkit/gcloud/functions_storage_buckets.zsh"
+source "$HOME/devkit/gcloud/functions_cloud_sql.zsh"
+source "$HOME/devkit/gcloud/functions_cloud_run.zsh"
+source "$HOME/devkit/gcloud/functions_secret_manager.zsh"
+source "$HOME/devkit/gcloud/functions_artifact_registry.zsh"
+source "$HOME/devkit/gcloud/functions_compute_engine.zsh"
+source "$HOME/devkit/gcloud/functions_cloud_scheduler.zsh"
 
 # ─────────────────────────────────────────────
 # 🧪 Dotenv Helpers
 # ─────────────────────────────────────────────
-source "$HOME/macOS/dotenv/functions.zsh"
+source "$HOME/devkit/dotenv/functions.zsh"
 
 # ─────────────────────────────────────────────
 # 💻 Code Utilities
 # ─────────────────────────────────────────────
-source "$HOME/macOS/code/functions.zsh"
+source "$HOME/devkit/code/functions.zsh"
 
 # ─────────────────────────────────────────────
 # 🍺 Homebrew
 # ─────────────────────────────────────────────
-source "$HOME/macOS/homebrew/functions.zsh"
+source "$HOME/devkit/homebrew/functions.zsh"
 
 # ─────────────────────────────────────────────
 # 📦 NPM
 # ─────────────────────────────────────────────
-source "$HOME/macOS/npm/functions.zsh"
+source "$HOME/devkit/npm/functions.zsh"
 
 # ─────────────────────────────────────────────
 # 📦 Ccache
 # ─────────────────────────────────────────────
-source "$HOME/macOS/ccache/exports.zsh"
+source "$HOME/devkit/ccache/exports.zsh"
