@@ -1,0 +1,12 @@
+ccache
+cocoapods
+expect
+git
+gradle
+mas
+node
+postgresql@16
+python@3.10
+python@3.11
+weasyprint
+zsh

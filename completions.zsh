@@ -65,3 +65,8 @@ source "$HOME/macOS/dotenv/functions.zsh"
 # 💻 Code Utilities
 # ─────────────────────────────────────────────
 source "$HOME/macOS/code/functions.zsh"
+
+# ─────────────────────────────────────────────
+# 🍺 Homebrew
+# ─────────────────────────────────────────────
+source "$HOME/macOS/homebrew/functions.zsh"

@@ -108,3 +108,69 @@ function confirm_or_abort() {
         esac
     done
 }
+
+# 📦 Show versions of commonly used dev tools
+function dev-status() {
+    echo "🔧 Development Environment Status:"
+    echo "────────────────────────────────────"
+
+    # Python
+    if command -v python3 &>/dev/null; then
+        echo "🐍 Python:      $(python3 --version)"
+    else
+        echo "🐍 Python:      Not installed"
+    fi
+
+    # Pip
+    if command -v pip3 &>/dev/null; then
+        echo "📦 Pip:         $(pip3 --version | awk '{print $2}')"
+    else
+        echo "📦 Pip:         Not installed"
+    fi
+
+    # Node.js
+    if command -v node &>/dev/null; then
+        echo "🟢 Node.js:     $(node --version)"
+    else
+        echo "🟢 Node.js:     Not installed"
+    fi
+
+    # NPM
+    if command -v npm &>/dev/null; then
+        echo "📦 NPM:         $(npm --version)"
+    else
+        echo "📦 NPM:         Not installed"
+    fi
+
+    # Java
+    if command -v java &>/dev/null; then
+        echo "☕ Java:        $(java -version 2>&1 | awk -F '"' '/version/ {print $2}')"
+    else
+        echo "☕ Java:        Not installed"
+    fi
+
+    # Flutter
+    if command -v flutter &>/dev/null; then
+        echo "💙 Flutter:     $(flutter --version | head -n 1)"
+    else
+        echo "💙 Flutter:     Not installed"
+    fi
+
+    # Dart
+    if command -v dart &>/dev/null; then
+        echo "🎯 Dart:        $(dart --version 2>&1)"
+    else
+        echo "🎯 Dart:        Not installed"
+    fi
+
+    # PostgreSQL
+    POSTGRES_VERSION=$(/opt/homebrew/opt/postgresql@16/bin/psql --version 2>/dev/null | awk '{print $3}')
+    echo "🐘 Postgres:    PostgreSQL $POSTGRES_VERSION (from @16)"
+
+    # Git
+    if command -v git &>/dev/null; then
+        echo "🔧 Git:         $(git --version)"
+    else
+        echo "🔧 Git:         Not installed"
+    fi
+}
