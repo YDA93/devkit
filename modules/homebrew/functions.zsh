@@ -1,3 +1,24 @@
+function homebrew-install() {
+    # Check if Homebrew is installed
+    if ! command -v brew &>/dev/null; then
+        echo "Homebrew not found. Installing..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+            echo "Homebrew installation failed."
+            return 1
+        }
+    else
+        echo "Homebrew is already installed."
+    fi
+
+    # Verify Homebrew is working
+    if ! brew --version &>/dev/null; then
+        echo "Homebrew seems to be installed but not working properly."
+        return 1
+    fi
+
+    echo "✅ Homebrew is installed and working."
+}
+
 # 💾 Saves a list of top-level Homebrew packages (formulae + casks)
 # 📄 Output: $DEVKIT_MODULES_PATH/homebrew/packages.txt
 function homebrew-save-packages() {
@@ -107,6 +128,7 @@ function homebrew-prune-packages() {
 #    - Installs listed formulae and casks
 #    - Runs npm-setup as part of the environment bootstrapping
 function homebrew-setup() {
+    homebrew-install
     homebrew-prune-packages
     homebrew-install-packages
     npm-setup

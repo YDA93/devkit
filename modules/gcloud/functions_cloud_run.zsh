@@ -1,19 +1,3 @@
-function docker_daemon_start() {
-    echo "⏳ Starting Docker Daemon..."
-
-    # Start Docker Daemon silently
-    nohup open -a Docker --args --unattended &>/dev/null &
-    disown
-
-    # Wait for Docker daemon to become available
-    while ! docker info &>/dev/null; do
-        echo "⏳ Waiting for Docker to start..."
-        sleep 5
-    done
-
-    echo "✅ Docker is now running!"
-}
-
 # Function to build image
 # This function builds a Docker image, tags it, pushes it to Artifact Registry, and configures
 # Cloud Build permissions before initiating the build process.

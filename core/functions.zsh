@@ -62,27 +62,11 @@ function _confirm_or_abort() {
 function devkit-pc-setup() {
     _confirm_or_abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
 
-    # Check if Homebrew is installed
-    if ! command -v brew &>/dev/null; then
-        echo "Homebrew not found. Installing..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-            echo "Homebrew installation failed."
-            return 1
-        }
-    else
-        echo "Homebrew is already installed."
-    fi
-
-    # Verify Homebrew is working
-    if ! brew --version &>/dev/null; then
-        echo "Homebrew seems to be installed but not working properly."
-        return 1
-    fi
-
-    echo "Homebrew is installed and working."
-
-    # Now run homebrew-setup
+    # Install Homebrew and packages
     homebrew-setup
+
+    # Install Xcode and Command Line Tools
+    xcode_setup
 }
 
 # 🔄 Updates tools like Homebrew, gcloud, Flutter, NPM, etc.
@@ -165,6 +149,7 @@ function devkit-doctor() {
     print_version "📦" "Gems" "gem" "gem --version"
     print_version "🍎" "CocoaPods" "pod" "pod --version"
     print_version "☁️ " "Google Cloud CLI" "gcloud" "gcloud --version | grep 'Google Cloud SDK' | awk '{print \$4}'"
+    print_version "🐳" "Docker" "docker" "docker --version | awk '{gsub(/,/,\"\"); print \$3}'"
     print_version "🔥" "Firebase CLI" "firebase" "firebase --version"
     print_version "♻️ " "ccache" "ccache" "ccache --version | head -n 1 | awk '{print \$3}'"
     print_version "🧪" "Expect" "expect" "expect -v | awk '{print \$3}'"
@@ -172,5 +157,6 @@ function devkit-doctor() {
     print_version "🛍 " "MAS" "mas" "mas version"
     print_version "🖨 " "WeasyPrint" "weasyprint" "weasyprint --version | awk '{print \$3}'"
     print_version "💻" "Zsh" "zsh" "zsh --version | awk '{print \$2}'"
+
     echo "────────────────────────────────────"
 }

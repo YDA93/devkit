@@ -14,5 +14,26 @@ zsh
 
 # Casks
 android-platform-tools
+android-studio
+chatgpt
+cloudflare-warp
+discord
+docker
+firefox
+flutter
+google-chrome
 google-cloud-sdk
+microsoft-edge
+microsoft-excel
+microsoft-outlook
+microsoft-powerpoint
+microsoft-teams
+microsoft-word
 ngrok
+onedrive
+pgadmin4
+postman
+skype
+visual-studio-code
+whatsapp
+zoom
