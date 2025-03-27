@@ -3,14 +3,18 @@
 # Load config
 source "$HOME/devkit/config.zsh"
 
-# Load core
-core_files=(aliases.zsh exports.zsh functions.zsh)
-for file in "${core_files[@]}"; do
-    source "$DEVKIT_ROOT/core/$file"
-done
+# Load core files dynamically
+core_files=(${DEVKIT_ROOT}/core/*.zsh)
 
-# Load modules
-# ❗ NO quotes here ⬇
+if ((${#core_files[@]} == 0)); then
+    echo "⚠️  No core files found to load."
+else
+    for file in "${core_files[@]}"; do
+        source "$file"
+    done
+fi
+
+# Load module files recursively
 module_files=(${DEVKIT_MODULES_PATH}/**/*.zsh)
 
 if ((${#module_files[@]} == 0)); then
@@ -21,6 +25,7 @@ else
     done
 fi
 
+# Show message only if sourced directly in terminal
 if [[ $ZSH_EVAL_CONTEXT == toplevel:* ]] && [[ -t 1 ]]; then
     echo "✅ DevKit fully loaded!"
 fi

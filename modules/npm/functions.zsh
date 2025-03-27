@@ -44,7 +44,7 @@ function npm-prune-packages() {
 
     for pkg in "${current_pkgs[@]}"; do
         if ! printf '%s\n' "${saved_pkgs[@]}" | grep -qx "$pkg"; then
-            if confirm_or_abort "Uninstall \"$pkg\"? It is not listed in packages.txt." "$@"; then
+            if _confirm_or_abort "Uninstall \"$pkg\"? It is not listed in packages.txt." "$@"; then
                 echo "❌ Uninstalling: $pkg"
                 npm uninstall -g "$pkg"
             else

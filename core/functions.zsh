@@ -20,9 +20,74 @@ function _log_update_step() {
     echo "--------------------------------------------------"
 }
 
+# 🛑 Asks the user to confirm before continuing (unless --quiet is passed).
+# 💡 Usage: _confirm_or_abort "Are you sure?" [--quiet]
+function _confirm_or_abort() {
+    local message="$1"
+    shift # Remove the first argument (message) from the list
+
+    # Check if --quiet flag is present
+    for arg in "$@"; do
+        if [[ "$arg" == "--quiet" ]]; then
+            return 0
+        fi
+    done
+
+    local CONFIRM=""
+    while true; do
+        # Properly print message first, then prompt on next line
+        printf "%s\n(yes/no): " "$message"
+
+        if [[ -n "$BASH_VERSION" ]]; then
+            read CONFIRM
+        else
+            read "? " CONFIRM
+        fi
+
+        case "$CONFIRM" in
+        yes)
+            return 0
+            ;;
+        no)
+            echo "Aborting action."
+            return 1
+            ;;
+        *)
+            echo "❌ Please type 'yes' or 'no'."
+            ;;
+        esac
+    done
+}
+
+function devkit-pc-setup() {
+    _confirm_or_abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
+
+    # Check if Homebrew is installed
+    if ! command -v brew &>/dev/null; then
+        echo "Homebrew not found. Installing..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+            echo "Homebrew installation failed."
+            return 1
+        }
+    else
+        echo "Homebrew is already installed."
+    fi
+
+    # Verify Homebrew is working
+    if ! brew --version &>/dev/null; then
+        echo "Homebrew seems to be installed but not working properly."
+        return 1
+    fi
+
+    echo "Homebrew is installed and working."
+
+    # Now run homebrew-setup
+    homebrew-setup
+}
+
 # 🔄 Updates tools like Homebrew, gcloud, Flutter, NPM, etc.
 # Shows nice progress messages for each step.
-function update_software_and_packages() {
+function devkit-pc-update() {
     # Run sudo upfront and clear terminal
     sudo -v && clear
 
@@ -70,47 +135,8 @@ function update_software_and_packages() {
     _log_update_step "devkit System Updates" softwareupdate -ia --verbose
 }
 
-# 🛑 Asks the user to confirm before continuing (unless --quiet is passed).
-# 💡 Usage: confirm_or_abort "Are you sure?" [--quiet]
-function confirm_or_abort() {
-    local message="$1"
-    shift # Remove the first argument (message) from the list
-
-    # Check if --quiet flag is present
-    for arg in "$@"; do
-        if [[ "$arg" == "--quiet" ]]; then
-            return 0
-        fi
-    done
-
-    local CONFIRM=""
-    while true; do
-        # Properly print message first, then prompt on next line
-        printf "%s\n(yes/no): " "$message"
-
-        if [[ -n "$BASH_VERSION" ]]; then
-            read CONFIRM
-        else
-            read "? " CONFIRM
-        fi
-
-        case "$CONFIRM" in
-        yes)
-            return 0
-            ;;
-        no)
-            echo "Aborting action."
-            return 1
-            ;;
-        *)
-            echo "❌ Please type 'yes' or 'no'."
-            ;;
-        esac
-    done
-}
-
 # 📦 Show versions of commonly used dev tools
-function devkit-status() {
+function devkit-doctor() {
     echo "🔧 Development Environment Status:"
     echo "────────────────────────────────────"
 

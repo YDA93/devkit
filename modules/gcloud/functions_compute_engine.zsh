@@ -3,7 +3,7 @@
 function gcloud_compute_engine_ipv4_create {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to create a new static IPv4 address?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to create a new static IPv4 address?" "$@" || return 1
 
     echo "🔹 Creating a global static IPv4 address for the Load Balancer..."
 
@@ -20,7 +20,7 @@ function gcloud_compute_engine_ipv4_create {
 function gcloud_compute_engine_ipv4_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to delete the static IPv4 address?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to delete the static IPv4 address?" "$@" || return 1
 
     echo "🔹 Deleting the static IPv4 address..."
 
@@ -32,7 +32,7 @@ function gcloud_compute_engine_ipv4_delete() {
 function gcloud_compute_engine_ssl_certificate_create() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to create a new SSL certificate?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to create a new SSL certificate?" "$@" || return 1
 
     echo "🔹 Creating Google-managed SSL certificate..."
 
@@ -48,7 +48,7 @@ function gcloud_compute_engine_ssl_certificate_create() {
 function gcloud_compute_engine_ssl_certificate_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to delete the SSL certificate?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to delete the SSL certificate?" "$@" || return 1
 
     echo "🔹 Deleting the SSL certificate..."
 
@@ -61,7 +61,7 @@ function gcloud_compute_engine_ssl_certificate_delete() {
 function gcloud_compute_engine_network_endpoint_group_create() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to create a new Network Endpoint Group?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to create a new Network Endpoint Group?" "$@" || return 1
 
     echo "🔹 Creating Network Endpoint Group (NEG) for Cloud Run..."
 
@@ -78,7 +78,7 @@ function gcloud_compute_engine_network_endpoint_group_create() {
 function gcloud_compute_engine_network_endpoint_group_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to delete the Network Endpoint Group?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to delete the Network Endpoint Group?" "$@" || return 1
 
     echo "🔹 Deleting Network Endpoint Group (NEG)..."
 
@@ -91,7 +91,7 @@ function gcloud_compute_engine_network_endpoint_group_delete() {
 function gcloud_compute_engine_backend_service_create() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to create a new backend service and attach the Network Endpoint Group (NEG)?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to create a new backend service and attach the Network Endpoint Group (NEG)?" "$@" || return 1
 
     echo "🔹 Creating backend service and attaching Network Endpoint Group (NEG) to it..."
 
@@ -112,7 +112,7 @@ function gcloud_compute_engine_backend_service_create() {
 function gcloud_compute_engine_backend_service_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to remove the Network Endpoint Group (NEG) from the backend service and delete the backend service?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to remove the Network Endpoint Group (NEG) from the backend service and delete the backend service?" "$@" || return 1
 
     echo "🔹 Removing the Network Endpoint Group (NEG) from the backend service and deleting the backend service..."
 
@@ -129,7 +129,7 @@ function gcloud_compute_engine_backend_service_delete() {
 function gcloud_compute_engine_url_map_create() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to create a new URL map?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to create a new URL map?" "$@" || return 1
 
     echo "🔹 Creating URL map..."
 
@@ -146,7 +146,7 @@ function gcloud_compute_engine_url_map_create() {
 function gcloud_compute_engine_url_map_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to delete the URL map?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to delete the URL map?" "$@" || return 1
 
     echo "🔹 Deleting URL map..."
 
@@ -158,7 +158,7 @@ function gcloud_compute_engine_url_map_delete() {
 function gcloud_compute_engine_target_https_proxy_and_attach_ssl_certificate() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to create a new HTTPS target proxy and attach the SSL certificate?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to create a new HTTPS target proxy and attach the SSL certificate?" "$@" || return 1
 
     echo "🔹 Creating HTTPS target proxy and attaching SSL certificate..."
 
@@ -181,7 +181,7 @@ function gcloud_compute_engine_target_https_proxy_and_attach_ssl_certificate() {
 function gcloud_compute_engine_target_https_proxy_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to delete the Target HTTPS Proxy?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to delete the Target HTTPS Proxy?" "$@" || return 1
 
     echo "🔹 Deleting the Target HTTPS Proxy..."
 
@@ -198,7 +198,7 @@ function gcloud_compute_engine_target_https_proxy_delete() {
 function gcloud_compute_engine_global_forwarding_rule_create() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to create a new Global Forwarding Rule?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to create a new Global Forwarding Rule?" "$@" || return 1
 
     echo "🔹 Creating global forwarding rule..."
 
@@ -229,7 +229,7 @@ function gcloud_compute_engine_global_forwarding_rule_create() {
 function gcloud_compute_engine_global_forwarding_rule_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to delete the Global Forwarding Rule?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to delete the Global Forwarding Rule?" "$@" || return 1
 
     echo "🔹 Deleting global forwarding rule..."
 
@@ -248,7 +248,7 @@ function gcloud_compute_engine_cloud_load_balancer_setup() {
     # Validate Google Cloud configuration before proceeding
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to set up the Cloud Load Balancer?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to set up the Cloud Load Balancer?" "$@" || return 1
 
     echo "⚙️ Starting to set up the Cloud Load Balancer..."
 
@@ -261,7 +261,7 @@ function gcloud_compute_engine_cloud_load_balancer_setup() {
     fi
 
     # Step 2: Ask user to point the subdomain to the static IP before proceeding
-    confirm_or_abort "Please confirm that you have pointed your domain to the Load Balancer's IP Address." "$@" || return 1
+    _confirm_or_abort "Please confirm that you have pointed your domain to the Load Balancer's IP Address." "$@" || return 1
 
     # Step 3: Create a Google-managed SSL certificate
     if ! gcloud_compute_engine_ssl_certificate_create --quiet; then
@@ -309,7 +309,7 @@ function gcloud_compute_engine_cloud_load_balancer_teardown() {
     # Validate Google Cloud configuration before proceeding
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to teardown the Cloud Load Balancer?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to teardown the Cloud Load Balancer?" "$@" || return 1
 
     echo "⚙️ Starting to teardown the Cloud Load Balancer..."
 

@@ -1,3 +1,4 @@
+# Formulae
 ccache
 cocoapods
 expect
@@ -10,3 +11,8 @@ python@3.10
 python@3.11
 weasyprint
 zsh
+
+# Casks
+android-platform-tools
+google-cloud-sdk
+ngrok

@@ -4,8 +4,16 @@ function homebrew-save-packages() {
     local output="$DEVKIT_MODULES_PATH/homebrew/packages.txt"
 
     echo "🍺 Saving installed packages to $output"
-    mkdir -p "$(dirname "$output")" # Ensure directory exists
-    brew leaves >"$output"
+    mkdir -p "$(dirname "$output")"
+
+    {
+        echo "# Formulae"
+        brew leaves
+        echo
+        echo "# Casks"
+        brew list --cask
+    } >"$output"
+
     echo "✅ Saved installed packages to $output"
 }
 
@@ -20,7 +28,19 @@ function homebrew-install-packages() {
     fi
 
     echo "🍺 Installing packages from $input"
-    xargs brew install <"$input"
+
+    local section=""
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        [[ "$line" =~ ^# ]] && section="$line" && continue
+        [[ -z "$line" ]] && continue
+
+        if [[ "$section" == "# Formulae" ]]; then
+            brew install "$line"
+        elif [[ "$section" == "# Casks" ]]; then
+            brew install --cask "$line"
+        fi
+    done <"$input"
+
     echo "✅ Installed packages from $input"
 }
 
@@ -35,18 +55,44 @@ function homebrew-prune-packages() {
 
     echo "🧹 Checking for packages to uninstall..."
 
-    # Current top-level packages
-    local current_leaves=($(brew leaves))
-    # Desired packages from file
-    local desired_packages=($(cat "$file"))
+    local current_formulae=($(brew leaves))
+    local current_casks=($(brew list --cask))
 
-    for pkg in "${current_leaves[@]}"; do
-        if ! printf '%s\n' "${desired_packages[@]}" | grep -qx "$pkg"; then
-            if confirm_or_abort "Uninstall \"$pkg\"? It is not listed in packages.txt." "$@"; then
-                echo "❌ Uninstalling: $pkg"
+    local section=""
+    local desired_formulae=()
+    local desired_casks=()
+
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        [[ "$line" =~ ^# ]] && section="$line" && continue
+        [[ -z "$line" ]] && continue
+
+        if [[ "$section" == "# Formulae" ]]; then
+            desired_formulae+=("$line")
+        elif [[ "$section" == "# Casks" ]]; then
+            desired_casks+=("$line")
+        fi
+    done <"$file"
+
+    # Prune formulae not in the desired list
+    for pkg in "${current_formulae[@]}"; do
+        if ! printf '%s\n' "${desired_formulae[@]}" | grep -qx "$pkg"; then
+            if _confirm_or_abort "Uninstall formula \"$pkg\"? It's not in packages.txt." "$@"; then
+                echo "❌ Uninstalling formula: $pkg"
                 brew uninstall --ignore-dependencies "$pkg"
             else
-                echo "⏭️ Skipping: $pkg"
+                echo "⏭️ Skipping formula: $pkg"
+            fi
+        fi
+    done
+
+    # Prune casks not in the desired list
+    for cask in "${current_casks[@]}"; do
+        if ! printf '%s\n' "${desired_casks[@]}" | grep -qx "$cask"; then
+            if _confirm_or_abort "Uninstall cask \"$cask\"? It's not in packages.txt." "$@"; then
+                echo "❌ Uninstalling cask: $cask"
+                brew uninstall --cask "$cask"
+            else
+                echo "⏭️ Skipping cask: $cask"
             fi
         fi
     done

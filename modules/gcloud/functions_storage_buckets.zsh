@@ -5,7 +5,7 @@
 function gcloud_storage_buckets_create() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to create new storage buckets?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to create new storage buckets?" "$@" || return 1
 
     echo "🔹 Creating Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GCP_PROJECT_ID-cloudbuild-artifacts"
 
@@ -28,7 +28,7 @@ function gcloud_storage_buckets_create() {
 function gcloud_storage_buckets_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to delete all storage buckets and their contents?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to delete all storage buckets and their contents?" "$@" || return 1
 
     echo "🔹 Deleting the Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GCP_PROJECT_ID-cloudbuild-artifacts..."
 
@@ -44,7 +44,7 @@ function gcloud_storage_buckets_delete() {
 function gcloud_storage_buckets_sync_static() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to sync static files to the storage bucket?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to sync static files to the storage bucket?" "$@" || return 1
 
     echo "🔹 Syncing static files to the storage bucket $GS_BUCKET_STATIC..."
 
@@ -58,7 +58,7 @@ function gcloud_storage_buckets_sync_static() {
 function gcloud_storage_buckets_set_public_read() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to set public read permissions to the storage buckets?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to set public read permissions to the storage buckets?" "$@" || return 1
 
     echo "🔹 Setting public read permissions to the Storage Buckets $GS_BUCKET_STATIC and $GS_BUCKET_NAME..."
 
@@ -80,7 +80,7 @@ function gcloud_storage_buckets_set_public_read() {
 function gcloud_storage_buckets_set_cross_origin() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to set cross-origin policy to the storage buckets?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to set cross-origin policy to the storage buckets?" "$@" || return 1
 
     echo "🔹 Setting cross-origin policy to the Storage Buckets $GS_BUCKET_STATIC and $GS_BUCKET_NAME..."
 

@@ -4,7 +4,7 @@
 function gcloud_secret_manager_env_create() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to create a new secret in Secret Manager?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to create a new secret in Secret Manager?" "$@" || return 1
 
     echo "🔹 Creating a new secret '$GCP_SECRET_NAME' in Secret Manager..."
 
@@ -26,7 +26,7 @@ function gcloud_secret_manager_env_create() {
 function gcloud_secret_manager_env_update() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to update the secret in Secret Manager?" "$@" || return 1
+    _confirm_or_abort "Are you sure you want to update the secret in Secret Manager?" "$@" || return 1
 
     echo "🔹 Updating the secret '$GCP_SECRET_NAME' in Secret Manager..."
 
@@ -56,7 +56,7 @@ function gcloud_secret_manager_env_update() {
 function gcloud_secret_manager_env_delete() {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Are you sure you want to delete the secret from Secret Manager
+    _confirm_or_abort "Are you sure you want to delete the secret from Secret Manager
 This action is irreversible and will permanently delete the secret." "$@" || return 1
 
     echo "🔹 Deleting the secret '$GCP_SECRET_NAME' from Secret Manager..."

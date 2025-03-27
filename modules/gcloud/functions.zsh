@@ -71,7 +71,7 @@ function _gcloud_slugify_project_name() {
 function gcloud_project_django_setup {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Set up a Django project in Google Cloud?" "$@" || return 1
+    _confirm_or_abort "Set up a Django project in Google Cloud?" "$@" || return 1
 
     gcloud-login-cli || return 1
     gcloud-login-adc || return 1
@@ -139,7 +139,7 @@ function gcloud_project_django_setup {
 function gcloud_project_django_teardown {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Tear down the Django project in Google Cloud?" "$@" || return 1
+    _confirm_or_abort "Tear down the Django project in Google Cloud?" "$@" || return 1
 
     gcloud-login-cli || return 1
     gcloud-login-adc || return 1
@@ -172,7 +172,7 @@ function gcloud_project_django_teardown {
 function gcloud_project_django_update {
     gcloud_config_load_and_validate || return 1
 
-    confirm_or_abort "Update an existing Django deployment in Google Cloud?" "$@" || return 1
+    _confirm_or_abort "Update an existing Django deployment in Google Cloud?" "$@" || return 1
 
     gcloud-login-cli || return 1
     gcloud-login-adc || return 1

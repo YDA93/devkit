@@ -22,3 +22,6 @@ export PATH="$HOME/.pub-cache/bin:$PATH"
 
 # 🐘 PostgreSQL 16
 export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
+
+# ☁️ Google Cloud SDK
+export PATH="$HOME/google-cloud-sdk/bin:$PATH"

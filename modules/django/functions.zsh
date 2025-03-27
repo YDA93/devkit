@@ -261,7 +261,7 @@ function django-migrate-to-new-database() {
     postgres_check_password || return 0
 
     # Prompt user for confirmation
-    if confirm_or_abort "This action will reset the project to its initial state. Proceed?"; then
+    if _confirm_or_abort "This action will reset the project to its initial state. Proceed?"; then
         echo "Confirmed!"
     else
         echo "Canceled!"
@@ -270,7 +270,7 @@ function django-migrate-to-new-database() {
 
     # Prompt user for backup
     backup_performed=false
-    if confirm_or_abort "Do you want to backup data?"; then
+    if _confirm_or_abort "Do you want to backup data?"; then
         django-dumpdata "$project_directory" || return 0
 
         backup_performed=true
@@ -309,7 +309,7 @@ function django-migrate-to-new-database() {
         django-loaddata "$project_directory" || return 0 # Using the default "data.json"
 
     else
-        if confirm_or_abort "Do you want to restore data from a backup file?"; then
+        if _confirm_or_abort "Do you want to restore data from a backup file?"; then
             echo "Please provide the path to the backup file:"
             read backup_file
             django-loaddata "$project_directory" "$backup_file" || return 0 # Using the user-specified backup file

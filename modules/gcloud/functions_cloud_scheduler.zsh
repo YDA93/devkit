@@ -47,7 +47,7 @@ function _gcloud_scheduler_jobs_prompt() {
     local message=$(printf "%s %d Cloud Scheduler job(s) in project '%s':\n%s" \
         "$verb" "${#job_names[@]}" "$GCP_PROJECT_ID" "$name_list")
 
-    confirm_or_abort "$message" "$@" || return 1
+    _confirm_or_abort "$message" "$@" || return 1
 }
 
 # 🗑️ Deletes all Cloud Scheduler jobs in the current project and region.
