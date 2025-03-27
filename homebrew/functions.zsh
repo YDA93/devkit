@@ -23,3 +23,38 @@ function homebrew-install-packages() {
     xargs brew install <"$input"
     echo "✅ Installed packages from $input"
 }
+
+# 🔥 Uninstalls Homebrew packages not in packages.txt (with confirmation)
+function homebrew-prune-packages() {
+    local file="$HOME/macOS/homebrew/packages.txt"
+
+    if [[ ! -f "$file" ]]; then
+        echo "❌ Package list not found at $file"
+        return 1
+    fi
+
+    echo "🧹 Checking for packages to uninstall..."
+
+    # Current top-level packages
+    local current_leaves=($(brew leaves))
+    # Desired packages from file
+    local desired_packages=($(cat "$file"))
+
+    for pkg in "${current_leaves[@]}"; do
+        if ! printf '%s\n' "${desired_packages[@]}" | grep -qx "$pkg"; then
+            if confirm_or_abort "Uninstall \"$pkg\"? It is not listed in packages.txt." "$@"; then
+                echo "❌ Uninstalling: $pkg"
+                brew uninstall --ignore-dependencies "$pkg"
+            else
+                echo "⏭️ Skipping: $pkg"
+            fi
+        fi
+    done
+
+    echo "✅ Cleanup complete. Only packages from packages.txt remain."
+}
+
+function homebrew-setup() {
+    homebrew-prune-packages
+    homebrew-install-packages
+}
