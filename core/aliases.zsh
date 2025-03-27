@@ -1,0 +1,5 @@
+alias devkit-ip-address="ipconfig getifaddr en0"
+alias devkit-mac-restart="sudo shutdown -r now"
+alias devkit-mac-shutdown="sudo shutdown -h now"
+alias devkit-zsh-reset="exec zsh"
+alias devkit-bash-reset="exec bash"

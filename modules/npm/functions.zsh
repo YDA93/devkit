@@ -1,7 +1,7 @@
 # 📦 Saves a list of top-level global npm packages (excluding dependencies)
-# 📄 Output: ~/devkit/npm/packages.txt
+# 📄 Output: /$DEVKIT_MODULES_PATH/npm/packages.txt
 function npm-save-packages() {
-    local output="$HOME/devkit/npm/packages.txt"
+    local output="$DEVKIT_MODULES_PATH/npm/packages.txt"
     echo "📦 Saving global npm packages to $output"
     mkdir -p "$(dirname "$output")"
 
@@ -14,9 +14,9 @@ function npm-save-packages() {
 }
 
 # 📦 Installs global npm packages from saved list
-# 📄 Input: ~/devkit/npm/packages.txt
+# 📄 Input: /$DEVKIT_MODULES_PATH/npm/packages.txt
 function npm-install-packages() {
-    local input="$HOME/devkit/npm/packages.txt"
+    local input="$DEVKIT_MODULES_PATH/npm/packages.txt"
 
     if [[ ! -f "$input" ]]; then
         echo "❌ Package list not found at $input"
@@ -30,7 +30,7 @@ function npm-install-packages() {
 
 # 🔥 Uninstalls global npm packages not in packages.txt (with confirmation)
 function npm-prune-packages() {
-    local file="$HOME/devkit/npm/packages.txt"
+    local file="$DEVKIT_MODULES_PATH/npm/packages.txt"
 
     if [[ ! -f "$file" ]]; then
         echo "❌ Package list not found at $file"

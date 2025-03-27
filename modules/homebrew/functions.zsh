@@ -1,7 +1,7 @@
 # 💾 Saves a list of top-level Homebrew packages (excluding dependencies)
-# 📄 Output: ~/devkit/homebrew/packages.txt
+# 📄 Output: /$DEVKIT_MODULES_PATH/homebrew/packages.txt
 function homebrew-save-packages() {
-    local output="$HOME/devkit/homebrew/packages.txt"
+    local output="$DEVKIT_MODULES_PATH/homebrew/packages.txt"
 
     echo "🍺 Saving installed packages to $output"
     mkdir -p "$(dirname "$output")" # Ensure directory exists
@@ -10,9 +10,9 @@ function homebrew-save-packages() {
 }
 
 # 📦 Installs Homebrew packages from a saved list
-# 📄 Input: ~/devkit/homebrew/packages.txt
+# 📄 Input: /$DEVKIT_MODULES_PATH/homebrew/packages.txt
 function homebrew-install-packages() {
-    local input="$HOME/devkit/homebrew/packages.txt"
+    local input="$DEVKIT_MODULES_PATH/homebrew/packages.txt"
 
     if [[ ! -f "$input" ]]; then
         echo "❌ Package list not found at $input"
@@ -26,7 +26,7 @@ function homebrew-install-packages() {
 
 # 🔥 Uninstalls Homebrew packages not in packages.txt (with confirmation)
 function homebrew-prune-packages() {
-    local file="$HOME/devkit/homebrew/packages.txt"
+    local file="$DEVKIT_MODULES_PATH/homebrew/packages.txt"
 
     if [[ ! -f "$file" ]]; then
         echo "❌ Package list not found at $file"

@@ -110,7 +110,7 @@ function confirm_or_abort() {
 }
 
 # 📦 Show versions of commonly used dev tools
-function dev-status() {
+function devkit-status() {
     echo "🔧 Development Environment Status:"
     echo "────────────────────────────────────"
 

@@ -1,5 +1,0 @@
-alias mac-ip-address="ipconfig getifaddr en0"
-alias mac-restart="sudo shutdown -r now"
-alias mac-shutdown="sudo shutdown -h now"
-alias zsh-reset="exec zsh"
-alias bash-reset="exec bash"
