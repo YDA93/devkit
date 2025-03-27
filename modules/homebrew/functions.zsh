@@ -1,5 +1,5 @@
-# 💾 Saves a list of top-level Homebrew packages (excluding dependencies)
-# 📄 Output: /$DEVKIT_MODULES_PATH/homebrew/packages.txt
+# 💾 Saves a list of top-level Homebrew packages (formulae + casks)
+# 📄 Output: $DEVKIT_MODULES_PATH/homebrew/packages.txt
 function homebrew-save-packages() {
     local output="$DEVKIT_MODULES_PATH/homebrew/packages.txt"
 
@@ -17,8 +17,8 @@ function homebrew-save-packages() {
     echo "✅ Saved installed packages to $output"
 }
 
-# 📦 Installs Homebrew packages from a saved list
-# 📄 Input: /$DEVKIT_MODULES_PATH/homebrew/packages.txt
+# 📦 Installs Homebrew formulae and casks from a saved package list
+# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/packages.txt
 function homebrew-install-packages() {
     local input="$DEVKIT_MODULES_PATH/homebrew/packages.txt"
 
@@ -44,7 +44,9 @@ function homebrew-install-packages() {
     echo "✅ Installed packages from $input"
 }
 
-# 🔥 Uninstalls Homebrew packages not in packages.txt (with confirmation)
+# 🔥 Uninstalls Homebrew formulae and casks not listed in packages.txt
+# 🧹 Prompts for confirmation before uninstalling each package
+# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/packages.txt
 function homebrew-prune-packages() {
     local file="$DEVKIT_MODULES_PATH/homebrew/packages.txt"
 
@@ -100,13 +102,42 @@ function homebrew-prune-packages() {
     echo "✅ Cleanup complete. Only packages from packages.txt remain."
 }
 
+# ⚙️ Runs the full Homebrew environment setup:
+#    - Prunes unlisted formulae and casks
+#    - Installs listed formulae and casks
+#    - Runs npm-setup as part of the environment bootstrapping
 function homebrew-setup() {
     homebrew-prune-packages
     homebrew-install-packages
     npm-setup
 }
 
+# 📋 Lists all currently installed Homebrew packages (formulae and casks)
 function homebrew-list-packages() {
     echo "🍺 Installed Homebrew packages:"
     brew list
+}
+
+# ♻️ Performs full Homebrew maintenance:
+#    - Checks system health (brew doctor)
+#    - Updates Homebrew itself and formulae (brew update, upgrade)
+#    - Removes unused dependencies (brew autoremove)
+#    - Cleans up outdated versions and cached files (brew cleanup)
+function homebrew-maintain() {
+    echo "🩺 Running brew doctor..."
+    brew doctor
+
+    echo "⬆️  Updating Homebrew..."
+    brew update
+
+    echo "🔄 Upgrading installed formulae..."
+    brew upgrade
+
+    echo "🧹 Removing unused dependencies..."
+    brew autoremove
+
+    echo "🗑️ Cleaning up cached files and old versions..."
+    brew cleanup
+
+    echo "✅ Homebrew maintenance complete!"
 }

@@ -92,13 +92,7 @@ function devkit-pc-update() {
     sudo -v && clear
 
     # --- Brew ---
-    _log_update_step "Homebrew and Packages" bash -c '
-        brew doctor
-        brew update
-        brew upgrade
-        brew autoremove
-        brew cleanup
-    '
+    _log_update_step "Homebrew and Packages" "homebrew-maintain"
 
     # --- gcloud ---
     _log_update_step "gcloud CLI" gcloud components update
