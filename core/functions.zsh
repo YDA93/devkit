@@ -59,6 +59,57 @@ function _confirm_or_abort() {
     done
 }
 
+# 🛡️ Checks if DevKit is fully set up based on required tools
+# 🧪 Usage: devkit-is-setup [--quiet] || return 1
+function devkit-is-setup() {
+    local quiet=false
+    if [[ "$1" == "--quiet" || "$1" == "-q" ]]; then
+        quiet=true
+    fi
+
+    local required_tools=(
+        git
+        zsh
+        node
+        npm
+        python3
+        pip3
+        java
+        docker
+        flutter
+        dart
+        gcloud
+        firebase
+        psql
+        ruby
+        pod
+        mas
+    )
+
+    local missing=()
+
+    for tool in "${required_tools[@]}"; do
+        if ! command -v "$tool" &>/dev/null; then
+            missing+=("$tool")
+        fi
+    done
+
+    if ((${#missing[@]} > 0)); then
+        if [[ "$quiet" == false ]]; then
+            echo "⚠️  DevKit is not fully set up."
+            echo "🚫 Missing tools: ${missing[*]}"
+            echo "👉 Run: devkit-pc-setup"
+        fi
+        return 1
+    fi
+
+    if [[ "$quiet" == false ]]; then
+        echo "✅ DevKit is fully set up!"
+    fi
+
+    return 0
+}
+
 function devkit-pc-setup() {
     _confirm_or_abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
 
@@ -88,7 +139,7 @@ function devkit-pc-update() {
     # --- pip (Python) ---
     _log_update_step "pip (Python)" bash -c '
     pip3 install --upgrade pip setuptools wheel
-'
+    '
 
     # --- gcloud ---
     _log_update_step "gcloud CLI" gcloud components update
@@ -127,10 +178,13 @@ function devkit-pc-update() {
     _log_update_step "devkit System Updates" softwareupdate -ia --verbose
 }
 
-# 📦 Show versions of commonly used dev tools
+# 📦 Show versions of commonly used dev tools and warn if missing
 function devkit-doctor() {
     echo "🔧 Development Environment Status:"
     echo "────────────────────────────────────"
+
+    # Track missing tools
+    local missing_tools=()
 
     # Helper: check if command exists and print version
     function print_version() {
@@ -139,7 +193,6 @@ function devkit-doctor() {
         local cmd="$3"
         local version_cmd="$4"
 
-        # Pad label to 16 chars
         local padded_label=$(printf "%-22s" "$name:")
 
         if command -v "$cmd" &>/dev/null; then
@@ -147,6 +200,7 @@ function devkit-doctor() {
             echo "$emoji  $padded_label $version"
         else
             echo "$emoji  $padded_label Not installed"
+            missing_tools+=("$name")
         fi
     }
 
@@ -173,4 +227,12 @@ function devkit-doctor() {
     print_version "💻" "Zsh" "zsh" "zsh --version | awk '{print \$2}'"
 
     echo "────────────────────────────────────"
+
+    if ((${#missing_tools[@]} > 0)); then
+        echo "⚠️  Missing tools: ${missing_tools[*]}"
+        echo "👉 Run: devkit-pc-setup to install and configure required packages."
+        return 1
+    else
+        echo "✅ All essential tools are installed!"
+    fi
 }

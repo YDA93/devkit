@@ -25,6 +25,12 @@ else
     done
 fi
 
+# Check if DevKit is fully set up
+if ! devkit-is-setup --quiet; then
+    echo "⛔ DevKit is not fully set up."
+    echo "👉 Please run: devkit-pc-setup"
+fi
+
 # Show message only if sourced directly in terminal
 if [[ $ZSH_EVAL_CONTEXT == toplevel:* ]] && [[ -t 1 ]]; then
     echo "✅ DevKit fully loaded!"
