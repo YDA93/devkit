@@ -57,8 +57,9 @@ function npm-prune-packages() {
 }
 
 function npm-setup() {
-    npm-prune-packages
-    npm-install-packages
+    npm-prune-packages || return 1
+    npm-install-packages || return 1
+    zsh-reset || return 1
 }
 
 function npm-list-packages() {

@@ -126,11 +126,12 @@ function homebrew-prune-packages() {
 # ⚙️ Runs the full Homebrew environment setup:
 #    - Prunes unlisted formulae and casks
 #    - Installs listed formulae and casks
-#    - Runs npm-setup as part of the environment bootstrapping
+#    - Resets Zsh configuration
 function homebrew-setup() {
-    homebrew-install
-    homebrew-prune-packages
-    homebrew-install-packages
+    homebrew-install || return 1
+    homebrew-prune-packages || return 1
+    homebrew-install-packages || return 1
+    zsh-reset || return 1
 }
 
 # 📋 Lists all currently installed Homebrew packages (formulae and casks)

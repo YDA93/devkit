@@ -62,6 +62,66 @@ function flutter-adb-connect() {
 # 🔄 Flutter Update Commands
 # ------------------------------------------------------------------------------
 
+# 🔎 Gets the latest stable Android build-tools version (excludes rc/beta)
+function _android-latest-build-tools() {
+    sdkmanager --list 2>/dev/null |
+        awk '/^ +build-tools;[0-9]/ { gsub(/^ +| +$/, "", $1); split($1, parts, ";"); print parts[2] }' |
+        grep -Ev 'rc|beta|alpha' |
+        sort -Vr | head -n1
+}
+
+# ☕️ Automatically symlinks the installed OpenJDK into macOS’s expected location
+function java-symlink-latest() {
+    local brew_jdk_path="$HOMEBREW_OPT_PREFIX/openjdk/libexec/openjdk.jdk"
+
+    if [[ ! -d "$brew_jdk_path" ]]; then
+        echo "❌ Homebrew OpenJDK not found at $brew_jdk_path"
+        return 1
+    fi
+
+    # Extract the actual JDK version using `java -version`
+    local version
+    version=$("$brew_jdk_path/Contents/Home/bin/java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d. -f1)
+
+    local target="/Library/Java/JavaVirtualMachines/openjdk-${version}.jdk"
+
+    if [[ ! -d "$target" ]]; then
+        echo "☕️ Symlinking OpenJDK $version to $target..."
+        sudo ln -sfn "$brew_jdk_path" "$target"
+    else
+        echo "☕️ OpenJDK $version already symlinked at $target"
+    fi
+}
+
+# 📱 Sets up the Android SDK environment for CLI builds and emulators
+function flutter-android-sdk-setup() {
+    _run_or_abort "☕️ Symlinking OpenJDK" \
+        "✅ OpenJDK symlinked." \
+        java-symlink-latest || return 1
+
+    local latest_build_tools
+    latest_build_tools=$(_android-latest-build-tools)
+
+    _run_or_abort "📦 Installing Android SDK packages (build-tools:$latest_build_tools)" \
+        "" \
+        sdkmanager \
+        "platforms;android-35" \
+        "build-tools;$latest_build_tools" \
+        "platform-tools" \
+        "emulator" \
+        "cmdline-tools;latest" || return 1
+
+    _run_or_abort "📜 Accepting Android SDK licenses (non-interactive)" \
+        "" \
+        bash -c "yes | sdkmanager --licenses" || return 1
+
+    _run_or_abort "📜 Accepting Flutter Android licenses (interactive)" \
+        "" \
+        flutter doctor --android-licenses || return 1
+
+    zsh-reset || return 1
+}
+
 function flutter-update-splash() {
     dart run flutter_native_splash:remove
     dart run flutter_native_splash:create

@@ -52,16 +52,15 @@ function mas-install-apps() {
 # 🔄 Updates installed App Store apps via mas
 function mas-maintain() {
     echo "🔍 Checking for App Store updates..."
-    mas outdated
-
+    mas outdated || return 1
     echo "⬆️  Upgrading App Store apps..."
-    mas upgrade
-
+    mas upgrade || return 1
     echo "✅ App Store apps updated."
 }
 
 # ⚙️ Full mas setup: installs mas, then installs saved apps
 function mas-setup() {
-    mas-install-apps
-    mas-maintain
+    mas-install-apps || return 1
+    mas-maintain || return 1
+    zsh-reset || return 1
 }

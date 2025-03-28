@@ -20,6 +20,25 @@ function _log_update_step() {
     echo "--------------------------------------------------"
 }
 
+# 🧪 Runs a command and exits if it fails, with custom success message
+function _run_or_abort() {
+    local description="$1"
+    local success_msg="$2"
+    shift 2
+
+    echo "$description..."
+    "$@"
+    local exit_code=$?
+    if [[ $exit_code -ne 0 ]]; then
+        echo "❌ Failed: $description"
+        return $exit_code
+    fi
+    if [ -n "$success_msg" ]; then
+        echo "$success_msg"
+        echo ""
+    fi
+}
+
 # 🛑 Asks the user to confirm before continuing (unless --quiet is passed).
 # 💡 Usage: _confirm_or_abort "Are you sure?" [--quiet]
 function _confirm_or_abort() {
@@ -110,23 +129,48 @@ function devkit-is-setup() {
     return 0
 }
 
+function check-software-updates() {
+    # 🛠️ Installs all available macOS software updates (system + security)
+    echo "🔍 Checking for macOS software updates..."
+
+    # Check for available software updates
+    available_updates=$(softwareupdate -l 2>&1)
+
+    if echo "$available_updates" | grep -q "No new software available"; then
+        echo "✅ No updates available. Skipping installation."
+        return 0
+    else
+        echo "⬇️  Updates available. Installing now..."
+        softwareupdate -ia --verbose
+        echo "✅ Updates installed successfully."
+        echo "🔁 A system restart may be required to complete installation."
+        echo "⚠️  Please reboot your Mac and then re-run: devkit-pc-setup"
+        return 1 # Signal that a reboot is needed
+    fi
+}
+
 function devkit-pc-setup() {
     _confirm_or_abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
 
+    check_software_updates || return 1
+
     # 🔄 Syncs your custom .gitconfig to the system/global Git config
-    git-sync-config
+    git-sync-config || return 1
 
     # Install Homebrew and packages
-    homebrew-setup
+    homebrew-setup || return 1
 
     # Install NPM and packages
-    npm-setup
+    npm-setup || return 1
 
     # Install MAS (Mac App Store) and applications
-    mas-setup
+    mas-setup || return 1
 
     # Install Xcode and Command Line Tools
-    xcode_setup
+    xcode_setup || return 1
+
+    # Flutter Android Setup
+    flutter-android-sdk-setup || return 1
 
     echo "--------------------------------------------------"
     echo "✅ devkit environment setup complete!"
