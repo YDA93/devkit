@@ -160,6 +160,9 @@ function devkit-pc-setup() {
     # Install Homebrew and packages
     homebrew-setup || return 1
 
+    # Now its time to ask the user to configure his cask apps prior to going further
+    _confirm_or_abort "🧩 Please take a moment to open and configure your downloaded apps (e.g. VS Code, Android Studio). Press Enter when you're ready to continue." "$@" || return 1
+
     # Install NPM and packages
     npm-setup || return 1
 
