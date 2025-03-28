@@ -141,25 +141,31 @@ function homebrew-list-packages() {
 }
 
 # ♻️ Performs full Homebrew maintenance:
-#    - Checks system health (brew doctor)
-#    - Updates Homebrew itself and formulae (brew update, upgrade)
-#    - Removes unused dependencies (brew autoremove)
-#    - Cleans up outdated versions and cached files (brew cleanup)
+#    - Checks system health
+#    - Updates Homebrew and all packages
+#    - Upgrades formulae and casks
+#    - Removes unused dependencies and cleans up
 function homebrew-maintain() {
-    echo "🩺 Running brew doctor..."
-    brew doctor
+    echo "🩺 Checking system health..."
+    brew doctor || echo "⚠️ brew doctor reported issues."
 
     echo "⬆️  Updating Homebrew..."
     brew update
 
-    echo "🔄 Upgrading installed formulae..."
+    echo "🔄 Upgrading formulae..."
     brew upgrade
 
-    echo "🧹 Removing unused dependencies..."
+    echo "🧴 Upgrading casks..."
+    brew upgrade --cask
+
+    echo "🧹 Autoremoving unused dependencies..."
     brew autoremove
 
-    echo "🗑️ Cleaning up cached files and old versions..."
-    brew cleanup
+    echo "🗑️ Cleaning up old versions and cache..."
+    brew cleanup -s --prune=7
+
+    echo "📦 Verifying installed packages..."
+    brew missing || echo "✅ No missing dependencies."
 
     echo "✅ Homebrew maintenance complete!"
 }

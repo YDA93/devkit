@@ -67,6 +67,10 @@ function devkit-pc-setup() {
 
     # Install Xcode and Command Line Tools
     xcode_setup
+
+    echo "--------------------------------------------------"
+    echo "✅ devkit environment setup complete!"
+    echo "--------------------------------------------------"
 }
 
 # 🔄 Updates tools like Homebrew, gcloud, Flutter, NPM, etc.
@@ -77,6 +81,11 @@ function devkit-pc-update() {
 
     # --- Brew ---
     _log_update_step "Homebrew and Packages" "homebrew-maintain"
+
+    # --- pip (Python) ---
+    _log_update_step "pip (Python)" bash -c '
+    pip3 install --upgrade pip setuptools wheel
+'
 
     # --- gcloud ---
     _log_update_step "gcloud CLI" gcloud components update
@@ -99,6 +108,8 @@ function devkit-pc-update() {
         npm install -g firebase-tools
         npm audit fix --force
     '
+    # --- CocoaPods ---
+    _log_update_step "CocoaPods" pod repo update
 
     # --- Rosetta ---
     _log_update_step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license
