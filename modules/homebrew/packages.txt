@@ -34,6 +34,7 @@ onedrive
 pgadmin4
 postman
 skype
+twitter
 visual-studio-code
 whatsapp
 zoom

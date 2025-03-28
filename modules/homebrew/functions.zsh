@@ -131,7 +131,6 @@ function homebrew-setup() {
     homebrew-install
     homebrew-prune-packages
     homebrew-install-packages
-    npm-setup
 }
 
 # 📋 Lists all currently installed Homebrew packages (formulae and casks)

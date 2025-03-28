@@ -119,6 +119,12 @@ function devkit-pc-setup() {
     # Install Homebrew and packages
     homebrew-setup
 
+    # Install NPM and packages
+    npm-setup
+
+    # Install MAS (Mac App Store) and applications
+    mas-setup
+
     # Install Xcode and Command Line Tools
     xcode_setup
 
@@ -169,10 +175,7 @@ function devkit-pc-update() {
     _log_update_step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license
 
     # --- App Store Apps ---
-    _log_update_step "App Store Apps (via mas-cli)" bash -c '
-        mas outdated
-        mas upgrade
-    '
+    _log_update_step "App Store Apps (via mas-cli)" mas-maintain
 
     # --- devkit Software Updates ---
     _log_update_step "devkit System Updates" softwareupdate -ia --verbose

@@ -28,37 +28,6 @@ function xcode_setup() {
     # Run simulator first launch
     xcode_simulator_first_launch
 
-    # Ensure `mas` is available
-    if ! command -v mas &>/dev/null; then
-        echo "❌ The 'mas' CLI is not installed. Install it with:"
-        echo "   brew install mas"
-        return 1
-    fi
-
-    # Install App Store Connect (ID: 1234793120)
-    if ! mas list | grep -q 1234793120; then
-        echo "📲 Installing App Store Connect..."
-        mas install 1234793120
-    else
-        echo "✅ App Store Connect is already installed."
-    fi
-
-    # Install Transporter (ID: 1450874784)
-    if ! mas list | grep -q 1450874784; then
-        echo "📦 Installing Transporter..."
-        mas install 1450874784
-    else
-        echo "✅ Transporter is already installed."
-    fi
-
-    # Install ColorSlurp (ID: 1287239339)
-    if ! mas list | grep -q 1287239339; then
-        echo "🎨 Installing ColorSlurp..."
-        mas install 1287239339
-    else
-        echo "✅ ColorSlurp is already installed."
-    fi
-
     echo "🎉 Xcode setup completed."
 }
 
