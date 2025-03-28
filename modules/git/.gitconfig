@@ -1,0 +1,24 @@
+[user]
+name = Yousef Almutairi
+email = yda93@hotmail.com
+[core]
+editor = code --wait
+autocrlf = input
+excludesfile = /Users/yousefalmutairi/.gitignore_global
+[init]
+defaultBranch = main
+[filter "lfs"]
+required = true
+clean = git-lfs clean -- %f
+smudge = git-lfs smudge -- %f
+process = git-lfs filter-process
+[diff]
+tool = vscode
+[difftool]
+vscode = "code --wait --diff $LOCAL $REMOTE"
+[difftool "vscode"]
+cmd = "code --wait --diff $LOCAL $REMOTE"
+[color]
+ui = auto
+[pull]
+ff = only

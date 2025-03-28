@@ -62,6 +62,9 @@ function _confirm_or_abort() {
 function devkit-pc-setup() {
     _confirm_or_abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
 
+    # 🔄 Syncs your custom .gitconfig to the system/global Git config
+    git-sync-config
+
     # Install Homebrew and packages
     homebrew-setup
 
