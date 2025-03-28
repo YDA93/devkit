@@ -4,7 +4,7 @@ function xcode_setup() {
 
     # 🛠️ Installs all available macOS software updates (system + security)
     echo "📦 Running software updates..."
-    check_software_updates || return 1
+    _check-software-updates || return 1
 
     # 🔁 Installs Rosetta for Apple Silicon (to run Intel-based apps/tools)
     if /usr/bin/pgrep oahd >/dev/null 2>&1; then

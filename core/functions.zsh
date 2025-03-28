@@ -20,7 +20,8 @@ function _log_update_step() {
     echo "--------------------------------------------------"
 }
 
-# 🧪 Runs a command and exits if it fails, with custom success message
+# 🧪 Runs a command and exits if it fails, with a custom success message.
+# 💡 Usage: _run_or_abort "Doing something" "✅ Success message" <command>
 function _run_or_abort() {
     local description="$1"
     local success_msg="$2"
@@ -129,7 +130,9 @@ function devkit-is-setup() {
     return 0
 }
 
-function check-software-updates() {
+# 🛠️ Checks for macOS software updates and installs them if available.
+# 💡 Usage: _check-software-updates && echo "Up to date" || echo "Reboot required"
+function _check-software-updates() {
     # 🛠️ Installs all available macOS software updates (system + security)
     echo "🔍 Checking for macOS software updates..."
 
@@ -149,10 +152,12 @@ function check-software-updates() {
     fi
 }
 
+# 🚀 Sets up your full devkit environment (tools, SDKs, configs).
+# 💡 Usage: devkit-pc-setup [--quiet]  # Skips confirmation prompts
 function devkit-pc-setup() {
     _confirm_or_abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
 
-    check_software_updates || return 1
+    _check-software-updates || return 1
 
     # 🔄 Syncs your custom .gitconfig to the system/global Git config
     git-sync-config || return 1
