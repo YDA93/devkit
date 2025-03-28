@@ -240,7 +240,7 @@ function devkit-doctor() {
         local cmd="$3"
         local version_cmd="$4"
 
-        local padded_label=$(printf "%-22s" "$name:")
+        local padded_label=$(printf "%-24s" "$name:")
 
         if command -v "$cmd" &>/dev/null; then
             local version=$(eval "$version_cmd")
@@ -250,7 +250,10 @@ function devkit-doctor() {
             missing_tools+=("$name")
         fi
     }
-
+    print_version "🖥 " "VS Code" "code" "code --version | head -n 1"
+    print_version "📱" "Android SDK" "sdkmanager" "sdkmanager --version"
+    print_version "🔌" "Android Platform Tools" "adb" "adb version | head -n 1 | awk '{print \$5}'"
+    print_version "🏗 " "Android Studio" "studio" "studio --version 2>/dev/null | head -n 1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+'"
     print_version "🐍" "Python" "python3" "python3 --version | awk '{print \$2}'"
     print_version "📦" "Pip" "pip3" "pip3 --version | awk '{print \$2}'"
     print_version "🟢" "Node.js" "node" "node --version | sed 's/v//'"
