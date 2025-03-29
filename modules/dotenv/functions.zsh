@@ -64,3 +64,79 @@ function environment_variable_set() {
 
     echo "✅ $key successfully set."
 }
+
+# environment_variable_get – Retrieve the value of a variable from a .env file
+#
+# Usage:
+#   environment_variable_get KEY [--env-file path] [--preserve-quotes] [--raw]
+#
+# Flags:
+#   --env-file         Path to the .env file (default: ".env")
+#   --preserve-quotes  Preserve surrounding quotes
+#   --raw              Output raw value (preserve escape sequences like \n)
+function environment_variable_get() {
+    local key=""
+    local env_file=".env"
+    local preserve_quotes=false
+    local raw_output=false
+
+    # Parse args
+    while [[ "$#" -gt 0 ]]; do
+        case "$1" in
+        --env-file)
+            env_file="$2"
+            shift 2
+            ;;
+        --preserve-quotes)
+            preserve_quotes=true
+            shift
+            ;;
+        --raw)
+            raw_output=true
+            shift
+            ;;
+        -*)
+            echo "❌ Unknown option: $1" >&2
+            return 1
+            ;;
+        *)
+            if [[ -z "$key" ]]; then
+                key="$1"
+            else
+                echo "❌ Unexpected argument: $1" >&2
+                return 1
+            fi
+            shift
+            ;;
+        esac
+    done
+
+    if [[ -z "$key" ]]; then
+        echo "❌ Error: No key provided."
+        return 1
+    fi
+
+    if [[ ! -f "$env_file" ]]; then
+        echo "❌ Error: File not found – $env_file"
+        return 1
+    fi
+
+    local value
+    value=$(grep "^${key}=" "$env_file" | cut -d'=' -f2-)
+
+    if [[ "$preserve_quotes" != true ]]; then
+        value="${value#\"}"
+        value="${value%\"}"
+    fi
+
+    if [[ -z "$value" ]]; then
+        echo "❌ Error: $key is not defined or empty in $env_file"
+        return 1
+    fi
+
+    if [[ "$raw_output" == true ]]; then
+        printf '%s\n' "$value"
+    else
+        echo "$value"
+    fi
+}

@@ -2,6 +2,7 @@
 ccache
 cocoapods
 expect
+gh
 git
 gradle
 mas

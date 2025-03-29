@@ -1,6 +1,46 @@
 # ------------------------------------------------------------------------------
 # 🚀 Django Server Shortcuts
 # ------------------------------------------------------------------------------
+# Function to upload the whole .env file as a single GitHub secret
+# Function to upload .env as a single secret AND upload GCP_CREDENTIALS separately
+function django-upload-env-to-github-secrets() {
+    # Get repo name in format owner/repo
+    local REPO
+    REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner) || {
+        echo "❌ Failed to get repo name"
+        return 1
+    }
+
+    echo "🔐 Uploading entire .env file to secret: ENVIRONMENT_VARIABLES"
+
+    # Upload .env file content directly as multiline secret
+    gh secret set ENVIRONMENT_VARIABLES --repo "$REPO" <.env || {
+        echo "❌ Failed to upload ENVIRONMENT_VARIABLES"
+        return 1
+    }
+
+    echo "✅ Uploaded ENVIRONMENT_VARIABLES to $REPO"
+
+    echo "🔐 Uploading GCP_CREDENTIALS to GitHub secrets..."
+
+    # Get GCP_CREDENTIALS using your custom command
+    local GCP_CREDS
+    GCP_CREDS=$(environment_variable_get "GCP_CREDENTIALS" --preserve-quotes --raw)
+
+    # Validate that it's not empty
+    if [[ -z "$GCP_CREDS" ]]; then
+        echo "❌ GCP_CREDENTIALS is empty or failed to load"
+        return 1
+    fi
+
+    # Upload GCP_CREDENTIALS as a separate GitHub secret
+    gh secret set GCP_CREDENTIALS --repo "$REPO" -b"$GCP_CREDS" || {
+        echo "❌ Failed to upload GCP_CREDENTIALS"
+        return 1
+    }
+
+    echo "✅ Uploaded GCP_CREDENTIALS to $REPO"
+}
 
 function django-settings() {
     local env=$1
