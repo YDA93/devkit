@@ -19,87 +19,97 @@ function homebrew-install() {
     echo "✅ Homebrew is installed and working."
 }
 
-# 💾 Saves a list of top-level Homebrew packages (formulae + casks)
-# 📄 Output: $DEVKIT_MODULES_PATH/homebrew/packages.txt
+# 💾 Saves lists of top-level Homebrew formulae and casks
+# 📄 Output: $DEVKIT_MODULES_PATH/homebrew/formulaes.txt and casks.txt
 function homebrew-save-packages() {
-    local output="$DEVKIT_MODULES_PATH/homebrew/packages.txt"
+    local base_dir="$DEVKIT_MODULES_PATH/homebrew"
+    local formulae_output="$base_dir/formulaes.txt"
+    local casks_output="$base_dir/casks.txt"
 
-    echo "🍺 Saving installed packages to $output"
-    mkdir -p "$(dirname "$output")"
+    echo "🍺 Saving installed Homebrew formulae to $formulae_output"
+    echo "🧴 Saving installed Homebrew casks to $casks_output"
+    mkdir -p "$base_dir"
 
-    {
-        echo "# Formulae"
-        brew list --formula --installed-on-request
-        echo
-        echo "# Casks"
-        brew list --cask
-    } >"$output"
+    brew list --formula --installed-on-request >"$formulae_output"
+    brew list --cask >"$casks_output"
 
-    echo "✅ Saved installed packages to $output"
+    echo "✅ Saved installed packages:"
+    echo "   📄 Formulae: $formulae_output"
+    echo "   📄 Casks:    $casks_output"
 }
 
-# 📦 Installs Homebrew formulae and casks from a saved package list
-# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/packages.txt
+# 📦 Installs Homebrew formulae and casks from saved package lists
+# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/formulaes.txt and casks.txt
 function homebrew-install-packages() {
-    local input="$DEVKIT_MODULES_PATH/homebrew/packages.txt"
+    local base_dir="$DEVKIT_MODULES_PATH/homebrew"
+    local formulae_input="$base_dir/formulaes.txt"
+    local casks_input="$base_dir/casks.txt"
 
-    if [[ ! -f "$input" ]]; then
-        echo "❌ Package list not found at $input"
+    if [[ ! -f "$formulae_input" && ! -f "$casks_input" ]]; then
+        echo "❌ No package lists found in $base_dir"
         return 1
     fi
 
-    echo "🍺 Installing packages from $input"
+    if [[ -f "$formulae_input" ]]; then
+        echo "🍺 Installing Homebrew formulae from $formulae_input"
+        while IFS= read -r formula || [[ -n "$formula" ]]; do
+            [[ -z "$formula" || "$formula" =~ ^# ]] && continue
+            brew install "$formula"
+        done <"$formulae_input"
+    fi
 
-    local section=""
-    while IFS= read -r line || [[ -n "$line" ]]; do
-        [[ "$line" =~ ^# ]] && section="$line" && continue
-        [[ -z "$line" ]] && continue
+    if [[ -f "$casks_input" ]]; then
+        echo "🧴 Installing Homebrew casks from $casks_input"
+        while IFS= read -r cask || [[ -n "$cask" ]]; do
+            [[ -z "$cask" || "$cask" =~ ^# ]] && continue
+            brew install --cask "$cask"
+        done <"$casks_input"
+    fi
 
-        if [[ "$section" == "# Formulae" ]]; then
-            brew install "$line"
-        elif [[ "$section" == "# Casks" ]]; then
-            brew install --cask "$line"
-        fi
-    done <"$input"
-
-    echo "✅ Installed packages from $input"
+    echo "✅ Finished installing Homebrew packages"
 }
 
-# 🔥 Uninstalls Homebrew formulae and casks not listed in packages.txt
+# 🔥 Uninstalls Homebrew formulae and casks not listed in formulaes.txt / casks.txt
 # 🧹 Prompts for confirmation before uninstalling each package
-# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/packages.txt
+# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/formulaes.txt and casks.txt
 function homebrew-prune-packages() {
-    local file="$DEVKIT_MODULES_PATH/homebrew/packages.txt"
+    local base_dir="$DEVKIT_MODULES_PATH/homebrew"
+    local formulae_file="$base_dir/formulaes.txt"
+    local casks_file="$base_dir/casks.txt"
 
-    if [[ ! -f "$file" ]]; then
-        echo "❌ Package list not found at $file"
+    if [[ ! -f "$formulae_file" && ! -f "$casks_file" ]]; then
+        echo "❌ No package lists found in $base_dir"
         return 1
     fi
 
-    echo "🧹 Checking for packages to uninstall..."
+    echo "🧹 Checking for Homebrew packages to uninstall..."
 
     local current_formulae=($(brew list --formula --installed-on-request))
     local current_casks=($(brew list --cask))
 
-    local section=""
     local desired_formulae=()
     local desired_casks=()
 
-    while IFS= read -r line || [[ -n "$line" ]]; do
-        [[ "$line" =~ ^# ]] && section="$line" && continue
-        [[ -z "$line" ]] && continue
-
-        if [[ "$section" == "# Formulae" ]]; then
+    # Read formulae
+    if [[ -f "$formulae_file" ]]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            [[ -z "$line" || "$line" =~ ^# ]] && continue
             desired_formulae+=("$line")
-        elif [[ "$section" == "# Casks" ]]; then
-            desired_casks+=("$line")
-        fi
-    done <"$file"
+        done <"$formulae_file"
+    fi
 
-    # Prune formulae not in the desired list
+    # Read casks
+    if [[ -f "$casks_file" ]]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            [[ -z "$line" || "$line" =~ ^# ]] && continue
+            desired_casks+=("$line")
+        done <"$casks_file"
+    fi
+
+    # Prune formulae
     for pkg in "${current_formulae[@]}"; do
         if ! printf '%s\n' "${desired_formulae[@]}" | grep -qx "$pkg"; then
-            if _confirm_or_abort "Uninstall formula \"$pkg\"? It's not in packages.txt." "$@"; then
+            if _confirm_or_abort "Uninstall formula \"$pkg\"? It's not in formulaes.txt." "$@"; then
                 echo "❌ Uninstalling formula: $pkg"
                 brew uninstall --ignore-dependencies "$pkg"
             else
@@ -108,10 +118,10 @@ function homebrew-prune-packages() {
         fi
     done
 
-    # Prune casks not in the desired list
+    # Prune casks
     for cask in "${current_casks[@]}"; do
         if ! printf '%s\n' "${desired_casks[@]}" | grep -qx "$cask"; then
-            if _confirm_or_abort "Uninstall cask \"$cask\"? It's not in packages.txt." "$@"; then
+            if _confirm_or_abort "Uninstall cask \"$cask\"? It's not in casks.txt." "$@"; then
                 echo "❌ Uninstalling cask: $cask"
                 brew uninstall --cask "$cask"
             else
@@ -120,9 +130,8 @@ function homebrew-prune-packages() {
         fi
     done
 
-    echo "✅ Cleanup complete. Only packages from packages.txt remain."
+    echo "✅ Cleanup complete. Only packages from the saved lists remain."
 }
-
 # ⚙️ Runs the full Homebrew environment setup:
 #    - Prunes unlisted formulae and casks
 #    - Installs listed formulae and casks

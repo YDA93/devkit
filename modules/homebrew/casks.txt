@@ -1,29 +1,9 @@
-# Formulae
-ccache
-cocoapods
-expect
-gh
-git
-gradle
-mas
-node@22
-openjdk
-postgresql@16
-python@3.11
-ruby
-weasyprint
-zsh
-
-# Casks
 android-platform-tools
 android-studio
-chatgpt
 cloudflare-warp
-discord
 docker
-firefox
 flutter
-google-chrome
+font-twitter-color-emoji
 google-cloud-sdk
 microsoft-auto-update
 microsoft-edge
@@ -33,12 +13,8 @@ microsoft-powerpoint
 microsoft-teams
 microsoft-word
 ngrok
-onedrive
 pgadmin4
 postman
-skype
-twitter
-font-twitter-color-emoji
 visual-studio-code
 whatsapp
 zoom
