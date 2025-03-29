@@ -29,7 +29,7 @@ function homebrew-save-packages() {
 
     {
         echo "# Formulae"
-        brew leaves
+        brew list --formula --installed-on-request
         echo
         echo "# Casks"
         brew list --cask
@@ -78,7 +78,7 @@ function homebrew-prune-packages() {
 
     echo "🧹 Checking for packages to uninstall..."
 
-    local current_formulae=($(brew leaves))
+    local current_formulae=($(brew list --formula --installed-on-request))
     local current_casks=($(brew list --cask))
 
     local section=""
