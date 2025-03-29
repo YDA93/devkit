@@ -131,7 +131,6 @@ function homebrew-setup() {
     homebrew-install || return 1
     homebrew-prune-packages || return 1
     homebrew-install-packages || return 1
-    zsh-reset || return 1
 }
 
 # 📋 Lists all currently installed Homebrew packages (formulae and casks)

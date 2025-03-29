@@ -5,7 +5,8 @@ expect
 git
 gradle
 mas
-node
+node@22
+openjdk
 postgresql@16
 python@3.11
 weasyprint

@@ -62,5 +62,4 @@ function mas-maintain() {
 function mas-setup() {
     mas-install-apps || return 1
     mas-maintain || return 1
-    zsh-reset || return 1
 }

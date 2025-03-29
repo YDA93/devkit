@@ -164,7 +164,6 @@ function flutter-android-sdk-setup() {
         "" \
         flutter doctor --android-licenses || return 1
 
-    zsh-reset || return 1
 }
 
 function flutter-update-splash() {
