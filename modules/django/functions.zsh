@@ -2,6 +2,35 @@
 # 🚀 Django Server Shortcuts
 # ------------------------------------------------------------------------------
 
+function django-settings() {
+    local env=$1
+    python-environment-activate || return 1
+
+    case "$env" in
+    local)
+        export DJANGO_SETTINGS_MODULE=project.settings.local
+        echo "🌱 Local settings activated"
+        ;;
+    dev)
+        export DJANGO_SETTINGS_MODULE=project.settings.dev
+        echo "🛠️ Development settings activated"
+        ;;
+    prod)
+        export DJANGO_SETTINGS_MODULE=project.settings.prod
+        echo "🚀 Production settings activated"
+        ;;
+    test)
+        export DJANGO_SETTINGS_MODULE=project.settings.test
+        echo "🧪 Test settings activated"
+        ;;
+    *)
+        echo "⚠️ Unknown environment: '$env'"
+        echo "Usage: django-settings [local|dev|prod|test]"
+        return 1
+        ;;
+    esac
+}
+
 # 🚀 Runs Django dev server on 0.0.0.0 (default: port 8000)
 # 💡 Usage: django-run-server [port]
 function django-run-server() {
@@ -246,7 +275,7 @@ function django-migrate-to-new-database() {
 
     python-environment-is-activated || return 0
 
-    django-settings-local
+    django-settings local
 
     environment_variable_exists LOCAL_DB_NAME || return 0
 
@@ -337,7 +366,7 @@ function django-migrate-to-new-database() {
 # - Accepts optional test path (e.g., app/tests/test_views.py::TestView::test_get)
 # 💡 Usage: django-run-pytest [path/to/test.py::TestClass::test_method]
 function django-run-pytest() {
-    django-settings-test
+    django-settings test
 
     # Replace '/' with '.', remove '.py::', and replace '::' with '.'
     modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
@@ -355,7 +384,7 @@ function django-run-pytest() {
 # - Accepts optional test path in pytest-like format
 # 💡 Usage: django-run-test [path/to/test.py::TestClass::test_method]
 function django-run-test() {
-    django-settings-test
+    django-settings test
 
     # Replace '/' with '.', remove '.py::', and replace '::' with '.'
     modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')

@@ -17,8 +17,6 @@ function python-environment-activate() {
         else
             echo "❌ No virtual environment found. Run python-environment-create first."
         fi
-    else
-        echo "⚠️ Environment already active."
     fi
 }
 
@@ -55,4 +53,4 @@ alias pip-update='pip-install-all && pip-upgrade && pip-upgrade requirements-tes
 # ------------------------------------------------------------------------------
 
 alias python-shell='python-environment-activate && python manage.py shell'
-alias python-shell-dev='python-environment-activate && django-settings-dev && python manage.py shell'
+alias python-shell-dev='django-settings dev && python manage.py shell'

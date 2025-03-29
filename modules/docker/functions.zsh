@@ -1,8 +1,3 @@
-# 🚀 Run Docker daemon startup once per login session
-if ! pgrep -f 'Docker.app' >/dev/null && ! docker info &>/dev/null; then
-    docker_daemon_start --quiet
-fi
-
 # ⏳ Starts Docker silently (with optional --quiet)
 function docker_daemon_start() {
     local quiet=false
@@ -31,17 +26,10 @@ function docker_daemon_start() {
 
 # ♻️ Restarts Docker Desktop and waits for the daemon to be ready
 function docker_daemon_restart() {
-    echo "♻️ Restarting Docker Desktop..."
-    osascript -e 'quit app "Docker"'
+    echo "♻️  Restarting Docker Desktop..."
+    pkill -f Docker
     sleep 2
-    open -a Docker
     docker_daemon_start
-}
-
-# 🔹 Opens the Docker Desktop GUI
-function docker_open_desktop() {
-    echo "🔹 Opening Docker Desktop..."
-    open -a Docker
 }
 
 # 🛑 Kills all running Docker containers

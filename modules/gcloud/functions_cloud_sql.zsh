@@ -271,7 +271,7 @@ EOF
     done
 
     # Run Django setup in previous terminal
-    if django-settings-dev && python manage.py migrate && python manage.py populate_database; then
+    if django-settings dev && python manage.py migrate && python manage.py populate_database; then
         echo "✅ Django setup completed successfully!"
     else
         echo "❌ Django setup failed."

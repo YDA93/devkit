@@ -1,13 +1,4 @@
 # ------------------------------------------------------------------------------
-# ⚙️ Django Settings Shortcuts
-# ------------------------------------------------------------------------------
-
-alias django-settings-local='python-environment-activate && echo "🌱 Local settings activated" && export DJANGO_SETTINGS_MODULE=project.settings.local'
-alias django-settings-dev='python-environment-activate && echo "🛠️ Development settings activated" && export DJANGO_SETTINGS_MODULE=project.settings.dev'
-alias django-settings-prod='python-environment-activate && echo "🚀 Production settings activated" && export DJANGO_SETTINGS_MODULE=project.settings.prod'
-alias django-settings-test='python-environment-activate && echo "🧪 Test settings activated" && export DJANGO_SETTINGS_MODULE=project.settings.test'
-
-# ------------------------------------------------------------------------------
 # 🧰 Django Project Setup
 # ------------------------------------------------------------------------------
 

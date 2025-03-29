@@ -26,6 +26,51 @@ function flutter-firebase-update-functions() {
     cd ../..
 }
 
+# Upload debug symbols to Firebase Crashlytics
+# 💡 Usage: flutter_upload_crashlytics_symbols
+# 👉 You can find your appId in `firebase_options.dart`:
+#    Look for: `FirebaseOptions.android` → `appId: '...'`
+
+function flutter_upload_crashlytics_symbols() {
+    local SYMBOLS_PATH="./symbols"
+
+    # Prompt user for Firebase App ID
+    echo "🆔 Please enter your Firebase App ID:"
+    echo "💡 Hint: Check 'firebase_options.dart' under:"
+    echo "     static const FirebaseOptions android = FirebaseOptions(..."
+    echo "     appId: 'YOUR_APP_ID_HERE',"
+    echo ""
+    printf "App ID: "
+    read APP_ID
+
+    # Validate input
+    if [[ -z "$APP_ID" ]]; then
+        echo "❌ App ID is required. Aborting."
+        return 1
+    fi
+
+    # Check if symbols directory exists
+    if [[ ! -d "$SYMBOLS_PATH" ]]; then
+        echo "❌ Symbols directory not found at: $SYMBOLS_PATH"
+        echo "📁 Please make sure obfuscated symbols are built and placed there."
+        return 1
+    fi
+
+    # Run upload
+    echo "🚀 Uploading symbols to Firebase Crashlytics..."
+    echo "🆔 App ID: $APP_ID"
+    echo "📁 Symbols Path: $SYMBOLS_PATH"
+    echo ""
+
+    firebase crashlytics:symbols:upload --app="$APP_ID" "$SYMBOLS_PATH"
+
+    if [[ $? -eq 0 ]]; then
+        echo "✅ Symbols uploaded successfully!"
+    else
+        echo "⚠️ Upload failed. Please check the App ID and symbols path."
+    fi
+}
+
 # ------------------------------------------------------------------------------
 # 🛠️ Flutter Utility Commands
 # ------------------------------------------------------------------------------
