@@ -46,11 +46,21 @@ fi
 # 🐘 PostgreSQL (latest postgresql@)
 if LATEST_PG=$(echo "$DEVKIT_REQUIRED_FORMULAE" | grep '^postgresql@' | sort -V | tail -n 1); then
     export PATH="$HOMEBREW_OPT_PREFIX/$LATEST_PG/bin:$PATH"
+    export LDFLAGS="-L$HOMEBREW_OPT_PREFIX/$LATEST_PG/lib"
+    export CPPFLAGS="-I$HOMEBREW_OPT_PREFIX/$LATEST_PG/include"
 fi
 
 # ☁️ Google Cloud SDK
 [[ -d "$HOMEBREW_OPT_PREFIX/google-cloud-sdk/bin" ]] && export PATH="$HOMEBREW_OPT_PREFIX/google-cloud-sdk/bin:$PATH"
 
 # 🤖 Android SDK
-export ANDROID_HOME="$HOME/Library/Android/sdk"
-export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
+export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
+
+# Use ccache for compilers
+[[ -d "$HOMEBREW_OPT_PREFIX/ccache/libexec" ]] && export PATH="$HOMEBREW_OPT_PREFIX/ccache/libexec:$PATH"
+
+# Enable ngrok shell completion
+if command -v ngrok &>/dev/null; then
+    eval "$(ngrok completion)"
+fi

@@ -52,18 +52,18 @@ function homebrew-install-packages() {
 
     if [[ -f "$formulae_input" ]]; then
         echo "🍺 Installing Homebrew formulae from $formulae_input"
-        while IFS= read -r formula || [[ -n "$formula" ]]; do
-            [[ -z "$formula" || "$formula" =~ ^# ]] && continue
-            brew install "$formula"
-        done <"$formulae_input"
+        xargs brew install --formula <"$formulae_input" || {
+            echo "❌ Failed to install formulae. Please check the list."
+            return 1
+        }
     fi
 
     if [[ -f "$casks_input" ]]; then
         echo "🧴 Installing Homebrew casks from $casks_input"
-        while IFS= read -r cask || [[ -n "$cask" ]]; do
-            [[ -z "$cask" || "$cask" =~ ^# ]] && continue
-            brew install --cask "$cask"
-        done <"$casks_input"
+        xargs brew install --cask <"$casks_input" || {
+            echo "❌ Failed to install casks. Please check the list."
+            return 1
+        }
     fi
 
     echo "✅ Finished installing Homebrew packages"

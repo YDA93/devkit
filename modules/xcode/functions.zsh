@@ -14,6 +14,10 @@ function xcode_setup() {
         softwareupdate --install-rosetta --agree-to-license || return 1
     fi
 
+    # 📜 Accept Xcode license, must be before updating CocoaPods
+    echo "📜 Accepting Xcode license..."
+    sudo xcodebuild -license accept || return 1
+
     # 🍎 Updates CocoaPods master specs repo (used for dependency resolution)
     if command -v pod >/dev/null 2>&1; then
         echo "📦 Updating CocoaPods specs..."
@@ -57,10 +61,6 @@ function xcode_simulator_first_launch() {
     # Run Xcode's first launch tasks (installs tools, accepts licenses)
     echo "🔧 Running Xcode first launch tasks..."
     sudo xcodebuild -runFirstLaunch || return 1
-
-    # 📜 Accept Xcode license
-    echo "📜 Accepting Xcode license..."
-    sudo xcodebuild -license accept || return 1
 
     # Pre-download the iOS platform support (optional but nice)
     echo "📦 Pre-downloading iOS platform support..."

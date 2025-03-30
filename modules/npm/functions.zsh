@@ -7,8 +7,7 @@ function npm-save-packages() {
 
     npm list -g --depth=0 --parseable |
         tail -n +2 |
-        awk -F/ '{print $NF}' \
-            >"$output"
+        awk -F/ '{print $NF}' >"$output"
 
     echo "✅ Saved npm packages to $output"
 }
@@ -23,9 +22,44 @@ function npm-install-packages() {
         return 1
     fi
 
+    echo "📦 Ensuring npm global prefix directory exists at $NPM_GLOBAL_PREFIX"
+    mkdir -p "$NPM_GLOBAL_PREFIX"
+
     echo "📦 Installing global npm packages from $input"
-    xargs npm install -g <"$input"
+    echo "📦 Packages:"
+    cat "$input"
+    echo ""
+
+    NPM_CONFIG_PREFIX="$NPM_GLOBAL_PREFIX" xargs npm install -g <"$input"
+
     echo "✅ Installed global npm packages"
+}
+
+# 🧹 Uninstalls global npm packages from saved list
+# 📄 Input: /$DEVKIT_MODULES_PATH/npm/packages.txt
+function npm-uninstall-packages() {
+    local input="$DEVKIT_MODULES_PATH/npm/packages.txt"
+
+    if [[ ! -f "$input" ]]; then
+        echo "❌ Package list not found at $input"
+        return 1
+    fi
+
+    echo "🧹 Uninstalling global npm packages from $input"
+    NPM_CONFIG_PREFIX="$NPM_GLOBAL_PREFIX" xargs npm uninstall -g <"$input"
+    echo "✅ Uninstalled global npm packages"
+}
+
+function npm-repair() {
+    LATEST_NODE=$(echo "$DEVKIT_REQUIRED_FORMULAE" | grep '^node@' | sort -V | tail -n 1)
+
+    echo "🔧 Reinstalling npm via Homebrew ($LATEST_NODE)..."
+    brew reinstall "$LATEST_NODE" || return 1
+    echo "🧼 Cleaning up existing global packages..."
+    npm-uninstall-packages || return 1
+    echo "♻️ Reinstalling global packages..."
+    npm-install-packages || return 1
+    echo "✅ npm repair complete"
 }
 
 # 🔥 Uninstalls global npm packages not in packages.txt (with confirmation)

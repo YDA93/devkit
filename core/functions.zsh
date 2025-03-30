@@ -211,15 +211,9 @@ function devkit-pc-update() {
     # --- NPM ---
     _log_update_step "NPM and Dependencies" bash -c '
         npm install -g npm@latest
-        sudo npm-check -u
-        npm audit fix --force
+        npm-check -g -u
     '
 
-    # --- Firebase CLI ---
-    _log_update_step "Firebase CLI" bash -c '
-        npm install -g firebase-tools
-        npm audit fix --force
-    '
     # --- CocoaPods ---
     _log_update_step "CocoaPods" pod repo update
 

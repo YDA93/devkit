@@ -1,9 +1,12 @@
 android-platform-tools
 android-studio
+chatgpt
 cloudflare-warp
 docker
+firefox
 flutter
 font-twitter-color-emoji
+google-chrome
 google-cloud-sdk
 microsoft-auto-update
 microsoft-edge
@@ -13,6 +16,7 @@ microsoft-powerpoint
 microsoft-teams
 microsoft-word
 ngrok
+onedrive
 pgadmin4
 postman
 visual-studio-code
