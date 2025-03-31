@@ -186,6 +186,11 @@ function homebrew-maintain() {
     echo "✅ Homebrew maintenance complete!"
 }
 
+# homebrew-doctor: Checks the status of Homebrew on your system.
+# - Verifies that Homebrew is installed.
+# - Runs 'brew doctor' to detect potential issues.
+# - Checks for outdated packages and suggests maintenance tips.
+# Provides clear, helpful output and guidance if problems are found.
 function homebrew-doctor() {
     echo "🔧 Checking Homebrew..."
 

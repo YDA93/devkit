@@ -60,7 +60,11 @@ function postgres-database-list() {
     export PGPASSWORD="$pg_password"
 
     # Get a list of all databases
-    databases=$(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | sed -e 's/ //g' -e '/^$/d')
+    databases=$(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | sed -e 's/ //g' -e '/^$/d') || {
+        echo "Error: Unable to connect to PostgreSQL. Please check your password."
+        unset PGPASSWORD
+        return 1
+    }
 
     echo "List of databases:"
     echo "------------------"
@@ -85,7 +89,11 @@ function postgres-database-create() {
     read db_name
 
     # Create the database
-    createdb -U postgres -h localhost "$db_name" && echo "Database '$db_name' created successfully!" || echo "Failed to create database."
+    createdb -U postgres -h localhost "$db_name" && echo "Database '$db_name' created successfully!" || echo "Failed to create database." || {
+        echo "Error: Unable to connect to PostgreSQL. Please check your password."
+        unset PGPASSWORD
+        return 1
+    }
 
     # Clean up and remove the PGPASSWORD environment variable for security
     unset PGPASSWORD
@@ -108,7 +116,10 @@ function postgres-password-validation() {
 # - Then creates a new database with the same name
 function postgres-database-create-interactive() {
     # List available databases before deletion prompt
-    databases=$(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | sed -e 's/ //g' -e '/^$/d')
+    databases=$(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | sed -e 's/ //g' -e '/^$/d') || {
+        echo "Error: Unable to connect to PostgreSQL. Please check your password."
+        return 1
+    }
     echo "Available databases:"
     echo "------------------"
     echo "$databases"

@@ -2,7 +2,7 @@
 # 🧰 Django Project Setup
 # ------------------------------------------------------------------------------
 
-alias django-project-setup='python-environment-setup && pip-install-all && django-migrate-to-new-database'
+alias django-project-setup='python-environment-setup && pip-install && django-migrate-to-new-database'
 
 # ------------------------------------------------------------------------------
 # 🔍 Django Utilities

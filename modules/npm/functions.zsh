@@ -7,7 +7,10 @@ function npm-save-packages() {
 
     npm list -g --depth=0 --parseable |
         tail -n +2 |
-        awk -F/ '{print $NF}' >"$output"
+        awk -F/ '{print $NF}' >"$output" || {
+        echo "❌ Failed to save npm packages. Please check your npm installation."
+        return 1
+    }
 
     echo "✅ Saved npm packages to $output"
 }
@@ -23,7 +26,10 @@ function npm-install-packages() {
     fi
 
     local npm_prefix
-    npm_prefix=$(npm config get prefix)
+    npm_prefix=$(npm config get prefix) || {
+        echo "❌ Failed to get npm prefix. Please check your npm installation."
+        return 1
+    }
 
     echo "📦 Installing global npm packages from $input"
     echo "📦 Using prefix: $npm_prefix"
@@ -31,7 +37,10 @@ function npm-install-packages() {
     cat "$input"
     echo ""
 
-    NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm install -g <"$input"
+    NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm install -g <"$input" || {
+        echo "❌ Failed to install npm packages. Please check the list."
+        return 1
+    }
 
     echo "✅ Installed global npm packages"
 }
@@ -47,7 +56,10 @@ function npm-uninstall-packages() {
     fi
 
     local npm_prefix
-    npm_prefix=$(npm config get prefix)
+    npm_prefix=$(npm config get prefix) || {
+        echo "❌ Failed to get npm prefix. Please check your npm installation."
+        return 1
+    }
 
     echo "🧹 Uninstalling global npm packages from $input"
     echo "🧹 Using prefix: $npm_prefix"
@@ -55,13 +67,19 @@ function npm-uninstall-packages() {
     cat "$input"
     echo ""
 
-    NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm uninstall -g <"$input"
+    NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm uninstall -g <"$input" || {
+        echo "❌ Failed to uninstall npm packages. Please check the list."
+        return 1
+    }
 
     echo "✅ Uninstalled global npm packages"
 }
 
 function npm-repair() {
-    LATEST_NODE=$(echo "$DEVKIT_REQUIRED_FORMULAE" | grep '^node@' | sort -V | tail -n 1)
+    LATEST_NODE=$(echo "$DEVKIT_REQUIRED_FORMULAE" | grep '^node@' | sort -V | tail -n 1) || {
+        echo "❌ Failed to find the latest Node.js version."
+        return 1
+    }
 
     echo "🔧 Reinstalling npm via Homebrew ($LATEST_NODE)..."
     brew reinstall "$LATEST_NODE" || return 1
@@ -83,7 +101,10 @@ function npm-prune-packages() {
 
     echo "🧹 Checking for npm packages to uninstall..."
 
-    local current_pkgs=($(npm list -g --depth=0 --parseable | tail -n +2 | awk -F/ '{print $NF}'))
+    local current_pkgs=($(npm list -g --depth=0 --parseable | tail -n +2 | awk -F/ '{print $NF}')) || {
+        echo "❌ Failed to list npm packages. Please check your npm installation."
+        return 1
+    }
     local saved_pkgs=($(cat "$file"))
 
     for pkg in "${current_pkgs[@]}"; do
@@ -107,7 +128,10 @@ function npm-setup() {
 
 function npm-list-packages() {
     echo "📦 Installed global npm packages:"
-    npm list -g
+    npm list -g || {
+        echo "❌ Failed to list npm packages. Please check your npm installation."
+        return 1
+    }
 }
 
 function npm-doctor() {
@@ -124,7 +148,10 @@ function npm-doctor() {
         return 1
     fi
 
-    npm_root=$(npm config get prefix 2>/dev/null)
+    npm_root=$(npm config get prefix 2>/dev/null) || {
+        echo "⚠️  Failed to get npm prefix. Please check your npm installation."
+        return 1
+    }
     echo "📁 npm global prefix: ${npm_root:-⚠️ Not set}"
 
     current_registry=$(npm config get registry)

@@ -1,3 +1,8 @@
+# firebase-doctor: Checks the Firebase CLI environment.
+# - Verifies that the Firebase CLI is installed.
+# - Ensures Node.js is available (a dependency of the CLI).
+# - Checks if you're logged into Firebase.
+# Helpful messages and tips are shown for any missing pieces.
 function firebase-doctor() {
     echo "🔥 Checking Firebase CLI..."
 

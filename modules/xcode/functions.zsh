@@ -69,6 +69,12 @@ function xcode-simulator-first-launch() {
     echo "✅ Xcode and Simulator first-launch setup complete."
 }
 
+# xcode-doctor: Verifies Xcode and related development tools are properly set up.
+# - Checks if Xcode is installed and selected via xcode-select.
+# - Confirms availability of 'xcrun' and CLI tools.
+# - Ensures iOS simulators are available via simctl.
+# - On Apple Silicon, checks if Rosetta is installed.
+# Provides helpful guidance if any part of the setup is missing.
 function xcode-doctor() {
     echo "🔧 Checking Xcode..."
 

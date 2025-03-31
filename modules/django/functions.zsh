@@ -223,7 +223,7 @@ function django-migrate-to-new-database() {
 
     {
         # 1. Validations
-        python-environment-is-activated || return 1
+        python-environment-is-active || return 1
         django-settings local || return 1
         environment-variable-exists LOCAL_DB_NAME || return 1
         environment-variable-exists LOCAL_DB_PASSWORD || return 1

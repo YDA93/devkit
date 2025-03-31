@@ -1,5 +1,4 @@
 # Checks if a specific environment variable exists and is non-empty in a .env file.
-#
 # Usage:
 #   environment-variable-exists [variable_name] [env_file]
 function environment-variable-exists() {
@@ -28,7 +27,6 @@ function environment-variable-exists() {
 }
 
 # Updates or adds a key-value pair in the .env file.
-#
 # Usage:
 #   environment-variable-set [key] [value]
 function environment-variable-set() {
@@ -66,7 +64,6 @@ function environment-variable-set() {
 }
 
 # environment-variable-get – Retrieve the value of a variable from a .env file
-#
 # Usage:
 #   environment-variable-get KEY [--env-file path] [--preserve-quotes] [--raw]
 #

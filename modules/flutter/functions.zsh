@@ -3,27 +3,63 @@
 # ------------------------------------------------------------------------------
 
 function flutter-flutterfire-init() {
-    firebase login
-    flutter-flutterfire-activate
-    flutterfire configure
+    firebase login || {
+        echo "❌ Firebase login failed. Please log in to Firebase CLI."
+        return 1
+    }
+    flutter-flutterfire-activate || {
+        echo "❌ FlutterFire CLI activation failed."
+        return 1
+    }
+    flutterfire configure || {
+        echo "❌ FlutterFire configuration failed."
+        return 1
+    }
 }
 
 function flutter-firebase-environment-create() {
-    python3.12 -m venv venv
-    source venv/bin/activate
-    echo 'environment created. & activated.'
+    python3.12 -m venv venv || {
+        echo "❌ Failed to create virtual environment."
+        return 1
+    }
+    source venv/bin/activate || {
+        echo "❌ Failed to activate virtual environment."
+        return 1
+    }
+    echo 'environment created. & activated.' || {
+        echo "❌ Failed to activate virtual environment."
+        return 1
+    }
 }
 
 function flutter-firebase-environment-setup() {
-    python-environment-delete
-    flutter-firebase-environment-create
-    pip-update
+    python-environment-delete || {
+        echo "❌ Failed to delete existing virtual environment."
+        return 1
+    }
+    flutter-firebase-environment-create || {
+        echo "❌ Failed to create virtual environment."
+        return 1
+    }
+    pip-update || {
+        echo "❌ Failed to update pip."
+        return 1
+    }
 }
 
 function flutter-firebase-update-functions() {
-    cd firebase/functions
-    flutter-firebase-environment-setup
-    cd ../..
+    cd firebase/functions || {
+        echo "❌ Failed to change directory to firebase/functions."
+        return 1
+    }
+    flutter-firebase-environment-setup || {
+        echo "❌ Failed to set up Firebase environment."
+        return 1
+    }
+    cd ../.. || {
+        echo "❌ Failed to change directory back to root."
+        return 1
+    }
 }
 
 # Upload debug symbols to Firebase Crashlytics
@@ -81,13 +117,22 @@ function flutter-adb-connect() {
     PORT=$2
 
     # Step 1: List the devices
-    adb devices
+    adb devices || {
+        echo "❌ Failed to list devices. Ensure adb is installed and running."
+        return 1
+    }
 
     # Step 2: Connect to the device using adb
-    adb connect "$IP_ADDRESS:$PORT"
+    adb connect "$IP_ADDRESS:$PORT" || {
+        echo "❌ Failed to connect to $IP_ADDRESS:$PORT. Ensure the device is reachable."
+        return 1
+    }
 
     # Step 3: Verify the connection
-    adb devices
+    adb devices || {
+        echo "❌ Failed to verify connection. Ensure adb is installed and running."
+        return 1
+    }
 
     # Step 4: Update .vscode/launch.json with the new port for the provided IP address
     # Navigate to the directory containing launch.json if necessary
@@ -98,7 +143,10 @@ function flutter-adb-connect() {
     REPLACE_PATTERN="$IP_ADDRESS:$PORT"
 
     # Update launch.json in place with the new port
-    sed -i '' -E "s/$SEARCH_PATTERN/$REPLACE_PATTERN/g" .vscode/launch.json
+    sed -i '' -E "s/$SEARCH_PATTERN/$REPLACE_PATTERN/g" .vscode/launch.json || {
+        echo "❌ Failed to update .vscode/launch.json. Ensure the file exists and is writable."
+        return 1
+    }
 
     echo "Updated .vscode/launch.json with new port for IP $IP_ADDRESS."
 }
@@ -132,7 +180,10 @@ function java-symlink-latest() {
 
     if [[ ! -d "$target" ]]; then
         echo "☕️ Symlinking OpenJDK $version to $target..."
-        sudo ln -sfn "$brew_jdk_path" "$target"
+        sudo ln -sfn "$brew_jdk_path" "$target" || {
+            echo "❌ Failed to create symlink at $target"
+            return 1
+        }
     else
         echo "☕️ OpenJDK $version already symlinked at $target"
     fi
@@ -167,17 +218,41 @@ function flutter-android-sdk-setup() {
 }
 
 function flutter-update-splash() {
-    dart run flutter_native_splash:remove
-    dart run flutter_native_splash:create
+    dart run flutter_native_splash:remove || {
+        echo "❌ Failed to remove existing splash screen."
+        return 1
+    }
+    dart run flutter_native_splash:create || {
+        echo "❌ Failed to create new splash screen."
+        return 1
+    }
 }
 
 function flutter-update-fontawesome() {
-    cd assets/font_awesome_flutter
-    flutter-clean
-    flutter-dart-fix
-    cd util
-    sh ./configurator.sh
-    cd ../../..
+    cd assets/font_awesome_flutter || {
+        echo "❌ Failed to change directory to assets/font_awesome_flutter."
+        return 1
+    }
+    flutter-clean || {
+        echo "❌ Failed to clean Flutter project."
+        return 1
+    }
+    flutter-dart-fix || {
+        echo "❌ Failed to apply Dart fixes."
+        return 1
+    }
+    cd util || {
+        echo "❌ Failed to change directory to util."
+        return 1
+    }
+    sh ./configurator.sh || {
+        echo "❌ Failed to run configurator.sh."
+        return 1
+    }
+    cd ../../.. || {
+        echo "❌ Failed to change directory back to root."
+        return 1
+    }
 }
 
 # ------------------------------------------------------------------------------
@@ -185,7 +260,10 @@ function flutter-update-fontawesome() {
 # ------------------------------------------------------------------------------
 
 function flutter-delete-unused-strings() {
-    dart pub global activate l10nization_cli
+    dart pub global activate l10nization_cli || {
+        echo "❌ Failed to activate l10nization_cli."
+        return 1
+    }
 
     # Temporary file to store unused translation keys
     temp_file="unused_keys.txt"
@@ -233,38 +311,107 @@ function flutter-delete-unused-strings() {
 
 function flutter-cache-reset() {
     echo "Clearing cache of Pod, Flutter, and Ccache..."
-    cd ios
-    pod cache clean --all
-    cd ..
-    flutter pub cache repair
-    ccache -z
-    ccache -C
+    cd ios || {
+        echo "❌ Failed to change directory to ios."
+        return 1
+    }
+    pod cache clean --all || {
+        echo "❌ Failed to clean Pod cache."
+        return 1
+    }
+    cd .. || {
+        echo "❌ Failed to change directory back to root."
+        return 1
+    }
+    flutter pub cache repair || {
+        echo "❌ Failed to repair Flutter pub cache."
+        return 1
+    }
+    ccache -z || {
+        echo "❌ Failed to Resets the cache statistics."
+        return 1
+    }
+    ccache -C || {
+        echo "❌ Failed to Clears the cache contents."
+        return 1
+    }
 }
 
 function flutter-ios-reinstall-podfile() {
-    cd ios
-    rm Podfile.lock
-    pod install --repo-update
-    cd ..
-    flutter-clean
+    cd ios || {
+        echo "❌ Failed to change directory to ios."
+        return 1
+    }
+    rm Podfile.lock || {
+        echo "❌ Failed to remove Podfile.lock."
+        return 1
+    }
+    pod install --repo-update || {
+        echo "❌ Failed to install pods."
+        return 1
+    }
+    cd .. || {
+        echo "❌ Failed to change directory back to root."
+        return 1
+    }
+    flutter-clean || {
+        echo "❌ Failed to clean Flutter project."
+        return 1
+    }
 }
 
 function flutter-clean() {
-    flutter clean
-    flutter pub upgrade
-    flutter pub outdated
-    flutter pub upgrade --major-versions
-    flutter-dart-fix
+    flutter clean || {
+        echo "❌ Failed to clean Flutter project."
+        return 1
+    }
+    flutter pub upgrade || {
+        echo "❌ Failed to upgrade Flutter packages."
+        return 1
+    }
+    flutter pub outdated || {
+        echo "❌ Failed to check for outdated packages."
+        return 1
+    }
+    flutter pub upgrade --major-versions || {
+        echo "❌ Failed to upgrade major versions of packages."
+        return 1
+    }
+    flutter-dart-fix || {
+        echo "❌ Failed to apply Dart fixes."
+        return 1
+    }
 }
 
 function flutter-clean-deep() {
     {
-        flutter-flutterfire-activate
-        flutter-firebase-update-functions
-        flutter-update-fontawesome
-        flutter-ios-reinstall-podfile
-        flutter-update-icon
-        flutter-update-splash
-        flutter-build-runner
+        flutter-flutterfire-activate || {
+            echo "❌ Failed to activate FlutterFire CLI."
+            return 1
+        }
+        flutter-firebase-update-functions || {
+            echo "❌ Failed to update Firebase functions."
+            return 1
+        }
+        flutter-update-fontawesome || {
+            echo "❌ Failed to update FontAwesome."
+            return 1
+        }
+        flutter-ios-reinstall-podfile || {
+            echo "❌ Failed to reinstall Podfile."
+            return 1
+        }
+        flutter-update-icon || {
+            echo "❌ Failed to update app icons."
+            return 1
+        }
+        flutter-update-splash || {
+            echo "❌ Failed to update splash screen."
+            return 1
+        }
+        flutter-build-runner || {
+            echo "❌ Failed to run build_runner."
+            return 1
+        }
     } | tee -a ./flutter-clean-deep.log
 }
