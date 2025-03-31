@@ -27,11 +27,11 @@ function flutter-firebase-update-functions() {
 }
 
 # Upload debug symbols to Firebase Crashlytics
-# 💡 Usage: flutter_upload_crashlytics_symbols
+# 💡 Usage: flutter-upload-crashlytics-symbols
 # 👉 You can find your appId in `firebase_options.dart`:
 #    Look for: `FirebaseOptions.android` → `appId: '...'`
 
-function flutter_upload_crashlytics_symbols() {
+function flutter-upload-crashlytics-symbols() {
     local SYMBOLS_PATH="./symbols"
 
     # Prompt user for Firebase App ID
@@ -140,14 +140,14 @@ function java-symlink-latest() {
 
 # 📱 Sets up the Android SDK environment for CLI builds and emulators
 function flutter-android-sdk-setup() {
-    _run_or_abort "☕️ Symlinking OpenJDK" \
+    _run-or-abort "☕️ Symlinking OpenJDK" \
         "✅ OpenJDK symlinked." \
         java-symlink-latest || return 1
 
     local latest_build_tools
     latest_build_tools=$(_android-latest-build-tools)
 
-    _run_or_abort "📦 Installing Android SDK packages (build-tools:$latest_build_tools)" \
+    _run-or-abort "📦 Installing Android SDK packages (build-tools:$latest_build_tools)" \
         "" \
         sdkmanager \
         "platforms;android-35" \
@@ -156,11 +156,11 @@ function flutter-android-sdk-setup() {
         "emulator" \
         "cmdline-tools;latest" || return 1
 
-    _run_or_abort "📜 Accepting Android SDK licenses (non-interactive)" \
+    _run-or-abort "📜 Accepting Android SDK licenses (non-interactive)" \
         "" \
         bash -c "yes | sdkmanager --licenses" || return 1
 
-    _run_or_abort "📜 Accepting Flutter Android licenses (interactive)" \
+    _run-or-abort "📜 Accepting Flutter Android licenses (interactive)" \
         "" \
         flutter doctor --android-licenses || return 1
 

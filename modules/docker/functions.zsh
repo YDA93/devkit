@@ -1,5 +1,5 @@
 # ⏳ Starts Docker silently (with optional --quiet)
-function docker_daemon_start() {
+function docker-daemon-start() {
     local quiet=false
 
     # Parse flags
@@ -25,63 +25,63 @@ function docker_daemon_start() {
 }
 
 # ♻️ Restarts Docker Desktop and waits for the daemon to be ready
-function docker_daemon_restart() {
+function docker-daemon-restart() {
     echo "♻️  Restarting Docker Desktop..."
     pkill -f Docker
     sleep 2
-    docker_daemon_start
+    docker-daemon-start
 }
 
 # 🛑 Kills all running Docker containers
-function docker_kill_all() {
+function docker-kill-all() {
     echo "🛑 Killing all running Docker containers..."
     docker ps -q | xargs -r docker kill
 }
 
 # 🧹 Removes stopped containers, unused images, volumes, and networks
-function docker_clean_all() {
+function docker-clean-all() {
     echo "🧹 Cleaning up Docker..."
     docker system prune -af --volumes
     echo "✅ Docker cleaned"
 }
 
 # 📋 Shows Docker and Docker Compose versions
-function docker_show_versions() {
+function docker-show-versions() {
     echo "🐳 Docker CLI: $(docker --version | cut -d ' ' -f 3 | tr -d ',')"
     echo "🔧 Compose:    $(docker compose version --short 2>/dev/null || echo 'not installed')"
 }
 
 # 📦 Lists all Docker containers (running and stopped)
-function docker_list_containers() {
+function docker-list-containers() {
     echo "📦 All Docker containers:"
     docker ps -a --format "table {{.ID}}\t{{.Status}}\t{{.Names}}\t{{.Image}}"
 }
 # 🟢 Lists only running Docker containers
-function docker_list_running() {
+function docker-list-running() {
     echo "🟢 Running Docker containers:"
     docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"
 }
 # 🖼️ Lists all Docker images
-function docker_list_images() {
+function docker-list-images() {
     echo "🖼️ Docker images:"
     docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}"
 }
 # 📁 Lists all Docker volumes
-function docker_list_volumes() {
+function docker-list-volumes() {
     echo "📁 Docker volumes:"
     docker volume ls
 }
 # 🌐 Lists all Docker networks
-function docker_list_networks() {
+function docker-list-networks() {
     echo "🌐 Docker networks:"
     docker network ls
 }
 
 # 🔍 Shows detailed info about a specific container
-# 📥 Usage: docker_inspect_container <container_name_or_id>
-function docker_inspect_container() {
+# 📥 Usage: docker-inspect-container <container_name_or_id>
+function docker-inspect-container() {
     if [[ -z "$1" ]]; then
-        echo "❌ Usage: docker_inspect_container <container_name_or_id>"
+        echo "❌ Usage: docker-inspect-container <container_name_or_id>"
         return 1
     fi
 
@@ -89,10 +89,10 @@ function docker_inspect_container() {
 }
 
 # 🔎 Shows logs for a specific container
-# 📥 Usage: docker_logs <container_name_or_id>
-function docker_logs() {
+# 📥 Usage: docker-logs <container_name_or_id>
+function docker-logs() {
     if [[ -z "$1" ]]; then
-        echo "❌ Usage: docker_logs <container_name_or_id>"
+        echo "❌ Usage: docker-logs <container_name_or_id>"
         return 1
     fi
 
@@ -100,11 +100,11 @@ function docker_logs() {
 }
 
 # 🚪 Opens a shell inside a running container
-function docker_shell() {
+function docker-shell() {
     docker exec -it "$1" /bin/sh
 }
 
 # 🏗️ Builds a Docker image from current directory
-function docker_build() {
+function docker-build() {
     docker build -t "$1" .
 }

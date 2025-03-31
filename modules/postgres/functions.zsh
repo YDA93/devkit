@@ -2,7 +2,7 @@
 # - Lists available databases
 # - Prompts for database name and password
 # - Confirms before dropping
-function postgres_database_delete() {
+function postgres-database-delete() {
     echo -n "Enter the PostgreSQL password: "
     read -s pg_password
     echo
@@ -52,7 +52,7 @@ function postgres_database_delete() {
 # 📋 Lists all PostgreSQL databases
 # - Prompts for password
 # - Displays database names and total count
-function postgres_database_list() {
+function postgres-database-list() {
     echo -n "Enter the PostgreSQL password: "
     read -s pg_password
     echo
@@ -73,7 +73,7 @@ function postgres_database_list() {
 
 # 🆕 Creates a new PostgreSQL database
 # - Prompts for password and new database name
-function postgres_database_create() {
+function postgres-database-create() {
     # Prompt for the PostgreSQL password and store in an environment variable
     echo -n "Enter the PostgreSQL password: "
     read -s pg_password
@@ -93,7 +93,7 @@ function postgres_database_create() {
 
 # 🔐 Checks if the current PGPASSWORD can connect
 # - Returns error if password is wrong
-function postgres_check_password() {
+function postgres-check-password() {
     # Attempt to connect to PostgreSQL using the set PGPASSWORD
     if ! (psql -U postgres -h localhost -c "\q" 2>/dev/null || true); then
         echo "Error: Invalid PostgreSQL password!\n Please check the LOCAL_DB_PASSWORD value in .env file."
@@ -106,7 +106,7 @@ function postgres_check_password() {
 # - Lists current databases
 # - If DB exists, prompts to drop it
 # - Then creates a new database with the same name
-function postgres_manage_database_creation() {
+function postgres-manage-database-creation() {
     # List available databases before deletion prompt
     databases=$(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | sed -e 's/ //g' -e '/^$/d')
     echo "Available databases:"
@@ -160,4 +160,25 @@ function postgres_manage_database_creation() {
     fi
     echo "New database created."
     sleep 2
+}
+
+function postgres-doctor() {
+    # PostgreSQL
+    echo "🐘 Checking PostgreSQL..."
+    if command -v psql &>/dev/null; then
+        if pg_ctl status >/dev/null 2>&1 || brew services list | grep -q postgresql; then
+            echo "✅ PostgreSQL service is installed"
+        else
+            echo "⚠️  PostgreSQL is not running or installed"
+        fi
+
+        if psql -U postgres -c '\q' 2>/dev/null; then
+            echo "✅ Able to connect as 'postgres' user"
+        else
+            echo "⚠️  Cannot connect to PostgreSQL as 'postgres'"
+            echo "    👉 You may need to run: createuser -s postgres"
+        fi
+    else
+        echo "⚠️  psql command not found. PostgreSQL might not be installed."
+    fi
 }

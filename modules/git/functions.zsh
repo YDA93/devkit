@@ -21,3 +21,19 @@ function git-sync-config() {
     ln -sf "$source" "$target"
     echo "✅ Linked $source → $target"
 }
+
+function git-doctor() {
+    # Git Config
+    echo "🔧 Checking Git configuration..."
+    if [[ -z $(git config user.name) || -z $(git config user.email) ]]; then
+        echo "⚠️  Git user.name or user.email not configured"
+    else
+        echo "✅ Git user.name and user.email are set"
+    fi
+
+    # SSH Key
+    echo "🔧 Checking SSH key..."
+    [[ -f ~/.ssh/id_rsa.pub || -f ~/.ssh/id_ed25519.pub ]] &&
+        echo "✅ SSH key found" ||
+        echo "⚠️  No SSH key found in ~/.ssh/"
+}

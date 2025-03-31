@@ -1,6 +1,6 @@
 # 📦 Runs a command with a clear start/success/failure message.
-# 💡 Usage: _log_update_step "Thing to update" <command>
-function _log_update_step() {
+# 💡 Usage: _log-update-step "Thing to update" <command>
+function _log-update-step() {
     local name="$1" # First argument: display name for logging
     shift           # Remaining arguments: command to execute
 
@@ -21,8 +21,8 @@ function _log_update_step() {
 }
 
 # 🧪 Runs a command and exits if it fails, with a custom success message.
-# 💡 Usage: _run_or_abort "Doing something" "✅ Success message" <command>
-function _run_or_abort() {
+# 💡 Usage: _run-or-abort "Doing something" "✅ Success message" <command>
+function _run-or-abort() {
     local description="$1"
     local success_msg="$2"
     shift 2
@@ -41,8 +41,8 @@ function _run_or_abort() {
 }
 
 # 🛑 Asks the user to confirm before continuing (unless --quiet is passed).
-# 💡 Usage: _confirm_or_abort "Are you sure?" [--quiet]
-function _confirm_or_abort() {
+# 💡 Usage: _confirm-or-abort "Are you sure?" [--quiet]
+function _confirm-or-abort() {
     local message="$1"
     shift # Remove the first argument (message) from the list
 
@@ -79,6 +79,27 @@ function _confirm_or_abort() {
     done
 }
 
+# 🛠️ Checks for macOS software updates and installs them if available.
+# 💡 Usage: _check-software-updates && echo "Up to date" || echo "Reboot required"
+function _check-software-updates() {
+    # 🛠️ Installs all available macOS software updates (system + security)
+    echo "🔍 Checking for macOS software updates..."
+
+    # Check for available software updates
+    available_updates=$(softwareupdate -l 2>&1)
+
+    if echo "$available_updates" | grep -q "No new software available"; then
+        echo "✅ No updates available. Skipping installation."
+        return 0
+    else
+        echo "⬇️  Updates available. Installing now..."
+        softwareupdate -ia --verbose
+        echo "✅ Updates installed successfully."
+        echo "🔁 A system restart may be required to complete installation."
+        echo "⚠️  Please reboot your Mac and then re-run: devkit-pc-setup"
+        return 1 # Signal that a reboot is needed
+    fi
+}
 # 🛡️ Checks if DevKit is fully set up based on required tools
 # 🧪 Usage: devkit-is-setup [--quiet] || return 1
 function devkit-is-setup() {
@@ -130,28 +151,6 @@ function devkit-is-setup() {
     return 0
 }
 
-# 🛠️ Checks for macOS software updates and installs them if available.
-# 💡 Usage: _check-software-updates && echo "Up to date" || echo "Reboot required"
-function _check-software-updates() {
-    # 🛠️ Installs all available macOS software updates (system + security)
-    echo "🔍 Checking for macOS software updates..."
-
-    # Check for available software updates
-    available_updates=$(softwareupdate -l 2>&1)
-
-    if echo "$available_updates" | grep -q "No new software available"; then
-        echo "✅ No updates available. Skipping installation."
-        return 0
-    else
-        echo "⬇️  Updates available. Installing now..."
-        softwareupdate -ia --verbose
-        echo "✅ Updates installed successfully."
-        echo "🔁 A system restart may be required to complete installation."
-        echo "⚠️  Please reboot your Mac and then re-run: devkit-pc-setup"
-        return 1 # Signal that a reboot is needed
-    fi
-}
-
 # 🚀 Sets up your full devkit environment (tools, SDKs, configs).
 # 💡 Usage: devkit-pc-setup [--quiet]  # Skips confirmation prompts
 function devkit-pc-setup() {
@@ -159,7 +158,7 @@ function devkit-pc-setup() {
     local log_file="$DEVKIT_ROOT/setup_$(date +'%Y%m%d%H%M%S').log"
 
     {
-        _confirm_or_abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
+        _confirm-or-abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
 
         _check-software-updates || return 1
 
@@ -170,7 +169,7 @@ function devkit-pc-setup() {
         homebrew-setup || return 1
 
         # Now its time to ask the user to configure his cask apps prior to going further
-        _confirm_or_abort "🧩 Please take a moment to open and configure your downloaded apps (e.g. VS Code, Android Studio). Press Enter when you're ready to continue." "$@" || return 1
+        _confirm-or-abort "🧩 Please take a moment to open and configure your downloaded apps (e.g. VS Code, Android Studio). Press Enter when you're ready to continue." "$@" || return 1
 
         # Install NPM and packages
         npm-setup || return 1
@@ -179,7 +178,7 @@ function devkit-pc-setup() {
         mas-setup || return 1
 
         # Install Xcode and Command Line Tools
-        xcode_setup || return 1
+        xcode-setup || return 1
 
         # Flutter Android Setup
         flutter-android-sdk-setup || return 1
@@ -202,45 +201,45 @@ function devkit-pc-update() {
         sudo -v && clear
 
         # --- Brew ---
-        _log_update_step "Homebrew and Packages" "homebrew-maintain"
+        _log-update-step "Homebrew and Packages" "homebrew-maintain"
 
         # --- pip (Python) ---
-        _log_update_step "pip (Python)" bash -c '
+        _log-update-step "pip (Python)" bash -c '
         pip3 install --upgrade pip setuptools wheel
         '
 
         # --- gcloud ---
-        _log_update_step "gcloud CLI" gcloud components update
+        _log-update-step "gcloud CLI" gcloud components update
 
         # --- Flutter ---
-        _log_update_step "Flutter SDK" bash -c '
+        _log-update-step "Flutter SDK" bash -c '
         flutter upgrade --force
         flutter doctor -v
         '
 
         # --- NPM ---
-        _log_update_step "NPM and Dependencies" bash -c '
+        _log-update-step "NPM and Dependencies" bash -c '
         npm install -g npm@latest
         npm-check -g -u
         '
 
         # --- CocoaPods ---
-        _log_update_step "CocoaPods" pod repo update
+        _log-update-step "CocoaPods" pod repo update
 
         # --- Rosetta ---
-        _log_update_step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license
+        _log-update-step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license
 
         # --- App Store Apps ---
-        _log_update_step "App Store Apps (via mas-cli)" mas-maintain
+        _log-update-step "App Store Apps (via mas-cli)" mas-maintain
 
         # --- devkit Software Updates ---
-        _log_update_step "devkit System Updates" softwareupdate -ia --verbose
+        _log-update-step "devkit System Updates" softwareupdate -ia --verbose
 
     } 2>&1 | tee -a "$log_file"
 }
 
 # 📦 Show versions of commonly used dev tools and warn if missing
-function devkit-doctor() {
+function devkit-check-tools() {
     echo "🔧 Development Environment Status:"
     echo "────────────────────────────────────"
 
@@ -299,4 +298,47 @@ function devkit-doctor() {
     else
         echo "✅ All essential tools are installed!"
     fi
+}
+
+function devkit-doctor() {
+    local log_file="$DEVKIT_ROOT/doctor_$(date +'%Y%m%d%H%M%S').log"
+
+    {
+        echo "🔍 Running devkit doctor..."
+        echo "────────────────────────────────────"
+
+        # Check for missing tools
+        devkit-check-tools || return 1
+
+        # Homebrew Checks
+        homebrew-doctor || return 1
+
+        # Xcode Checks
+        xcode-doctor || return 1
+
+        # Git Checks
+        git-doctor || return 1
+
+        # PostgreSQL Checks
+        postgres-doctor || return 1
+
+        # NPM Checks
+        npm-doctor || return 1
+
+        # Shell
+        echo "🔧 Checking default shell..."
+        [[ "$SHELL" == *"zsh" ]] && echo "✅ Default shell is zsh" ||
+            echo "⚠️  Zsh is not your default shell. Set it with: chsh -s $(which zsh)"
+
+        # PATH Sanity
+        echo "🔧 Checking PATH..."
+        echo "$PATH" | grep -q "/usr/local/bin" &&
+            echo "✅ /usr/local/bin is in PATH" ||
+            echo "⚠️  /usr/local/bin is missing from PATH"
+
+        echo "✅ All checks completed!"
+        echo "🔧 Your devkit environment is ready!"
+        echo "────────────────────────────────────"
+
+    } 2>&1 | tee -a "$log_file"
 }

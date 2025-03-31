@@ -4,7 +4,7 @@
 # - Example: github-commit-and-push "Refactored login logic"
 function github-commit-and-push() {
 
-    _confirm_or_abort "This action will commit all changes and push them to the remote repository. Continue?" "$@" || return 1
+    _confirm-or-abort "This action will commit all changes and push them to the remote repository. Continue?" "$@" || return 1
 
     # Check if a commit message is provided
     if [ $# -eq 0 ]; then
@@ -27,7 +27,7 @@ function github-commit-and-push() {
 # - Forcefully re-commits everything
 function github-clear-cache-and-recommit-all-files() {
 
-    _confirm_or_abort "This action will reset the Git cache and recommit all files. Continue?" "$@" || return 1
+    _confirm-or-abort "This action will reset the Git cache and recommit all files. Continue?" "$@" || return 1
 
     # Step 1: Remove all files from the Git index (cache) without deleting them from the working directory.
     git rm -r --cached .
@@ -47,7 +47,7 @@ function github-clear-cache-and-recommit-all-files() {
 # - Force pushes to remove the last commit from remote
 function github-undo-last-commit() {
 
-    _confirm_or_abort "This action will revert the last commit on GitHub only. Continue?" "$@" || return 1
+    _confirm-or-abort "This action will revert the last commit on GitHub only. Continue?" "$@" || return 1
 
     # Step 1: Force push the current branch, resetting it to the previous commit on GitHub.
     # This will remove the last commit from the remote repository, effectively undoing it on GitHub.
@@ -65,7 +65,7 @@ function github-branch-rename() {
         return 1
     fi
 
-    _confirm_or_abort "This action will rename the current branch to '$1'. Continue?" "$@" || return 1
+    _confirm-or-abort "This action will rename the current branch to '$1'. Continue?" "$@" || return 1
 
     local new_branch="$1"
     local old_branch
@@ -85,7 +85,7 @@ function github-branch-create() {
         return 1
     fi
 
-    _confirm_or_abort "Create a new branch '$1' and switch to it?" "$@" || return 1
+    _confirm-or-abort "Create a new branch '$1' and switch to it?" "$@" || return 1
 
     git checkout -b "$1"
     echo "✅ Created and switched to branch: $1"
@@ -101,8 +101,8 @@ function github-branch-delete() {
         return 1
     fi
 
-    _confirm_or_abort "Delete local branch '$branch'?" "$@" && git branch -d "$branch"
-    _confirm_or_abort "Delete remote branch '$branch'?" "$@" && git push origin --delete "$branch"
+    _confirm-or-abort "Delete local branch '$branch'?" "$@" && git branch -d "$branch"
+    _confirm-or-abort "Delete remote branch '$branch'?" "$@" && git push origin --delete "$branch"
 }
 
 # 🌲 Shows all branches with the current one highlighted
@@ -117,7 +117,7 @@ function github-branch-list() {
 
 # 🧹 Deletes all local branches merged into main
 function github-branches-clean() {
-    _confirm_or_abort "This will delete all branches already merged into 'main'. Continue?" "$@" || return 1
+    _confirm-or-abort "This will delete all branches already merged into 'main'. Continue?" "$@" || return 1
 
     git branch --merged main | grep -v '^\*' | grep -v 'main' | xargs -n 1 git branch -d
     echo "✅ Cleaned up merged branches."
@@ -125,7 +125,7 @@ function github-branches-clean() {
 
 # 🔄 Resets local branch to match remote (forcefully)
 function github-reset-to-remote() {
-    _confirm_or_abort "This will reset your local branch to match remote. All local changes will be lost. Continue?" "$@" || return 1
+    _confirm-or-abort "This will reset your local branch to match remote. All local changes will be lost. Continue?" "$@" || return 1
 
     git fetch origin
     git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
@@ -134,7 +134,7 @@ function github-reset-to-remote() {
 
 # 📥 Safely pulls latest changes after stashing
 function github-stash-and-pull() {
-    _confirm_or_abort "This will stash your local changes, pull the latest changes from remote, and then reapply your stashed changes. Continue?" "$@" || return 1
+    _confirm-or-abort "This will stash your local changes, pull the latest changes from remote, and then reapply your stashed changes. Continue?" "$@" || return 1
 
     echo "📦 Stashing local changes..."
     git stash push -m "Auto stash before pull"
@@ -173,7 +173,7 @@ function github-push-tag() {
 function github-rebase-current() {
     local target="${1:-main}"
 
-    _confirm_or_abort "This will rebase current branch onto '$target'. Continue?" "$@" || return 1
+    _confirm-or-abort "This will rebase current branch onto '$target'. Continue?" "$@" || return 1
 
     git fetch origin
     git rebase origin/"$target"

@@ -1,10 +1,10 @@
 # Function to build image
 # This function builds a Docker image, tags it, pushes it to Artifact Registry, and configures
 # Cloud Build permissions before initiating the build process.
-function gcloud_run_build_image() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-run-build-image() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to build the Docker image and deploy the service to Cloud Run?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to build the Docker image and deploy the service to Cloud Run?" "$@" || return 1
 
     echo "🔹 Building the Docker image and pushing it to Artifact Registry..."
 
@@ -12,7 +12,7 @@ function gcloud_run_build_image() {
     GCP_RUN_FULL_IMAGE_NAME="$GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_EXTENDED_IMAGE_NAME"
 
     # Open Docker Desktop
-    docker_daemon_start &&
+    docker-daemon-start &&
 
         # Authenticate Docker to push the image
         gcloud auth configure-docker $GCP_REGION-docker.pkg.dev --quiet &&
@@ -47,10 +47,10 @@ function gcloud_run_build_image() {
 # Function to deploy the service to Cloud Run for the first time
 # This function deploys the Cloud Run service using the built Docker image, configuring it with
 # CPU, memory, and database connectivity settings while allowing unauthenticated access.
-function gcloud_run_deploy_initial() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-run-deploy-initial() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to deploy the service to Cloud Run for the first time?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to deploy the service to Cloud Run for the first time?" "$@" || return 1
 
     echo "🔹 Deploying the service to Cloud Run for the first time..."
 
@@ -69,10 +69,10 @@ function gcloud_run_deploy_initial() {
 
 # Function to redeploy the service to Cloud Run
 # This function redeploys an updated version of the Cloud Run service using the latest image from Artifact Registry.
-function gcloud_run_deploy_latest() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-run-deploy-latest() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to redeploy the service to Cloud Run?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to redeploy the service to Cloud Run?" "$@" || return 1
 
     echo "🔹 Redeploying the service to Cloud Run..."
 
@@ -89,10 +89,10 @@ function gcloud_run_deploy_latest() {
 
 # Function to update the service URLs environment variable in Cloud Run
 # This function retrieves the Cloud Run service's URL and updates it as an environment variable in the service configuration.
-function gcloud_run_set_service_urls_env() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-run-set-service-urls-env() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to update the service URLs environment variable in Cloud Run?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to update the service URLs environment variable in Cloud Run?" "$@" || return 1
 
     echo "🔹 Updating the service URLs environment variable in Cloud Run..."
 
@@ -112,35 +112,35 @@ function gcloud_run_set_service_urls_env() {
 
 # Function to build the image and deploy the service to Cloud Run for the first time
 # This function builds the Docker image, deploys it to Cloud Run, and updates the service URL environment variable.
-function gcloud_run_build_and_deploy_initial() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-run-build-and-deploy-initial() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to build the Docker image and deploy the service to Cloud Run for the first time?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to build the Docker image and deploy the service to Cloud Run for the first time?" "$@" || return 1
 
     echo "⚙️ Starting to build the Docker image and deploy the service to Cloud Run for the first time..."
     # Build the image, deploy the service for the first time, and update the service URL environment variable
-    gcloud_run_build_image --quiet && gcloud_run_deploy_initial --quiet && gcloud_run_set_service_urls_env --quiet
+    gcloud-run-build-image --quiet && gcloud-run-deploy-initial --quiet && gcloud-run-set-service-urls-env --quiet
 }
 
 # Function to build the image and redeploy the service to Cloud Run
 # This function builds the Docker image, redeploys the Cloud Run service, and updates the service URL environment variable.
-function gcloud_run_build_and_deploy_latest() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-run-build-and-deploy-latest() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to build the Docker image and redeploy the service to Cloud Run?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to build the Docker image and redeploy the service to Cloud Run?" "$@" || return 1
 
     echo "⚙️ Starting to build the Docker image and redeploy the service to Cloud Run..."
 
     # Build the image, redeploy the service, and update the service URL environment variable
-    gcloud_run_build_image --quiet && gcloud_run_deploy_latest --quiet && gcloud_run_set_service_urls_env --quiet
+    gcloud-run-build-image --quiet && gcloud-run-deploy-latest --quiet && gcloud-run-set-service-urls-env --quiet
 }
 
 # Function to delete the service from Cloud Run with user confirmation
 # This function permanently deletes a Cloud Run service along with its associated job after user confirmation.
-function gcloud_run_service_delete() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-run-service-delete() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to delete the Cloud Run service and job?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to delete the Cloud Run service and job?" "$@" || return 1
 
     # Delete the service
     echo "🔹 Deleting the Cloud Run service '$GCP_RUN_NAME'..."

@@ -1,10 +1,10 @@
 # Function to create a new Cloud SQL for PostgreSQL instance
 # This function provisions a Cloud SQL PostgreSQL instance with predefined configurations, including
 # storage settings, maintenance schedules, backup, and query insights.
-function gcloud_sql_instance_create() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-sql-instance-create() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to create a new Cloud SQL instance?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to create a new Cloud SQL instance?" "$@" || return 1
 
     echo "🔹 Creating a new Cloud SQL instance for PostgreSQL..."
 
@@ -44,10 +44,10 @@ function gcloud_sql_instance_create() {
 
 # Function to delete a Cloud SQL instance
 # This function permanently deletes a specified Cloud SQL instance after user confirmation.
-function gcloud_sql_instance_delete() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-sql-instance-delete() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to delete the Cloud SQL instance '$GCP_SQL_INSTANCE_ID'?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to delete the Cloud SQL instance '$GCP_SQL_INSTANCE_ID'?" "$@" || return 1
 
     INSTANCE_NAME=$GCP_SQL_INSTANCE_ID
 
@@ -60,9 +60,9 @@ function gcloud_sql_instance_delete() {
 # Function to run the cloud-sql-proxy with the loaded configuration
 # This function starts the Cloud SQL Proxy, forwarding database connections through a local port
 # to securely access the Cloud SQL instance.
-function gcloud_sql_proxy_start() {
+function gcloud-sql-proxy-start() {
     # Call the configuration loading function
-    gcloud_config_load_and_validate || return 1
+    gcloud-config-load-and-validate || return 1
 
     echo "🔹 Starting Cloud SQL Proxy..."
     # If the configuration loads and validates, run the cloud-sql-proxy
@@ -73,9 +73,9 @@ function gcloud_sql_proxy_start() {
 # Function to connect to a gcloud PostgreSQL instance
 # This function establishes an interactive connection to the Cloud SQL PostgreSQL instance using
 # the gcloud CLI.
-function gcloud_sql_postgres_connect() {
+function gcloud-sql-postgres-connect() {
     # Step 1: Load Configuration and Validate
-    gcloud_config_load_and_validate || return 1
+    gcloud-config-load-and-validate || return 1
 
     echo "🔹 Connecting to the Cloud SQL PostgreSQL instance..."
 
@@ -86,11 +86,11 @@ function gcloud_sql_postgres_connect() {
 # Function to create a new database and user in gcloud PostgreSQL
 # This function automates the creation of a new database and user within a Cloud SQL PostgreSQL instance,
 # assigns privileges, and ensures access permissions.
-function gcloud_sql_db_and_user_create() {
+function gcloud-sql-db-and-user-create() {
     # Step 1: Load Configuration and Validate
-    gcloud_config_load_and_validate || return 1
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to create a new database and user?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to create a new database and user?" "$@" || return 1
 
     echo "🔹 Creating a new database and user in Cloud SQL for PostgreSQL..."
 
@@ -159,10 +159,10 @@ EOF
 # Function to delete a database and user in gcloud PostgreSQL
 # This function revokes privileges, drops the specified database, and removes the associated user
 # from the Cloud SQL PostgreSQL instance.
-function gcloud_sql_db_and_user_delete() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-sql-db-and-user-delete() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to delete the database and user '$GCP_SQL_DB_USERNAME'?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to delete the database and user '$GCP_SQL_DB_USERNAME'?" "$@" || return 1
 
     echo "🔹 Deleting the database and user in Cloud SQL for PostgreSQL..."
 
@@ -230,8 +230,8 @@ EOF
 # Function to start Cloud SQL Proxy in a new VS Code terminal tab and run Django setup
 # This function launches the Cloud SQL Proxy in a new terminal tab, waits for it to be available,
 # and then executes Django setup commands, including migrations and database population.
-function gcloud_sql_proxy_and_django_setup() {
-    _confirm_or_abort "Are you sure you want to start the Cloud SQL Proxy and run Django setup?" "$@" || return 1
+function gcloud-sql-proxy-and-django-setup() {
+    _confirm-or-abort "Are you sure you want to start the Cloud SQL Proxy and run Django setup?" "$@" || return 1
 
     echo "🔹 Starting the Cloud SQL Proxy in a new terminal window, then start Django in Development 
     settings, apply migrations, and populate the database..."
@@ -239,10 +239,10 @@ function gcloud_sql_proxy_and_django_setup() {
     # Get the current working directory
     local cwd=$(pwd)
 
-    # Open a new terminal window and run gcloud_sql_proxy_start in that directory
+    # Open a new terminal window and run gcloud-sql-proxy-start in that directory
     osascript <<EOF
 tell application "Terminal"
-    do script "cd '$cwd' && gcloud_sql_proxy_start"
+    do script "cd '$cwd' && gcloud-sql-proxy-start"
 end tell
 EOF
 

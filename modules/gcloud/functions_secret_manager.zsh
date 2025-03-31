@@ -1,10 +1,10 @@
 # Function to create .env file in Secret Manager
 # This function creates a new secret in Google Cloud Secret Manager using the contents of the local .env file
 # and grants the necessary permissions to the compute service account.
-function gcloud_secret_manager_env_create() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-secret-manager-env-create() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to create a new secret in Secret Manager?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to create a new secret in Secret Manager?" "$@" || return 1
 
     echo "🔹 Creating a new secret '$GCP_SECRET_NAME' in Secret Manager..."
 
@@ -23,10 +23,10 @@ function gcloud_secret_manager_env_create() {
 # Function to update .env file in Secret Manager and disable only active previous versions
 # This function adds a new version of the secret in Google Cloud Secret Manager and disables
 # all previously active versions to ensure only the latest version remains accessible.
-function gcloud_secret_manager_env_update() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-secret-manager-env-update() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to update the secret in Secret Manager?" "$@" || return 1
+    _confirm-or-abort "Are you sure you want to update the secret in Secret Manager?" "$@" || return 1
 
     echo "🔹 Updating the secret '$GCP_SECRET_NAME' in Secret Manager..."
 
@@ -53,10 +53,10 @@ function gcloud_secret_manager_env_update() {
 
 # Function to delete .env file from Secret Manager
 # This function permanently deletes a secret from Google Cloud Secret Manager after user confirmation.
-function gcloud_secret_manager_env_delete() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-secret-manager-env-delete() {
+    gcloud-config-load-and-validate || return 1
 
-    _confirm_or_abort "Are you sure you want to delete the secret from Secret Manager
+    _confirm-or-abort "Are you sure you want to delete the secret from Secret Manager
 This action is irreversible and will permanently delete the secret." "$@" || return 1
 
     echo "🔹 Deleting the secret '$GCP_SECRET_NAME' from Secret Manager..."
@@ -65,7 +65,7 @@ This action is irreversible and will permanently delete the secret." "$@" || ret
     gcloud secrets delete $GCP_SECRET_NAME --quiet
 }
 
-function gcloud_secret_manager_env_download() {
+function gcloud-secret-manager-env-download() {
     echo "📃 Fetching available secrets..."
 
     local temp_file=$(mktemp)

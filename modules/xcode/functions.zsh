@@ -1,5 +1,5 @@
 # 🛠️ Sets up Xcode, CLI tools, and related developer apps
-function xcode_setup() {
+function xcode-setup() {
     echo "🚀 Starting Xcode setup..."
 
     # 🛠️ Installs all available macOS software updates (system + security)
@@ -44,15 +44,15 @@ function xcode_setup() {
     fi
 
     # 🧪 Run simulator first launch (if function exists)
-    if typeset -f xcode_simulator_first_launch >/dev/null; then
-        xcode_simulator_first_launch || return 1
+    if typeset -f xcode-simulator-first-launch >/dev/null; then
+        xcode-simulator-first-launch || return 1
     fi
 
     echo "🎉 Xcode setup completed successfully."
 }
 
 # 🚀 Launch the iOS Simulator once to complete its first-run setup
-function xcode_simulator_first_launch() {
+function xcode-simulator-first-launch() {
     echo "📱 Launching iOS Simulator for initial setup..."
 
     # Set Xcode path (only if needed)
@@ -67,4 +67,28 @@ function xcode_simulator_first_launch() {
     xcodebuild -downloadPlatform iOS || return 1
 
     echo "✅ Xcode and Simulator first-launch setup complete."
+}
+
+function xcode-doctor() {
+    # Xcode Checks
+    echo "🔧 Checking Xcode..."
+    xcode-select -p >/dev/null || {
+        echo "⚠️  Xcode not properly installed or selected."
+        return 1
+    }
+
+    # iOS Simulators
+    if command -v xcrun &>/dev/null; then
+        echo "📱 Checking iOS simulators..."
+        xcrun simctl list devices available | grep -qE "iPhone|iPad" &&
+            echo "✅ iOS simulators are available" ||
+            echo "⚠️  No available iOS simulators found. You may need to install them via Xcode."
+    fi
+
+    # Rosetta
+    echo "🔧 Checking Rosetta installation..."
+    if [[ $(uname -m) == "arm64" && ! $(command -v otool) ]]; then
+        echo "⚠️  Rosetta is not installed. Please install it: softwareupdate --install-rosetta"
+        return 1
+    fi
 }

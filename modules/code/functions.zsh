@@ -1,7 +1,7 @@
 # 💻 Opens a local project from $HOME/Desktop/dev in VS Code
 # - If no project name is given, lists available ones
-# 💡 Usage: code_project <project_name>
-function code_project() {
+# 💡 Usage: code-project <project_name>
+function code-project() {
     local BASE_PATH="$HOME/Desktop/dev"
     local PROJECT_NAME=$1 # Get the first argument as project name
 
@@ -25,11 +25,11 @@ function code_project() {
     fi
 }
 
-# 🧠 Tab completion for `code_project`
-function _code_project_completions() {
+# 🧠 Tab completion for `code-project`
+function _code-project-completions() {
     local BASE_PATH="$HOME/Desktop/dev"
     COMPREPLY=($(compgen -W "$(ls -1 "$BASE_PATH")" -- "${COMP_WORDS[1]}"))
 }
 
-# 🧩 Attach the completion function to `code_project`
-complete -F _code_project_completions code_project
+# 🧩 Attach the completion function to `code-project`
+complete -F _code-project-completions code-project

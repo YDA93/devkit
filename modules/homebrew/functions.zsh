@@ -109,7 +109,7 @@ function homebrew-prune-packages() {
     # Prune formula
     for pkg in "${current_formula[@]}"; do
         if ! printf '%s\n' "${desired_formula[@]}" | grep -qx "$pkg"; then
-            if _confirm_or_abort "Uninstall formula \"$pkg\"? It's not in formulas.txt." "$@"; then
+            if _confirm-or-abort "Uninstall formula \"$pkg\"? It's not in formulas.txt." "$@"; then
                 echo "❌ Uninstalling formula: $pkg"
                 brew uninstall --ignore-dependencies "$pkg"
             else
@@ -121,7 +121,7 @@ function homebrew-prune-packages() {
     # Prune casks
     for cask in "${current_casks[@]}"; do
         if ! printf '%s\n' "${desired_casks[@]}" | grep -qx "$cask"; then
-            if _confirm_or_abort "Uninstall cask \"$cask\"? It's not in casks.txt." "$@"; then
+            if _confirm-or-abort "Uninstall cask \"$cask\"? It's not in casks.txt." "$@"; then
                 echo "❌ Uninstalling cask: $cask"
                 brew uninstall --cask "$cask"
             else
@@ -178,4 +178,15 @@ function homebrew-maintain() {
     brew missing || echo "✅ No missing dependencies."
 
     echo "✅ Homebrew maintenance complete!"
+}
+
+function homebrew-doctor() {
+    # Homebrew Checks
+    echo "🔧 Checking Homebrew..."
+    if ! command -v brew &>/dev/null; then
+        echo "⚠️  Homebrew not installed."
+    else
+        brew doctor || return 1
+        brew outdated || echo "✅ No outdated packages"
+    fi
 }

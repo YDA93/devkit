@@ -44,7 +44,7 @@ function django-secret-key-generate() {
     print(''.join(secrets.choice(safe_chars) for _ in range(50)))
     ")
 
-    environment_variable_set "DJANGO_SECRET_KEY" "$raw_key"
+    environment-variable-set "DJANGO_SECRET_KEY" "$raw_key"
 }
 
 # ------------------------------------------------------------------------------
@@ -222,19 +222,19 @@ function django-migrate-to-new-database() {
         # 1. Validations
         python-environment-is-activated || return 1
         django-settings local || return 1
-        environment_variable_exists LOCAL_DB_NAME || return 1
-        environment_variable_exists LOCAL_DB_PASSWORD || return 1
+        environment-variable-exists LOCAL_DB_NAME || return 1
+        environment-variable-exists LOCAL_DB_PASSWORD || return 1
 
         # 2. Set the PGPASSWORD environment variable
-        export PGPASSWORD=$(environment_variable_get LOCAL_DB_PASSWORD)
-        postgres_check_password || return 1
+        export PGPASSWORD=$(environment-variable-get LOCAL_DB_PASSWORD)
+        postgres-check-password || return 1
 
         # Prompt user for confirmation
-        _confirm_or_abort "This action will reset the project to its initial state. Proceed?" || return 1
+        _confirm-or-abort "This action will reset the project to its initial state. Proceed?" || return 1
 
         # 3. Backup data if needed
         local backup_performed=false
-        if _confirm_or_abort "Do you want to backup data?"; then
+        if _confirm-or-abort "Do you want to backup data?"; then
             django-dumpdata "$project_directory" || return 1
             backup_performed=true
         else
@@ -242,10 +242,10 @@ function django-migrate-to-new-database() {
         fi
 
         # 4. Manage database creation
-        postgres_manage_database_creation || return 1
+        postgres-manage-database-creation || return 1
 
         # 5. Update the .env file with the correct database name
-        environment_variable_set "LOCAL_DB_NAME" "$db_name" || return 1
+        environment-variable-set "LOCAL_DB_NAME" "$db_name" || return 1
 
         # 6. Delete all migrations and cache files
         django-delete-migrations-and-cache || return 1
@@ -272,7 +272,7 @@ function django-migrate-to-new-database() {
             django-loaddata "$project_directory" || return 1 # Using the default "data.json"
 
         else
-            if _confirm_or_abort "Do you want to restore data from a backup file?"; then
+            if _confirm-or-abort "Do you want to restore data from a backup file?"; then
                 echo "Please provide the path to the backup file:"
                 read backup_file || return 1
                 django-loaddata "$project_directory" "$backup_file" || return 1 # Using the user-specified backup file
@@ -359,7 +359,7 @@ function django-upload-env-to-github-secrets() {
 
     # Get GCP_CREDENTIALS using your custom command
     local GCP_CREDS
-    GCP_CREDS=$(environment_variable_get "GCP_CREDENTIALS" --preserve-quotes --raw)
+    GCP_CREDS=$(environment-variable-get "GCP_CREDENTIALS" --preserve-quotes --raw)
 
     # Validate that it's not empty
     if [[ -z "$GCP_CREDS" ]]; then

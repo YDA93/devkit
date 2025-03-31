@@ -1,17 +1,17 @@
 # 🔤 Returns a job name based on the project and cron URL path.
 # 📦 Usage:
-#   _gcloud_scheduler_jobs_generate_name "https://..."
-function _gcloud_scheduler_jobs_generate_name() {
+#   _gcloud-scheduler-jobs-generate-name "https://..."
+function _gcloud-scheduler-jobs-generate-name() {
     local url="$1"
-    local project_name=$(_gcloud_slugify_project_name)
+    local project_name=$(_gcloud-slugify-project-name)
     local cron_path=$(echo "$url" | awk -F '/' '{print $(NF-1)}')
     echo "${project_name}_${cron_path}"
 }
 
 # 📝 Turns a cron URL into a readable job description.
 # 📦 Usage:
-#   _gcloud_scheduler_jobs_generate_description "https://..."
-function _gcloud_scheduler_jobs_generate_description() {
+#   _gcloud-scheduler-jobs-generate-description "https://..."
+function _gcloud-scheduler-jobs-generate-description() {
     local url="$1"
     local domain=$(echo "$url" | awk -F '/' '{print $3}')
 
@@ -28,16 +28,16 @@ function _gcloud_scheduler_jobs_generate_description() {
 
 # ✅ Prompts user to confirm creating or deleting jobs.
 # 📦 Usage:
-#   _gcloud_scheduler_jobs_prompt create "${urls[@]}"
-#   _gcloud_scheduler_jobs_prompt delete "${urls[@]}"
-function _gcloud_scheduler_jobs_prompt() {
+#   _gcloud-scheduler-jobs-prompt create "${urls[@]}"
+#   _gcloud-scheduler-jobs-prompt delete "${urls[@]}"
+function _gcloud-scheduler-jobs-prompt() {
     local mode="$1"
     shift
     local urls=("$@")
 
     local job_names=()
     for url in "${urls[@]}"; do
-        job_names+=("$(_gcloud_scheduler_jobs_generate_description "$url")")
+        job_names+=("$(_gcloud-scheduler-jobs-generate-description "$url")")
     done
 
     local name_list=$(printf "  • %s\n" "${job_names[@]}")
@@ -47,12 +47,12 @@ function _gcloud_scheduler_jobs_prompt() {
     local message=$(printf "%s %d Cloud Scheduler job(s) in project '%s':\n%s" \
         "$verb" "${#job_names[@]}" "$GCP_PROJECT_ID" "$name_list")
 
-    _confirm_or_abort "$message" "$@" || return 1
+    _confirm-or-abort "$message" "$@" || return 1
 }
 
 # 🗑️ Deletes all Cloud Scheduler jobs in the current project and region.
-function gcloud_scheduler_jobs_delete() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-scheduler-jobs-delete() {
+    gcloud-config-load-and-validate || return 1
 
     echo "📡 Fetching all Cloud Scheduler jobs in project '$GCP_PROJECT_ID'..."
     local urls=($(gcloud scheduler jobs list \
@@ -66,12 +66,12 @@ function gcloud_scheduler_jobs_delete() {
     fi
 
     # Format job list for prompt
-    _gcloud_scheduler_jobs_prompt delete "${urls[@]}" "$@" || return 1
+    _gcloud-scheduler-jobs-prompt delete "${urls[@]}" "$@" || return 1
 
     echo "🔹 Deleting ${#urls[@]} job(s)..."
 
     for url in "${urls[@]}"; do
-        local job_name=$(_gcloud_scheduler_jobs_generate_name "$url")
+        local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
         echo "🔧 Deleting job: $job_name"
         gcloud scheduler jobs delete "$job_name" \
             --project="$GCP_PROJECT_ID" \
@@ -85,8 +85,8 @@ function gcloud_scheduler_jobs_delete() {
 # 🔄 Syncs GCP Cloud Scheduler with your Django cron URLs.
 #    - Adds new jobs
 #    - Removes jobs no longer in code
-function gcloud_scheduler_jobs_sync() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-scheduler-jobs-sync() {
+    gcloud-config-load-and-validate || return 1
 
     echo "🔹 Syncing Cloud Scheduler with Django cron URLs..."
 
@@ -99,9 +99,9 @@ function gcloud_scheduler_jobs_sync() {
     else
         echo "🔍 Found ${#local_urls[@]} local cron job(s):"
         for url in "${local_urls[@]}"; do
-            local job_name=$(_gcloud_scheduler_jobs_generate_name "$url")
+            local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
             local_jobs[$job_name]="$url"
-            echo "  • $(_gcloud_scheduler_jobs_generate_description "$url")"
+            echo "  • $(_gcloud-scheduler-jobs-generate-description "$url")"
         done
     fi
     echo ""
@@ -117,7 +117,7 @@ function gcloud_scheduler_jobs_sync() {
     else
         echo "📡 Found ${#remote_jobs[@]} Cloud Scheduler job(s):"
         for url in "${remote_jobs[@]}"; do
-            local description=$(_gcloud_scheduler_jobs_generate_description "$url")
+            local description=$(_gcloud-scheduler-jobs-generate-description "$url")
             echo "  • $description"
         done
     fi
@@ -129,7 +129,7 @@ function gcloud_scheduler_jobs_sync() {
 
     # Remote jobs not in local → mark for deletion
     for url in "${remote_jobs[@]}"; do
-        local job_name=$(_gcloud_scheduler_jobs_generate_name "$url")
+        local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
         if [[ -z "${local_jobs[$job_name]}" ]]; then
             to_delete_urls+=("$url")
         fi
@@ -144,16 +144,16 @@ function gcloud_scheduler_jobs_sync() {
 
     # Confirm before making changes
     if [[ ${#to_delete_urls[@]} -gt 0 ]]; then
-        _gcloud_scheduler_jobs_prompt delete "${to_delete_urls[@]}" "$@" || return 1
+        _gcloud-scheduler-jobs-prompt delete "${to_delete_urls[@]}" "$@" || return 1
     fi
 
     if [[ ${#to_create_urls[@]} -gt 0 ]]; then
-        _gcloud_scheduler_jobs_prompt create "${to_create_urls[@]}" "$@" || return 1
+        _gcloud-scheduler-jobs-prompt create "${to_create_urls[@]}" "$@" || return 1
     fi
 
     # 🔧 Delete jobs
     for url in "${to_delete_urls[@]}"; do
-        local job_name=$(_gcloud_scheduler_jobs_generate_name "$url")
+        local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
         echo "🗑️  Deleting job: $job_name"
         gcloud scheduler jobs delete "$job_name" \
             --project="$GCP_PROJECT_ID" \
@@ -164,8 +164,8 @@ function gcloud_scheduler_jobs_sync() {
     # 🔧 Create missing jobs
     local schedule="${2:-0 3 * * *}" # Default 3 AM
     for url in "${to_create_urls[@]}"; do
-        local job_name=$(_gcloud_scheduler_jobs_generate_name "$url")
-        local description=$(_gcloud_scheduler_jobs_generate_description "$url")
+        local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
+        local description=$(_gcloud-scheduler-jobs-generate-description "$url")
 
         echo "➕ Creating job: $job_name"
 
@@ -195,8 +195,8 @@ function gcloud_scheduler_jobs_sync() {
 }
 
 # 📋 Lists all Cloud Scheduler jobs in the current project and region.
-function gcloud_scheduler_jobs_list() {
-    gcloud_config_load_and_validate || return 1
+function gcloud-scheduler-jobs-list() {
+    gcloud-config-load-and-validate || return 1
 
     echo "📡 Fetching all Cloud Scheduler jobs in project '$GCP_PROJECT_ID'..."
     gcloud scheduler jobs list \

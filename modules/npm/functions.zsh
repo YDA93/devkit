@@ -88,7 +88,7 @@ function npm-prune-packages() {
 
     for pkg in "${current_pkgs[@]}"; do
         if ! printf '%s\n' "${saved_pkgs[@]}" | grep -qx "$pkg"; then
-            if _confirm_or_abort "Uninstall \"$pkg\"? It is not listed in packages.txt." "$@"; then
+            if _confirm-or-abort "Uninstall \"$pkg\"? It is not listed in packages.txt." "$@"; then
                 echo "❌ Uninstalling: $pkg"
                 npm uninstall -g "$pkg"
             else
@@ -108,4 +108,33 @@ function npm-setup() {
 function npm-list-packages() {
     echo "📦 Installed global npm packages:"
     npm list -g
+}
+
+function npm-doctor() {
+    # NPM Checks
+    if command -v npm &>/dev/null; then
+        echo "📦 Checking npm configuration..."
+
+        npm_root=$(npm config get prefix 2>/dev/null)
+        echo "🔧 npm global prefix: ${npm_root:-⚠️ Not set}"
+
+        current_registry=$(npm config get registry)
+        if [[ "$current_registry" != "https://registry.npmjs.org/" ]]; then
+            echo "⚠️  npm registry is: $current_registry"
+            echo "    👉 Consider resetting: npm config set registry https://registry.npmjs.org/"
+        else
+            echo "✅ npm registry is set to default"
+        fi
+
+        global_path="$(npm config get prefix)/lib/node_modules"
+        if [[ -w "$global_path" ]]; then
+            echo "✅ Global npm packages are writable"
+        else
+            echo "⚠️  No write access to global npm packages"
+            echo "    👉 Consider using nvm or fnm to avoid permission issues"
+        fi
+
+    else
+        echo "⚠️  npm not found."
+    fi
 }

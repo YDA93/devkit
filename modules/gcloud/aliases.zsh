@@ -16,7 +16,7 @@ alias gcloud-update='gcloud components update'
 alias gcloud-account-list='gcloud auth list'
 
 # Use function for dynamic input
-function gcloud-account-set() {
+function gcloud-config-account-set() {
     gcloud config set account "$1"
 }
 
@@ -30,6 +30,6 @@ function gcloud-project-describe() {
     gcloud projects describe "$1"
 }
 
-function gcloud-project-set() {
+function gcloud-config-project-set() {
     gcloud config set project "$1"
 }

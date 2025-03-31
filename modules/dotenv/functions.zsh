@@ -1,8 +1,8 @@
 # Checks if a specific environment variable exists and is non-empty in a .env file.
 #
 # Usage:
-#   environment_variable_exists [variable_name] [env_file]
-function environment_variable_exists() {
+#   environment-variable-exists [variable_name] [env_file]
+function environment-variable-exists() {
     local var_name="$1"
     local env_file="${2:-.env}"
 
@@ -30,15 +30,15 @@ function environment_variable_exists() {
 # Updates or adds a key-value pair in the .env file.
 #
 # Usage:
-#   environment_variable_set [key] [value]
-function environment_variable_set() {
+#   environment-variable-set [key] [value]
+function environment-variable-set() {
     local key="$1"
     local value="$2"
     local env_file=".env"
 
     if [ -z "$key" ] || [ -z "$value" ]; then
         echo "❌ Error: Key or value is missing!"
-        echo "Usage: environment_variable_set [key] [value]"
+        echo "Usage: environment-variable-set [key] [value]"
         return 1
     fi
 
@@ -65,16 +65,16 @@ function environment_variable_set() {
     echo "✅ $key successfully set."
 }
 
-# environment_variable_get – Retrieve the value of a variable from a .env file
+# environment-variable-get – Retrieve the value of a variable from a .env file
 #
 # Usage:
-#   environment_variable_get KEY [--env-file path] [--preserve-quotes] [--raw]
+#   environment-variable-get KEY [--env-file path] [--preserve-quotes] [--raw]
 #
 # Flags:
 #   --env-file         Path to the .env file (default: ".env")
 #   --preserve-quotes  Preserve surrounding quotes
 #   --raw              Output raw value (preserve escape sequences like \n)
-function environment_variable_get() {
+function environment-variable-get() {
     local key=""
     local env_file=".env"
     local preserve_quotes=false

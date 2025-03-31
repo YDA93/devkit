@@ -19,7 +19,7 @@ alias flutter-build-ios-warm-up='flutter build ipa --bundle-sksl-path flutter_01
 alias flutter-build-android-warm-up='flutter build appbundle --bundle-sksl-path flutter_01_android.sksl.json'
 
 # 📦 Production-ready Android build with code obfuscation and symbol upload
-alias flutter-build-android='flutter build appbundle --obfuscate --split-debug-info=./symbols/ && flutter_upload_crashlytics_symbols'
+alias flutter-build-android='flutter build appbundle --obfuscate --split-debug-info=./symbols/ && flutter-upload-crashlytics-symbols'
 
 # Rebuild generated files (e.g., JSON serializers, freezed, etc.)
 alias flutter-build-runner='dart run build_runner build --delete-conflicting-outputs'
