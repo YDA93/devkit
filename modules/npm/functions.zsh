@@ -111,30 +111,41 @@ function npm-list-packages() {
 }
 
 function npm-doctor() {
-    # NPM Checks
-    if command -v npm &>/dev/null; then
-        echo "📦 Checking npm configuration..."
+    echo "📦 Checking npm and Node.js..."
 
-        npm_root=$(npm config get prefix 2>/dev/null)
-        echo "🔧 npm global prefix: ${npm_root:-⚠️ Not set}"
-
-        current_registry=$(npm config get registry)
-        if [[ "$current_registry" != "https://registry.npmjs.org/" ]]; then
-            echo "⚠️  npm registry is: $current_registry"
-            echo "    👉 Consider resetting: npm config set registry https://registry.npmjs.org/"
-        else
-            echo "✅ npm registry is set to default"
-        fi
-
-        global_path="$(npm config get prefix)/lib/node_modules"
-        if [[ -w "$global_path" ]]; then
-            echo "✅ Global npm packages are writable"
-        else
-            echo "⚠️  No write access to global npm packages"
-            echo "    👉 Consider using nvm or fnm to avoid permission issues"
-        fi
-
-    else
-        echo "⚠️  npm not found."
+    if ! command -v node &>/dev/null; then
+        echo "⚠️  Node.js is not installed or not in PATH."
+        echo "💡 Install with: brew install node"
+        return 1
     fi
+
+    if ! command -v npm &>/dev/null; then
+        echo "⚠️  npm is not installed."
+        return 1
+    fi
+
+    npm_root=$(npm config get prefix 2>/dev/null)
+    echo "📁 npm global prefix: ${npm_root:-⚠️ Not set}"
+
+    current_registry=$(npm config get registry)
+    if [[ "$current_registry" != "https://registry.npmjs.org/" ]]; then
+        echo "⚠️  npm registry is: $current_registry"
+        echo "    👉 Consider resetting it:"
+        echo "       npm config set registry https://registry.npmjs.org/"
+    else
+        echo "✅ npm registry is set to default"
+    fi
+
+    global_path="$npm_root/lib/node_modules"
+    if [[ -w "$global_path" ]]; then
+        echo "✅ Global npm packages are writable"
+    else
+        echo "⚠️  No write access to global npm packages"
+        echo "    👉 Consider using nvm or fnm to manage Node versions and avoid permission issues"
+    fi
+
+    echo "🧪 Running basic 'npm doctor' check..."
+    npm doctor || echo "⚠️  npm doctor found some issues (see above)"
+
+    return 0
 }

@@ -181,12 +181,31 @@ function homebrew-maintain() {
 }
 
 function homebrew-doctor() {
-    # Homebrew Checks
     echo "🔧 Checking Homebrew..."
+
     if ! command -v brew &>/dev/null; then
-        echo "⚠️  Homebrew not installed."
-    else
-        brew doctor || return 1
-        brew outdated || echo "✅ No outdated packages"
+        echo "⚠️  Homebrew is not installed."
+        echo "👉 You can install it with: homebrew-install"
+        return 1
     fi
+
+    echo "🩺 Running 'brew doctor'..."
+    brew doctor
+    if [[ $? -ne 0 ]]; then
+        echo "⚠️  Homebrew reports issues. Run 'brew doctor' manually to review details."
+        return 1
+    else
+        echo "✅ No major issues reported by Homebrew."
+    fi
+
+    echo "📦 Checking for outdated packages..."
+    if [[ -n "$(brew outdated)" ]]; then
+        echo "⚠️  You have outdated packages."
+        echo "👉 Consider running 'brew outdated' to see which ones."
+        echo "👉 To upgrade, use: 'homebrew-maintain'"
+    else
+        echo "✅ All packages are up to date."
+    fi
+
+    return 0
 }

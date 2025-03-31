@@ -198,7 +198,7 @@ function devkit-pc-update() {
 
     {
         # Run sudo upfront and clear terminal
-        sudo -v && clear
+        clear
 
         # --- Brew ---
         _log-update-step "Homebrew and Packages" "homebrew-maintain"
@@ -324,6 +324,9 @@ function devkit-doctor() {
 
         # NPM Checks
         npm-doctor || return 1
+
+        # Firebase Checks
+        firebase-doctor || return 1
 
         # Shell
         echo "🔧 Checking default shell..."

@@ -70,25 +70,37 @@ function xcode-simulator-first-launch() {
 }
 
 function xcode-doctor() {
-    # Xcode Checks
     echo "🔧 Checking Xcode..."
-    xcode-select -p >/dev/null || {
+
+    if ! xcode-select -p &>/dev/null; then
         echo "⚠️  Xcode not properly installed or selected."
+        echo "💡 Try: xcode-select --install"
         return 1
-    }
-
-    # iOS Simulators
-    if command -v xcrun &>/dev/null; then
-        echo "📱 Checking iOS simulators..."
-        xcrun simctl list devices available | grep -qE "iPhone|iPad" &&
-            echo "✅ iOS simulators are available" ||
-            echo "⚠️  No available iOS simulators found. You may need to install them via Xcode."
     fi
 
-    # Rosetta
+    if ! command -v xcrun &>/dev/null; then
+        echo "⚠️  'xcrun' not found. Xcode CLI tools may not be fully installed."
+        return 1
+    fi
+
+    echo "📱 Checking iOS simulators..."
+    if xcrun simctl list devices available | grep -qE "iPhone|iPad"; then
+        echo "✅ iOS simulators are available."
+    else
+        echo "⚠️  No available iOS simulators found."
+        echo "💡 Open Xcode ➝ Preferences ➝ Components to install simulators."
+    fi
+
     echo "🔧 Checking Rosetta installation..."
-    if [[ $(uname -m) == "arm64" && ! $(command -v otool) ]]; then
-        echo "⚠️  Rosetta is not installed. Please install it: softwareupdate --install-rosetta"
-        return 1
+    if [[ $(uname -m) == "arm64" ]]; then
+        if ! /usr/bin/pgrep oahd &>/dev/null; then
+            echo "⚠️  Rosetta is not installed."
+            echo "💡 Run: softwareupdate --install-rosetta --agree-to-license"
+            return 1
+        else
+            echo "✅ Rosetta is installed."
+        fi
     fi
+
+    return 0
 }

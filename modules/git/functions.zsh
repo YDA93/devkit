@@ -23,17 +23,47 @@ function git-sync-config() {
 }
 
 function git-doctor() {
-    # Git Config
+    echo "🔧 Checking Git..."
+
+    if ! command -v git &>/dev/null; then
+        echo "⚠️  Git is not installed."
+        echo "💡 Install with: brew install git"
+        return 1
+    fi
+
     echo "🔧 Checking Git configuration..."
     if [[ -z $(git config user.name) || -z $(git config user.email) ]]; then
         echo "⚠️  Git user.name or user.email not configured"
+        echo "💡 Set them with:"
+        echo "   git config --global user.name \"Your Name\""
+        echo "   git config --global user.email \"you@example.com\""
     else
         echo "✅ Git user.name and user.email are set"
     fi
 
-    # SSH Key
+    echo "📝 Checking for global .gitignore..."
+    if git config --get core.excludesfile &>/dev/null; then
+        echo "✅ Global .gitignore is configured"
+    else
+        echo "⚠️  No global .gitignore set"
+        echo "💡 Tip: git config --global core.excludesfile ~/.gitignore_global"
+    fi
+
     echo "🔧 Checking SSH key..."
-    [[ -f ~/.ssh/id_rsa.pub || -f ~/.ssh/id_ed25519.pub ]] &&
-        echo "✅ SSH key found" ||
+    if [[ -f ~/.ssh/id_rsa.pub || -f ~/.ssh/id_ed25519.pub ]]; then
+        echo "✅ SSH key found"
+    else
         echo "⚠️  No SSH key found in ~/.ssh/"
+        echo "💡 Generate one with: ssh-keygen -t ed25519 -C \"your_email@example.com\""
+    fi
+
+    echo "🔐 Testing SSH connection to GitHub..."
+    if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
+        echo "✅ SSH connection to GitHub works"
+    else
+        echo "⚠️  SSH connection to GitHub failed or requires verification"
+        echo "💡 Run: ssh -T git@github.com to test manually"
+    fi
+
+    return 0
 }

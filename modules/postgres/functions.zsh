@@ -163,22 +163,30 @@ function postgres-manage-database-creation() {
 }
 
 function postgres-doctor() {
-    # PostgreSQL
     echo "🐘 Checking PostgreSQL..."
-    if command -v psql &>/dev/null; then
-        if pg_ctl status >/dev/null 2>&1 || brew services list | grep -q postgresql; then
-            echo "✅ PostgreSQL service is installed"
-        else
-            echo "⚠️  PostgreSQL is not running or installed"
-        fi
 
-        if psql -U postgres -c '\q' 2>/dev/null; then
-            echo "✅ Able to connect as 'postgres' user"
-        else
-            echo "⚠️  Cannot connect to PostgreSQL as 'postgres'"
-            echo "    👉 You may need to run: createuser -s postgres"
-        fi
-    else
+    if ! command -v psql &>/dev/null; then
         echo "⚠️  psql command not found. PostgreSQL might not be installed."
+        echo "💡 Install with: brew install postgresql"
+        return 1
     fi
+
+    echo "🛠 Checking if PostgreSQL service is running..."
+    if pg_ctl status &>/dev/null || brew services list | grep -E 'postgresql(@[0-9]+)?' &>/dev/null; then
+        echo "✅ PostgreSQL service appears to be installed"
+    else
+        echo "⚠️  PostgreSQL service not running or not installed"
+        echo "💡 Start with: brew services start postgresql"
+    fi
+
+    echo "🔑 Checking connection as 'postgres' user..."
+    if psql -U postgres -c '\q' &>/dev/null; then
+        echo "✅ Able to connect as 'postgres'"
+    else
+        echo "⚠️  Cannot connect as 'postgres'"
+        echo "💡 You might need to create the user: createuser -s postgres"
+        echo "   Or ensure the service is running and permissions are correct."
+    fi
+
+    return 0
 }
