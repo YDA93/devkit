@@ -10,13 +10,22 @@ alias pip='pip3'
 
 alias python-environment-create='python -m venv venv && source venv/bin/activate && echo "✅ Environment created and activated."'
 
+# 🐍 Activates the Python virtual environment from ./venv
+# 💡 Usage: python-environment-activate
 function python-environment-activate() {
-    if [[ -z "$VIRTUAL_ENV" ]]; then
-        if [[ -f "venv/bin/activate" ]]; then
-            source venv/bin/activate && echo "✅ Environment activated."
-        else
-            echo "❌ No virtual environment found. Run python-environment-create first."
-        fi
+    local expected_python="$(pwd)/venv/bin/python3"
+    local current_python="$(command -v python3)"
+
+    if [[ "$current_python" == "$expected_python" ]]; then
+        return 0
+    fi
+
+    if [[ -f "venv/bin/activate" ]]; then
+        source venv/bin/activate && echo "✅ Environment activated: venv"
+    else
+        echo "❌ No virtual environment found at ./venv"
+        echo "💡 Run: python-environment-create"
+        return 1
     fi
 }
 
@@ -24,14 +33,18 @@ alias python-environment-delete='[[ -d venv ]] && rm -rf venv && echo "🗑️ E
 
 alias python-environment-setup='python-environment-delete; python-environment-create && python-environment-activate && pip-install-all'
 
+# ✅ Checks if the current Python interpreter is from the ./venv virtual environment
+# 💡 Usage: python-environment-is-activated
 function python-environment-is-activated() {
-    # Check if a virtual environment is currently activated
-    if [[ -z "$VIRTUAL_ENV" ]]; then
+    local expected_python="$(pwd)/venv/bin/python3"
+    local current_python="$(command -v python3)"
+
+    if [[ "$current_python" == "$expected_python" ]]; then
+        echo "✅ Virtual environment is active: venv"
+        return 0
+    else
         echo "❌ Virtual environment is not activated."
         return 1
-    else
-        echo "✅ Virtual environment is active: $VIRTUAL_ENV"
-        return 0
     fi
 }
 

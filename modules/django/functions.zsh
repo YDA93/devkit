@@ -207,8 +207,11 @@ function django-delete-migrations-and-cache() {
     cd "$OLDPWD"
 }
 
-# 🔁 Rebuilds the Django project on a new DB
-# - Confirms backups, deletes migrations, resets DB, restores data, etc.
+# 🔁 Rebuilds the Django project on a fresh database
+# - Validates environment and settings
+# - Optionally backs up data
+# - Creates a new database and updates .env
+# - Runs migrations and restores data
 # 💡 Usage: django-migrate-to-new-database
 function django-migrate-to-new-database() {
 
@@ -227,7 +230,7 @@ function django-migrate-to-new-database() {
 
         # 2. Set the PGPASSWORD environment variable
         export PGPASSWORD=$(environment-variable-get LOCAL_DB_PASSWORD)
-        postgres-check-password || return 1
+        postgres-password-validation || return 1
 
         # Prompt user for confirmation
         _confirm-or-abort "This action will reset the project to its initial state. Proceed?" || return 1
@@ -242,54 +245,65 @@ function django-migrate-to-new-database() {
         fi
 
         # 4. Manage database creation
-        postgres-manage-database-creation || return 1
+        postgres-database-create-interactive || return 1
+        unset PGPASSWORD
 
         # 5. Update the .env file with the correct database name
         environment-variable-set "LOCAL_DB_NAME" "$db_name" || return 1
 
-        # 6. Delete all migrations and cache files
-        django-delete-migrations-and-cache || return 1
+        # 6. Initialize the database
+        django-database-initialize "$project_directory" "$backup_performed" || return 1
 
-        # 7. Handle URLs
-        # Store the original content of the urls.py
-        local original_content=$(cat ./project/urls.py)
-        echo "Updating project URLs..."
-        # Comment out the entire content of the file
-        sed -i '' 's/^/# /' ./project/urls.py
-        # Create an empty urlpatterns block
-        echo "urlpatterns = []" >>./project/urls.py
-
-        # 8. Run migrations
-        # Run makemigrations
-        python "$project_directory"/manage.py makemigrations || return 1
-        # Create cache table
-        python "$project_directory"/manage.py createcachetable || return 1
-        # Run migrate
-        python "$project_directory"/manage.py migrate || return 1
-
-        # 9. Restoration of data
-        if [ "$backup_performed" = true ]; then
-            django-loaddata "$project_directory" || return 1 # Using the default "data.json"
-
-        else
-            if _confirm-or-abort "Do you want to restore data from a backup file?"; then
-                echo "Please provide the path to the backup file:"
-                read backup_file || return 1
-                django-loaddata "$project_directory" "$backup_file" || return 1 # Using the user-specified backup file
-            fi
-        fi
-
-        # 10. Restore original URLs
-        echo "Restoring original project URLs..."
-        echo "$original_content" >./project/urls.py
-
-        # 11. Reset the PGPASSWORD environment variable
-        unset PGPASSWORD
-
-        echo "Project reset and migration complete."
+        echo "✅ Project reset and migration complete."
 
     } 2>&1 | tee -a "$log_file"
 
+}
+
+# 🧱 Re-initializes the Django database and restores data
+# - Deletes migrations and __pycache__
+# - Runs makemigrations, createcachetable, and migrate
+# - Restores data from backup or prompts for file
+# - Temporarily disables and then restores project URLs
+# 💡 Usage: django-database-initialize <project_directory> <backup_performed>
+function django-database-initialize() {
+    local project_directory=$1
+    local backup_performed=$2
+
+    # 1. Delete all migrations and cache files
+    django-delete-migrations-and-cache || return 1
+
+    # 2. Handle URLs
+    # Store the original content of the urls.py
+    echo "Updating project URLs..."
+    local original_content=$(cat ./project/urls.py)
+    # Comment out the entire content of the file
+    sed -i '' 's/^/# /' ./project/urls.py
+    # Create an empty urlpatterns block
+    echo "urlpatterns = []" >>./project/urls.py
+
+    # 3. Run makemigrations
+    python "$project_directory"/manage.py makemigrations || return 1
+    # 4. Create cache table
+    python "$project_directory"/manage.py createcachetable || return 1
+    # 5. Run migrate
+    python "$project_directory"/manage.py migrate || return 1
+
+    # 6. Restoration of data
+    if [ "$backup_performed" = true ]; then
+        django-loaddata "$project_directory" || return 1 # Using the default "data.json"
+
+    else
+        if _confirm-or-abort "Do you want to restore data from a backup file?"; then
+            echo "Please provide the path to the backup file:"
+            read backup_file || return 1
+            django-loaddata "$project_directory" "$backup_file" || return 1 # Using the user-specified backup file
+        fi
+    fi
+
+    # 7. Restore original URLs
+    echo "Restoring original project URLs..."
+    echo "$original_content" >./project/urls.py
 }
 
 # ------------------------------------------------------------------------------

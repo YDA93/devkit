@@ -93,7 +93,7 @@ function postgres-database-create() {
 
 # 🔐 Checks if the current PGPASSWORD can connect
 # - Returns error if password is wrong
-function postgres-check-password() {
+function postgres-password-validation() {
     # Attempt to connect to PostgreSQL using the set PGPASSWORD
     if ! (psql -U postgres -h localhost -c "\q" 2>/dev/null || true); then
         echo "Error: Invalid PostgreSQL password!\n Please check the LOCAL_DB_PASSWORD value in .env file."
@@ -106,7 +106,7 @@ function postgres-check-password() {
 # - Lists current databases
 # - If DB exists, prompts to drop it
 # - Then creates a new database with the same name
-function postgres-manage-database-creation() {
+function postgres-database-create-interactive() {
     # List available databases before deletion prompt
     databases=$(psql -U postgres -h localhost -lqt | cut -d \| -f 1 | sed -e 's/ //g' -e '/^$/d')
     echo "Available databases:"
@@ -162,6 +162,12 @@ function postgres-manage-database-creation() {
     sleep 2
 }
 
+# 🐘 Diagnoses the local PostgreSQL setup
+#
+# ✅ Verifies the `psql` command is available
+# 🛠  Checks if the PostgreSQL service is installed and running
+# 🔑 Attempts to connect as the `postgres` superuser
+# 💡 Provides helpful instructions if any step fails
 function postgres-doctor() {
     echo "🐘 Checking PostgreSQL..."
 
