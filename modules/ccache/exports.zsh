@@ -5,4 +5,7 @@ export CCACHE_SLOPPINESS="clang_index_store,file_stat_matches,include_file_ctime
 export CCACHE_FILECLONE=true
 export CCACHE_DEPEND=true
 export CCACHE_INODECACHE=true
-export CCACHE_LOGFILE="$DEVKIT_ROOT/ccache.log"
+
+CCACHE_LOGDIR="$DEVKIT_ROOT/logs/ccache"
+mkdir -p "$CCACHE_LOGDIR"
+export CCACHE_LOGFILE="$CCACHE_LOGDIR/ccache.log"

@@ -66,6 +66,9 @@ function homebrew-install-packages() {
         }
     fi
 
+    brew cleanup
+    brew autoremove
+
     echo "✅ Finished installing Homebrew packages"
 }
 
@@ -129,6 +132,9 @@ function homebrew-prune-packages() {
             fi
         fi
     done
+
+    brew cleanup
+    brew autoremove
 
     echo "✅ Cleanup complete. Only packages from the saved lists remain."
 }

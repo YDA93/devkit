@@ -79,6 +79,19 @@ function _confirm-or-abort() {
     done
 }
 
+# 🖨️ Prints a section title with a border for better readability.
+# 💡 Usage: print_section_title "Section Title"
+function print_section_title() {
+    local title="$1"
+    local line_length=$((${#title} + 4))
+    local border=$(printf '─%.0s' $(seq 1 $line_length))
+
+    echo
+    echo "┌$border┐"
+    echo "│ $title"
+    echo "└$border┘"
+}
+
 # 🛠️ Checks for macOS software updates and installs them if available.
 # 💡 Usage: _check-software-updates && echo "Up to date" || echo "Reboot required"
 function _check-software-updates() {
@@ -155,7 +168,9 @@ function devkit-is-setup() {
 # 💡 Usage: devkit-pc-setup [--quiet]  # Skips confirmation prompts
 function devkit-pc-setup() {
 
-    local log_file="$DEVKIT_ROOT/setup_$(date +'%Y%m%d%H%M%S').log"
+    local log_dir="$DEVKIT_ROOT/logs/devkit/setup"
+    mkdir -p "$log_dir"
+    local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
     {
         _confirm-or-abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
@@ -194,7 +209,9 @@ function devkit-pc-setup() {
 # 🔄 Updates tools like Homebrew, gcloud, Flutter, NPM, etc.
 # Shows nice progress messages for each step.
 function devkit-pc-update() {
-    local log_file="$DEVKIT_ROOT/update_$(date +'%Y%m%d%H%M%S').log"
+    local log_dir="$DEVKIT_ROOT/logs/devkit/update"
+    mkdir -p "$log_dir"
+    local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
     {
         # Run sudo upfront and clear terminal
@@ -257,37 +274,66 @@ function devkit-check-tools() {
 
         if command -v "$cmd" &>/dev/null; then
             local version=$(eval "$version_cmd")
-            echo "$emoji  $padded_label $version"
+            echo "  $emoji  $padded_label $version"
         else
-            echo "$emoji  $padded_label Not installed"
+            echo "  $emoji  $padded_label Not installed"
             missing_tools+=("$name")
         fi
     }
+    print_section_title "💻 Shell & System Tools"
+    print_version "🧮" "Zsh" "zsh" "zsh --version | awk '{print \$2}'"
+    print_version "🛠 " "Git" "git" "git --version | awk '{print \$3}'"
+    print_version "🛍 " "MAS" "mas" "mas version"
+    print_version "♻️ " "ccache" "ccache" "ccache --version | head -n 1 | awk '{print \$3}'"
+    print_version "🧪" "Expect" "expect" "expect -v | awk '{print \$3}'"
+    echo
+
+    print_section_title "🧰 Developer Tools & Editors"
+
     print_version "🖥 " "VS Code" "code" "code --version | head -n 1"
-    print_version "📱" "Android SDK" "sdkmanager" "sdkmanager --version"
-    print_version "🔌" "Android Platform Tools" "adb" "adb version | head -n 1 | awk '{print \$5}'"
     print_version "🏗 " "Android Studio" "studio" "studio --version 2>/dev/null | head -n 1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+'"
+    print_version "🧱" "Gradle" "gradle" "gradle --version | awk '/Gradle / {print \$2}'"
+    echo
+
+    print_section_title "⚙️  Languages & Package Managers"
+
+    print_version "☕" "Java" "java" "java -version 2>&1 | awk -F '\"' '/version/ {print \$2}'"
     print_version "🐍" "Python" "python3" "python3 --version | awk '{print \$2}'"
     print_version "📦" "Pip" "pip3" "pip3 --version | awk '{print \$2}'"
     print_version "🟢" "Node.js" "node" "node --version | sed 's/v//'"
     print_version "📦" "NPM" "npm" "npm --version"
-    print_version "☕" "Java" "java" "java -version 2>&1 | awk -F '\"' '/version/ {print \$2}'"
-    print_version "💙" "Flutter" "flutter" "flutter --version 2>/dev/null | head -n 1 | awk '{print \$2}'"
-    print_version "🎯" "Dart" "dart" "dart --version 2>&1 | awk '{print \$4}'"
-    print_version "🐘" "PostgreSQL" "psql" "psql --version | awk '{print \$3}'"
-    print_version "🛠 " "Git" "git" "git --version | awk '{print \$3}'"
     print_version "💎" "Ruby" "ruby" "ruby --version | awk '{print \$2}'"
     print_version "📦" "Gems" "gem" "gem --version"
+    print_version "🎯" "Dart" "dart" "dart --version 2>&1 | awk '{print \$4}'"
+    echo
+
+    print_section_title "📱 Mobile Dev Tools"
+
+    print_version "🛠️" "Xcode" "xcodebuild" "xcodebuild -version | head -n 1 | awk '{print \$2}'"
     print_version "🍎" "CocoaPods" "pod" "pod --version"
+    print_version "💙" "Flutter" "flutter" "flutter --version 2>/dev/null | head -n 1 | awk '{print \$2}'"
+    print_version "📱" "Android SDK" "sdkmanager" "sdkmanager --version"
+    print_version "🔌" "Android Platform Tools" "adb" "adb version | head -n 1 | awk '{print \$5}'"
+    echo
+
+    print_section_title "🚀  Cloud & Deployment"
+
     print_version "☁️ " "Google Cloud CLI" "gcloud" "gcloud --version | grep 'Google Cloud SDK' | awk '{print \$4}'"
-    print_version "🐳" "Docker" "docker" "docker --version | awk '{gsub(/,/,\"\"); print \$3}'"
     print_version "🔥" "Firebase CLI" "firebase" "firebase --version"
-    print_version "♻️ " "ccache" "ccache" "ccache --version | head -n 1 | awk '{print \$3}'"
-    print_version "🧪" "Expect" "expect" "expect -v | awk '{print \$3}'"
-    print_version "🧱" "Gradle" "gradle" "gradle --version | awk '/Gradle / {print \$2}'"
-    print_version "🛍 " "MAS" "mas" "mas version"
+    print_version "🐳" "Docker" "docker" "docker --version | awk '{gsub(/,/,\"\"); print \$3}'"
+
+    echo
+
+    print_section_title "🗄️  Databases"
+
+    print_version "🐘" "PostgreSQL" "psql" "psql --version | awk '{print \$3}'"
+
+    echo
+
+    print_section_title "🧩 Miscellaneous Tools"
+
     print_version "🖨 " "WeasyPrint" "weasyprint" "weasyprint --version | awk '{print \$3}'"
-    print_version "💻" "Zsh" "zsh" "zsh --version | awk '{print \$2}'"
+    echo
 
     echo "────────────────────────────────────"
 
@@ -301,7 +347,9 @@ function devkit-check-tools() {
 }
 
 function devkit-doctor() {
-    local log_file="$DEVKIT_ROOT/doctor_$(date +'%Y%m%d%H%M%S').log"
+    local log_dir="$DEVKIT_ROOT/logs/devkit/doctor"
+    mkdir -p "$log_dir"
+    local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
     {
         echo "🔍 Running devkit doctor..."
