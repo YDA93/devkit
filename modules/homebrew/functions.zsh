@@ -19,41 +19,41 @@ function homebrew-install() {
     echo "✅ Homebrew is installed and working."
 }
 
-# 💾 Saves lists of top-level Homebrew formulae and casks
-# 📄 Output: $DEVKIT_MODULES_PATH/homebrew/formulaes.txt and casks.txt
+# 💾 Saves lists of top-level Homebrew formula and casks
+# 📄 Output: $DEVKIT_MODULES_PATH/homebrew/formulas.txt and casks.txt
 function homebrew-save-packages() {
     local base_dir="$DEVKIT_MODULES_PATH/homebrew"
-    local formulae_output="$base_dir/formulaes.txt"
+    local formula_output="$base_dir/formulas.txt"
     local casks_output="$base_dir/casks.txt"
 
-    echo "🍺 Saving installed Homebrew formulae to $formulae_output"
+    echo "🍺 Saving installed Homebrew formula to $formula_output"
     echo "🧴 Saving installed Homebrew casks to $casks_output"
     mkdir -p "$base_dir"
 
-    brew list --formula --installed-on-request >"$formulae_output"
+    brew list --formula --installed-on-request >"$formula_output"
     brew list --cask >"$casks_output"
 
     echo "✅ Saved installed packages:"
-    echo "   📄 Formulae: $formulae_output"
+    echo "   📄 Formulae: $formula_output"
     echo "   📄 Casks:    $casks_output"
 }
 
-# 📦 Installs Homebrew formulae and casks from saved package lists
-# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/formulaes.txt and casks.txt
+# 📦 Installs Homebrew formula and casks from saved package lists
+# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/formulas.txt and casks.txt
 function homebrew-install-packages() {
     local base_dir="$DEVKIT_MODULES_PATH/homebrew"
-    local formulae_input="$base_dir/formulaes.txt"
+    local formula_input="$base_dir/formulas.txt"
     local casks_input="$base_dir/casks.txt"
 
-    if [[ ! -f "$formulae_input" && ! -f "$casks_input" ]]; then
+    if [[ ! -f "$formula_input" && ! -f "$casks_input" ]]; then
         echo "❌ No package lists found in $base_dir"
         return 1
     fi
 
-    if [[ -f "$formulae_input" ]]; then
-        echo "🍺 Installing Homebrew formulae from $formulae_input"
-        xargs brew install --formula <"$formulae_input" || {
-            echo "❌ Failed to install formulae. Please check the list."
+    if [[ -f "$formula_input" ]]; then
+        echo "🍺 Installing Homebrew formula from $formula_input"
+        xargs brew install --formula <"$formula_input" || {
+            echo "❌ Failed to install formula. Please check the list."
             return 1
         }
     fi
@@ -69,33 +69,33 @@ function homebrew-install-packages() {
     echo "✅ Finished installing Homebrew packages"
 }
 
-# 🔥 Uninstalls Homebrew formulae and casks not listed in formulaes.txt / casks.txt
+# 🔥 Uninstalls Homebrew formula and casks not listed in formulas.txt / casks.txt
 # 🧹 Prompts for confirmation before uninstalling each package
-# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/formulaes.txt and casks.txt
+# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/formulas.txt and casks.txt
 function homebrew-prune-packages() {
     local base_dir="$DEVKIT_MODULES_PATH/homebrew"
-    local formulae_file="$base_dir/formulaes.txt"
+    local formula_file="$base_dir/formulas.txt"
     local casks_file="$base_dir/casks.txt"
 
-    if [[ ! -f "$formulae_file" && ! -f "$casks_file" ]]; then
+    if [[ ! -f "$formula_file" && ! -f "$casks_file" ]]; then
         echo "❌ No package lists found in $base_dir"
         return 1
     fi
 
     echo "🧹 Checking for Homebrew packages to uninstall..."
 
-    local current_formulae=($(brew list --formula --installed-on-request))
+    local current_formula=($(brew list --formula --installed-on-request))
     local current_casks=($(brew list --cask))
 
-    local desired_formulae=()
+    local desired_formula=()
     local desired_casks=()
 
-    # Read formulae
-    if [[ -f "$formulae_file" ]]; then
+    # Read formula
+    if [[ -f "$formula_file" ]]; then
         while IFS= read -r line || [[ -n "$line" ]]; do
             [[ -z "$line" || "$line" =~ ^# ]] && continue
-            desired_formulae+=("$line")
-        done <"$formulae_file"
+            desired_formula+=("$line")
+        done <"$formula_file"
     fi
 
     # Read casks
@@ -106,10 +106,10 @@ function homebrew-prune-packages() {
         done <"$casks_file"
     fi
 
-    # Prune formulae
-    for pkg in "${current_formulae[@]}"; do
-        if ! printf '%s\n' "${desired_formulae[@]}" | grep -qx "$pkg"; then
-            if _confirm_or_abort "Uninstall formula \"$pkg\"? It's not in formulaes.txt." "$@"; then
+    # Prune formula
+    for pkg in "${current_formula[@]}"; do
+        if ! printf '%s\n' "${desired_formula[@]}" | grep -qx "$pkg"; then
+            if _confirm_or_abort "Uninstall formula \"$pkg\"? It's not in formulas.txt." "$@"; then
                 echo "❌ Uninstalling formula: $pkg"
                 brew uninstall --ignore-dependencies "$pkg"
             else
@@ -133,8 +133,8 @@ function homebrew-prune-packages() {
     echo "✅ Cleanup complete. Only packages from the saved lists remain."
 }
 # ⚙️ Runs the full Homebrew environment setup:
-#    - Prunes unlisted formulae and casks
-#    - Installs listed formulae and casks
+#    - Prunes unlisted formula and casks
+#    - Installs listed formula and casks
 #    - Resets Zsh configuration
 function homebrew-setup() {
     homebrew-install || return 1
@@ -142,16 +142,18 @@ function homebrew-setup() {
     homebrew-install-packages || return 1
 }
 
-# 📋 Lists all currently installed Homebrew packages (formulae and casks)
+# 📋 Lists all currently installed Homebrew packages (formula and casks)
 function homebrew-list-packages() {
-    echo "🍺 Installed Homebrew packages:"
-    brew list
+    echo "🍺 Installed Homebrew formula:"
+    brew list --formula --installed-on-request
+    echo "🧴 Installed Homebrew casks:"
+    brew list --cask
 }
 
 # ♻️ Performs full Homebrew maintenance:
 #    - Checks system health
 #    - Updates Homebrew and all packages
-#    - Upgrades formulae and casks
+#    - Upgrades formula and casks
 #    - Removes unused dependencies and cleans up
 function homebrew-maintain() {
     echo "🩺 Checking system health..."
@@ -160,7 +162,7 @@ function homebrew-maintain() {
     echo "⬆️  Updating Homebrew..."
     brew update
 
-    echo "🔄 Upgrading formulae..."
+    echo "🔄 Upgrading formula..."
     brew upgrade
 
     echo "🧴 Upgrading casks..."

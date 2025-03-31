@@ -22,7 +22,7 @@ function python-environment-activate() {
 
 alias python-environment-delete='[[ -d venv ]] && rm -rf venv && echo "🗑️ Environment deleted."'
 
-alias python-environment-setup='python-environment-delete && python-environment-create && python-environment-activate && pip-install-all'
+alias python-environment-setup='python-environment-delete; python-environment-create && python-environment-activate && pip-install-all'
 
 function python-environment-is-activated() {
     # Check if a virtual environment is currently activated

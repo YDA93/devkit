@@ -1,47 +1,9 @@
 # ------------------------------------------------------------------------------
-# 🚀 Django Server Shortcuts
+# ⚙️ Django Settings Management
 # ------------------------------------------------------------------------------
-# Function to upload the whole .env file as a single GitHub secret
-# Function to upload .env as a single secret AND upload GCP_CREDENTIALS separately
-function django-upload-env-to-github-secrets() {
-    # Get repo name in format owner/repo
-    local REPO
-    REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner) || {
-        echo "❌ Failed to get repo name"
-        return 1
-    }
 
-    echo "🔐 Uploading entire .env file to secret: ENVIRONMENT_VARIABLES"
-
-    # Upload .env file content directly as multiline secret
-    gh secret set ENVIRONMENT_VARIABLES --repo "$REPO" <.env || {
-        echo "❌ Failed to upload ENVIRONMENT_VARIABLES"
-        return 1
-    }
-
-    echo "✅ Uploaded ENVIRONMENT_VARIABLES to $REPO"
-
-    echo "🔐 Uploading GCP_CREDENTIALS to GitHub secrets..."
-
-    # Get GCP_CREDENTIALS using your custom command
-    local GCP_CREDS
-    GCP_CREDS=$(environment_variable_get "GCP_CREDENTIALS" --preserve-quotes --raw)
-
-    # Validate that it's not empty
-    if [[ -z "$GCP_CREDS" ]]; then
-        echo "❌ GCP_CREDENTIALS is empty or failed to load"
-        return 1
-    fi
-
-    # Upload GCP_CREDENTIALS as a separate GitHub secret
-    gh secret set GCP_CREDENTIALS --repo "$REPO" -b"$GCP_CREDS" || {
-        echo "❌ Failed to upload GCP_CREDENTIALS"
-        return 1
-    }
-
-    echo "✅ Uploaded GCP_CREDENTIALS to $REPO"
-}
-
+# ⚙️ Sets the DJANGO_SETTINGS_MODULE environment variable based on the selected environment
+# 💡 Usage: django-settings [local|dev|prod|test]
 function django-settings() {
     local env=$1
     python-environment-activate || return 1
@@ -71,17 +33,6 @@ function django-settings() {
     esac
 }
 
-# 🚀 Runs Django dev server on 0.0.0.0 (default: port 8000)
-# 💡 Usage: django-run-server [port]
-function django-run-server() {
-    if [ $# -eq 0 ]; then
-        python manage.py runserver 0.0.0.0:8000
-    else
-        python manage.py runserver 0.0.0.0:$@
-
-    fi
-}
-
 # 🔐 Generates a new Django SECRET_KEY and sets it as an environment variable
 # 💡 Usage: django-secret-key-generate
 function django-secret-key-generate() {
@@ -96,58 +47,19 @@ function django-secret-key-generate() {
     environment_variable_set "DJANGO_SECRET_KEY" "$raw_key"
 }
 
-# 🔍 Finds all cron URL patterns in internal Django apps
-# - Looks for path("cron/...") inside each app's urls.py
-# - Uses INTERNAL_APPS from settings
-# - Returns full URLs like: https://your-domain.com/store/cron/...
-# 💡 Usage: django-find-cron-urls [project_root]
-function django-find-cron-urls() {
-    local project_root=${1:-.}
-    local settings_file="$project_root/project/settings/base.py"
+# ------------------------------------------------------------------------------
+# 🚀 Django Server Shortcuts
+# ------------------------------------------------------------------------------
 
-    echo "🚀 Searching for cron jobs in internal apps..."
-
-    # 🔍 Extract INTERNAL_APPS values from base.py (e.g. "logs", "store", ...)
-    local apps=($(sed -n '/INTERNAL_APPS *= *\[/,/]/p' "$settings_file" |
-        grep -Eo '"[^"]+"' | tr -d '"'))
-
-    local matches=()
-
-    # 🔁 Loop through each internal app
-    for app in "${apps[@]}"; do
-        local urls_file="$project_root/$app/urls.py"
-
-        # 📄 Only proceed if the app has a urls.py
-        if [[ -f "$urls_file" ]]; then
-
-            # 🧪 Read the entire file into one line to handle multi-line path() calls
-            # 🔎 Find lines matching path("cron/...")
-            local results=$(tr '\n' ' ' <"$urls_file" |
-                sed 's/)/)\n/g' |
-                grep 'path *( *["'\'']cron/' |
-                sed -E "s/.*path *\( *['\"](cron\/[^\"')]+)['\"].*/$app\/\1/")
-
-            # ➕ Add full URL paths to matches array
-            if [[ -n "$results" ]]; then
-                while IFS= read -r line; do
-                    matches+=("https://$ADMIN_DOMAIN/$line")
-                done <<<"$results"
-            fi
-        fi
-    done
-
-    # 🧾 Print the results
-    if [[ ${#matches[@]} -gt 0 ]]; then
-        echo "✅ Found ${#matches[@]} cron path(s):"
-        for match in "${matches[@]}"; do
-            echo "  ➤ $match"
-        done
+# 🚀 Runs Django dev server on 0.0.0.0 (default: port 8000)
+# 💡 Usage: django-run-server [port]
+function django-run-server() {
+    if [ $# -eq 0 ]; then
+        python manage.py runserver 0.0.0.0:8000
     else
-        echo "⚠️  No cron paths found."
-    fi
+        python manage.py runserver 0.0.0.0:$@
 
-    # 📤 Return the full URLs
-    printf '%s\n' "${matches[@]}"
+    fi
 }
 
 # ------------------------------------------------------------------------------
@@ -299,103 +211,85 @@ function django-delete-migrations-and-cache() {
 # - Confirms backups, deletes migrations, resets DB, restores data, etc.
 # 💡 Usage: django-migrate-to-new-database
 function django-migrate-to-new-database() {
-    # Stop executing the script on any error
-    set -e
 
     # Redirect output to a log file
-    LOGFILE="migration_$(date +'%Y%m%d%H%M%S').log"
-    exec > >(tee -a $LOGFILE) 2>&1
-    echo "Output is being logged to $LOGFILE"
-
-    # Redirect output to console on exit
-    trap 'exec >& /dev/tty 2>& /dev/tty' EXIT
+    local log_file="migration_$(date +'%Y%m%d%H%M%S').log"
 
     # Get the current directory
-    project_directory="$PWD"
+    local project_directory="$PWD"
 
-    python-environment-is-activated || return 0
+    {
+        # 1. Validations
+        python-environment-is-activated || return 1
+        django-settings local || return 1
+        environment_variable_exists LOCAL_DB_NAME || return 1
+        environment_variable_exists LOCAL_DB_PASSWORD || return 1
 
-    django-settings local
+        # 2. Set the PGPASSWORD environment variable
+        export PGPASSWORD=$(environment_variable_get LOCAL_DB_PASSWORD)
+        postgres_check_password || return 1
 
-    environment_variable_exists LOCAL_DB_NAME || return 0
+        # Prompt user for confirmation
+        _confirm_or_abort "This action will reset the project to its initial state. Proceed?" || return 1
 
-    environment_variable_exists LOCAL_DB_PASSWORD || return 0
-
-    # Extracting value of LOCAL_DB_PASSWORD from .env file
-    local_db_password=$(grep "LOCAL_DB_PASSWORD=" .env | cut -d '=' -f2 | tr -d '"')
-
-    # Set the PGPASSWORD environment variable
-    export PGPASSWORD="$local_db_password"
-
-    postgres_check_password || return 0
-
-    # Prompt user for confirmation
-    if _confirm_or_abort "This action will reset the project to its initial state. Proceed?"; then
-        echo "Confirmed!"
-    else
-        echo "Canceled!"
-        return 0
-    fi
-
-    # Prompt user for backup
-    backup_performed=false
-    if _confirm_or_abort "Do you want to backup data?"; then
-        django-dumpdata "$project_directory" || return 0
-
-        backup_performed=true
-    else
-        echo "Skipping data backup..."
-    fi
-
-    postgres_manage_database_creation || return 0
-
-    # Update the .env file with the correct database name
-    environment_variable_set "LOCAL_DB_NAME" "$db_name" || return 0
-
-    django-delete-migrations-and-cache
-
-    # Store the original content of the urls.py
-    original_content=$(cat ./project/urls.py)
-
-    echo "Updating project URLs..."
-    # Comment out the entire content of the file
-    sed -i '' 's/^/# /' ./project/urls.py
-
-    # Create an empty urlpatterns block
-    echo "urlpatterns = []" >>./project/urls.py
-
-    # Run makemigrations
-    python "$project_directory"/manage.py makemigrations
-
-    # Create cache table
-    python "$project_directory"/manage.py createcachetable
-
-    # Run migrate
-    python "$project_directory"/manage.py migrate
-
-    # Restore data logic
-    if [ "$backup_performed" = true ]; then
-        django-loaddata "$project_directory" || return 0 # Using the default "data.json"
-
-    else
-        if _confirm_or_abort "Do you want to restore data from a backup file?"; then
-            echo "Please provide the path to the backup file:"
-            read backup_file
-            django-loaddata "$project_directory" "$backup_file" || return 0 # Using the user-specified backup file
+        # 3. Backup data if needed
+        local backup_performed=false
+        if _confirm_or_abort "Do you want to backup data?"; then
+            django-dumpdata "$project_directory" || return 1
+            backup_performed=true
+        else
+            echo "Skipping data backup..."
         fi
-    fi
 
-    echo "Restoring original project URLs..."
-    # Restore original urlpatterns block
-    echo "$original_content" >./project/urls.py
+        # 4. Manage database creation
+        postgres_manage_database_creation || return 1
 
-    # Clean up: Reset the PGPASSWORD environment variable
-    unset PGPASSWORD
+        # 5. Update the .env file with the correct database name
+        environment_variable_set "LOCAL_DB_NAME" "$db_name" || return 1
 
-    echo "Project reset and migration complete."
+        # 6. Delete all migrations and cache files
+        django-delete-migrations-and-cache || return 1
 
-    # Now redirect output back to console
-    exec >&/dev/tty 2>&/dev/tty
+        # 7. Handle URLs
+        # Store the original content of the urls.py
+        local original_content=$(cat ./project/urls.py)
+        echo "Updating project URLs..."
+        # Comment out the entire content of the file
+        sed -i '' 's/^/# /' ./project/urls.py
+        # Create an empty urlpatterns block
+        echo "urlpatterns = []" >>./project/urls.py
+
+        # 8. Run migrations
+        # Run makemigrations
+        python "$project_directory"/manage.py makemigrations || return 1
+        # Create cache table
+        python "$project_directory"/manage.py createcachetable || return 1
+        # Run migrate
+        python "$project_directory"/manage.py migrate || return 1
+
+        # 9. Restoration of data
+        if [ "$backup_performed" = true ]; then
+            django-loaddata "$project_directory" || return 1 # Using the default "data.json"
+
+        else
+            if _confirm_or_abort "Do you want to restore data from a backup file?"; then
+                echo "Please provide the path to the backup file:"
+                read backup_file || return 1
+                django-loaddata "$project_directory" "$backup_file" || return 1 # Using the user-specified backup file
+            fi
+        fi
+
+        # 10. Restore original URLs
+        echo "Restoring original project URLs..."
+        echo "$original_content" >./project/urls.py
+
+        # 11. Reset the PGPASSWORD environment variable
+        unset PGPASSWORD
+
+        echo "Project reset and migration complete."
+
+    } 2>&1 | tee -a "$log_file"
+
 }
 
 # ------------------------------------------------------------------------------
@@ -435,4 +329,107 @@ function django-run-test() {
     fi
 
     python manage.py test $modified_arg
+}
+
+# ------------------------------------------------------------------------------
+# 🗝️ GitHub Secrets & Environment Management
+# ------------------------------------------------------------------------------
+
+# 🔐 Uploads .env file and GCP_CREDENTIALS to GitHub Secrets
+# 💡 Usage: django-upload-env-to-github-secrets
+function django-upload-env-to-github-secrets() {
+    # Get repo name in format owner/repo
+    local REPO
+    REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner) || {
+        echo "❌ Failed to get repo name"
+        return 1
+    }
+
+    echo "🔐 Uploading entire .env file to secret: ENVIRONMENT_VARIABLES"
+
+    # Upload .env file content directly as multiline secret
+    gh secret set ENVIRONMENT_VARIABLES --repo "$REPO" <.env || {
+        echo "❌ Failed to upload ENVIRONMENT_VARIABLES"
+        return 1
+    }
+
+    echo "✅ Uploaded ENVIRONMENT_VARIABLES to $REPO"
+
+    echo "🔐 Uploading GCP_CREDENTIALS to GitHub secrets..."
+
+    # Get GCP_CREDENTIALS using your custom command
+    local GCP_CREDS
+    GCP_CREDS=$(environment_variable_get "GCP_CREDENTIALS" --preserve-quotes --raw)
+
+    # Validate that it's not empty
+    if [[ -z "$GCP_CREDS" ]]; then
+        echo "❌ GCP_CREDENTIALS is empty or failed to load"
+        return 1
+    fi
+
+    # Upload GCP_CREDENTIALS as a separate GitHub secret
+    gh secret set GCP_CREDENTIALS --repo "$REPO" -b"$GCP_CREDS" || {
+        echo "❌ Failed to upload GCP_CREDENTIALS"
+        return 1
+    }
+
+    echo "✅ Uploaded GCP_CREDENTIALS to $REPO"
+}
+
+# ------------------------------------------------------------------------------
+# 🔍 Django Cron URL Tools
+# ------------------------------------------------------------------------------
+
+# 🔍 Finds all cron URL patterns in internal Django apps
+# - Looks for path("cron/...") inside each app's urls.py
+# - Uses INTERNAL_APPS from settings
+# - Returns full URLs like: https://your-domain.com/store/cron/...
+# 💡 Usage: django-find-cron-urls [project_root]
+function django-find-cron-urls() {
+    local project_root=${1:-.}
+    local settings_file="$project_root/project/settings/base.py"
+
+    echo "🚀 Searching for cron jobs in internal apps..."
+
+    # 🔍 Extract INTERNAL_APPS values from base.py (e.g. "logs", "store", ...)
+    local apps=($(sed -n '/INTERNAL_APPS *= *\[/,/]/p' "$settings_file" |
+        grep -Eo '"[^"]+"' | tr -d '"'))
+
+    local matches=()
+
+    # 🔁 Loop through each internal app
+    for app in "${apps[@]}"; do
+        local urls_file="$project_root/$app/urls.py"
+
+        # 📄 Only proceed if the app has a urls.py
+        if [[ -f "$urls_file" ]]; then
+
+            # 🧪 Read the entire file into one line to handle multi-line path() calls
+            # 🔎 Find lines matching path("cron/...")
+            local results=$(tr '\n' ' ' <"$urls_file" |
+                sed 's/)/)\n/g' |
+                grep 'path *( *["'\'']cron/' |
+                sed -E "s/.*path *\( *['\"](cron\/[^\"')]+)['\"].*/$app\/\1/")
+
+            # ➕ Add full URL paths to matches array
+            if [[ -n "$results" ]]; then
+                while IFS= read -r line; do
+                    matches+=("https://$ADMIN_DOMAIN/$line")
+                done <<<"$results"
+            fi
+        fi
+    done
+
+    # 🧾 Print the results
+    if [[ ${#matches[@]} -gt 0 ]]; then
+        echo "✅ Found ${#matches[@]} cron path(s):"
+        for match in "${matches[@]}"; do
+            echo "  ➤ $match"
+        done
+    else
+        echo "⚠️  No cron paths found."
+    fi
+
+    # 📤 Return the full URLs
+    printf '%s\n' "${matches[@]}"
 }

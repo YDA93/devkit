@@ -7,8 +7,8 @@ export HOMEBREW_PREFIX="$(brew --prefix)"
 export HOMEBREW_OPT_PREFIX="$HOMEBREW_PREFIX/opt"
 export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
 
-# 🧾 Extract top-level Homebrew formulae from formulaes.txt
-DEVKIT_REQUIRED_FORMULAE=$(awk '!/^#/ && NF' "$DEVKIT_MODULES_PATH/homebrew/formulaes.txt")
+# 🧾 Extract top-level Homebrew formula from formulas.txt
+DEVKIT_REQUIRED_FORMULAE=$(awk '!/^#/ && NF' "$DEVKIT_MODULES_PATH/homebrew/formulas.txt")
 
 export DEVKIT_REQUIRED_FORMULAE
 

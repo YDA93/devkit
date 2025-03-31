@@ -155,76 +155,88 @@ function _check-software-updates() {
 # 🚀 Sets up your full devkit environment (tools, SDKs, configs).
 # 💡 Usage: devkit-pc-setup [--quiet]  # Skips confirmation prompts
 function devkit-pc-setup() {
-    _confirm_or_abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
 
-    _check-software-updates || return 1
+    local log_file="$DEVKIT_ROOT/setup_$(date +'%Y%m%d%H%M%S').log"
 
-    # 🔄 Syncs your custom .gitconfig to the system/global Git config
-    git-sync-config || return 1
+    {
+        _confirm_or_abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
 
-    # Install Homebrew and packages
-    homebrew-setup || return 1
+        _check-software-updates || return 1
 
-    # Now its time to ask the user to configure his cask apps prior to going further
-    _confirm_or_abort "🧩 Please take a moment to open and configure your downloaded apps (e.g. VS Code, Android Studio). Press Enter when you're ready to continue." "$@" || return 1
+        # 🔄 Syncs your custom .gitconfig to the system/global Git config
+        git-sync-config || return 1
 
-    # Install NPM and packages
-    npm-setup || return 1
+        # Install Homebrew and packages
+        homebrew-setup || return 1
 
-    # Install MAS (Mac App Store) and applications
-    mas-setup || return 1
+        # Now its time to ask the user to configure his cask apps prior to going further
+        _confirm_or_abort "🧩 Please take a moment to open and configure your downloaded apps (e.g. VS Code, Android Studio). Press Enter when you're ready to continue." "$@" || return 1
 
-    # Install Xcode and Command Line Tools
-    xcode_setup || return 1
+        # Install NPM and packages
+        npm-setup || return 1
 
-    # Flutter Android Setup
-    flutter-android-sdk-setup || return 1
+        # Install MAS (Mac App Store) and applications
+        mas-setup || return 1
 
-    echo "--------------------------------------------------"
-    echo "✅ devkit environment setup complete!"
-    echo "--------------------------------------------------"
+        # Install Xcode and Command Line Tools
+        xcode_setup || return 1
+
+        # Flutter Android Setup
+        flutter-android-sdk-setup || return 1
+
+        echo "--------------------------------------------------"
+        echo "✅ devkit environment setup complete!"
+        echo "--------------------------------------------------"
+
+    } 2>&1 | tee -a "$log_file"
+
 }
 
 # 🔄 Updates tools like Homebrew, gcloud, Flutter, NPM, etc.
 # Shows nice progress messages for each step.
 function devkit-pc-update() {
-    # Run sudo upfront and clear terminal
-    sudo -v && clear
+    local log_file="$DEVKIT_ROOT/update_$(date +'%Y%m%d%H%M%S').log"
 
-    # --- Brew ---
-    _log_update_step "Homebrew and Packages" "homebrew-maintain"
+    {
+        # Run sudo upfront and clear terminal
+        sudo -v && clear
 
-    # --- pip (Python) ---
-    _log_update_step "pip (Python)" bash -c '
-    pip3 install --upgrade pip setuptools wheel
-    '
+        # --- Brew ---
+        _log_update_step "Homebrew and Packages" "homebrew-maintain"
 
-    # --- gcloud ---
-    _log_update_step "gcloud CLI" gcloud components update
+        # --- pip (Python) ---
+        _log_update_step "pip (Python)" bash -c '
+        pip3 install --upgrade pip setuptools wheel
+        '
 
-    # --- Flutter ---
-    _log_update_step "Flutter SDK" bash -c '
+        # --- gcloud ---
+        _log_update_step "gcloud CLI" gcloud components update
+
+        # --- Flutter ---
+        _log_update_step "Flutter SDK" bash -c '
         flutter upgrade --force
         flutter doctor -v
-    '
+        '
 
-    # --- NPM ---
-    _log_update_step "NPM and Dependencies" bash -c '
+        # --- NPM ---
+        _log_update_step "NPM and Dependencies" bash -c '
         npm install -g npm@latest
         npm-check -g -u
-    '
+        '
 
-    # --- CocoaPods ---
-    _log_update_step "CocoaPods" pod repo update
+        # --- CocoaPods ---
+        _log_update_step "CocoaPods" pod repo update
 
-    # --- Rosetta ---
-    _log_update_step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license
+        # --- Rosetta ---
+        _log_update_step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license
 
-    # --- App Store Apps ---
-    _log_update_step "App Store Apps (via mas-cli)" mas-maintain
+        # --- App Store Apps ---
+        _log_update_step "App Store Apps (via mas-cli)" mas-maintain
 
-    # --- devkit Software Updates ---
-    _log_update_step "devkit System Updates" softwareupdate -ia --verbose
+        # --- devkit Software Updates ---
+        _log_update_step "devkit System Updates" softwareupdate -ia --verbose
+
+    } 2>&1 | tee -a "$log_file"
 }
 
 # 📦 Show versions of commonly used dev tools and warn if missing

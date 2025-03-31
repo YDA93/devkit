@@ -13,7 +13,7 @@ function npm-save-packages() {
 }
 
 # 📦 Installs global npm packages from saved list
-# 📄 Input: /$DEVKIT_MODULES_PATH/npm/packages.txt
+# 📄 Input: $DEVKIT_MODULES_PATH/npm/packages.txt
 function npm-install-packages() {
     local input="$DEVKIT_MODULES_PATH/npm/packages.txt"
 
@@ -22,21 +22,22 @@ function npm-install-packages() {
         return 1
     fi
 
-    echo "📦 Ensuring npm global prefix directory exists at $NPM_GLOBAL_PREFIX"
-    mkdir -p "$NPM_GLOBAL_PREFIX"
+    local npm_prefix
+    npm_prefix=$(npm config get prefix)
 
     echo "📦 Installing global npm packages from $input"
+    echo "📦 Using prefix: $npm_prefix"
     echo "📦 Packages:"
     cat "$input"
     echo ""
 
-    NPM_CONFIG_PREFIX="$NPM_GLOBAL_PREFIX" xargs npm install -g <"$input"
+    NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm install -g <"$input"
 
     echo "✅ Installed global npm packages"
 }
 
 # 🧹 Uninstalls global npm packages from saved list
-# 📄 Input: /$DEVKIT_MODULES_PATH/npm/packages.txt
+# 📄 Input: $DEVKIT_MODULES_PATH/npm/packages.txt
 function npm-uninstall-packages() {
     local input="$DEVKIT_MODULES_PATH/npm/packages.txt"
 
@@ -45,8 +46,17 @@ function npm-uninstall-packages() {
         return 1
     fi
 
+    local npm_prefix
+    npm_prefix=$(npm config get prefix)
+
     echo "🧹 Uninstalling global npm packages from $input"
-    NPM_CONFIG_PREFIX="$NPM_GLOBAL_PREFIX" xargs npm uninstall -g <"$input"
+    echo "🧹 Using prefix: $npm_prefix"
+    echo "🧹 Packages:"
+    cat "$input"
+    echo ""
+
+    NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm uninstall -g <"$input"
+
     echo "✅ Uninstalled global npm packages"
 }
 
