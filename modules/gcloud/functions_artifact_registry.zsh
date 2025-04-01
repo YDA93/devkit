@@ -1,5 +1,9 @@
-# Function to create an Artifact Registry repository for storing Docker images
-# This is necessary for deploying applications with Cloud Run or Kubernetes
+# ------------------------------------------------------------------------------
+# 📦 Google Artifact Registry Utilities
+# ------------------------------------------------------------------------------
+
+# 🏗️ Creates a new Docker Artifact Registry repository
+# 💡 Usage: gcloud-artifact-registry-repository-create
 function gcloud-artifact-registry-repository-create() {
     gcloud-config-load-and-validate || return 1
 
@@ -15,8 +19,8 @@ function gcloud-artifact-registry-repository-create() {
         --quiet
 }
 
-# Function to delete an existing Artifact Registry repository
-# This permanently removes the repository and its contents
+# 🗑️ Deletes an Artifact Registry repository and all its contents
+# 💡 Usage: gcloud_artifact_registry_repository_delete
 function gcloud_artifact_registry_repository_delete() {
     gcloud-config-load-and-validate || return 1
 

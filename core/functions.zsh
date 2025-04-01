@@ -1,5 +1,9 @@
-# 📦 Runs a command with a clear start/success/failure message.
-# 💡 Usage: _log-update-step "Thing to update" <command>
+# ------------------------------------------------------------------------------
+# 🧰 DevKit Support Utilities
+# ------------------------------------------------------------------------------
+
+# 🔧 Logs a step with visible progress/status indicators
+# 💡 Usage: _log-update-step "Label" <command>
 function _log-update-step() {
     local name="$1" # First argument: display name for logging
     shift           # Remaining arguments: command to execute
@@ -20,8 +24,8 @@ function _log-update-step() {
     echo "--------------------------------------------------"
 }
 
-# 🧪 Runs a command and exits if it fails, with a custom success message.
-# 💡 Usage: _run-or-abort "Doing something" "✅ Success message" <command>
+# 🧪 Runs a command, aborts if it fails, and prints custom messages
+# 💡 Usage: _run-or-abort "Label" "Success Msg" <command>
 function _run-or-abort() {
     local description="$1"
     local success_msg="$2"
@@ -40,8 +44,8 @@ function _run-or-abort() {
     fi
 }
 
-# 🛑 Asks the user to confirm before continuing (unless --quiet is passed).
-# 💡 Usage: _confirm-or-abort "Are you sure?" [--quiet]
+# 🛑 Asks the user for confirmation before continuing
+# 💡 Usage: _confirm-or-abort "Prompt?" [--quiet]
 function _confirm-or-abort() {
     local message="$1"
     shift # Remove the first argument (message) from the list
@@ -79,8 +83,8 @@ function _confirm-or-abort() {
     done
 }
 
-# 🖨️ Prints a section title with a border for better readability.
-# 💡 Usage: print_section_title "Section Title"
+# 🖨️ Prints a stylized section title to terminal
+# 💡 Usage: print_section_title "Title"
 function print_section_title() {
     local title="$1"
     local line_length=$((${#title} + 4))
@@ -92,8 +96,8 @@ function print_section_title() {
     echo "└$border┘"
 }
 
-# 🛠️ Checks for macOS software updates and installs them if available.
-# 💡 Usage: _check-software-updates && echo "Up to date" || echo "Reboot required"
+# 🔄 Checks for and installs macOS updates
+# 💡 Usage: _check-software-updates
 function _check-software-updates() {
     # 🛠️ Installs all available macOS software updates (system + security)
     echo "🔍 Checking for macOS software updates..."
@@ -113,8 +117,8 @@ function _check-software-updates() {
         return 1 # Signal that a reboot is needed
     fi
 }
-# 🛡️ Checks if DevKit is fully set up based on required tools
-# 🧪 Usage: devkit-is-setup [--quiet] || return 1
+# ✅ Checks if all required tools are installed
+# 💡 Usage: devkit-is-setup [--quiet]
 function devkit-is-setup() {
     local quiet=false
     if [[ "$1" == "--quiet" || "$1" == "-q" ]]; then
@@ -164,8 +168,8 @@ function devkit-is-setup() {
     return 0
 }
 
-# 🚀 Sets up your full devkit environment (tools, SDKs, configs).
-# 💡 Usage: devkit-pc-setup [--quiet]  # Skips confirmation prompts
+# 🚀 Sets up full devkit environment (tools, SDKs, configs)
+# 💡 Usage: devkit-pc-setup [--quiet]
 function devkit-pc-setup() {
 
     local log_dir="$DEVKIT_ROOT/logs/devkit/setup"
@@ -206,8 +210,8 @@ function devkit-pc-setup() {
 
 }
 
-# 🔄 Updates tools like Homebrew, gcloud, Flutter, NPM, etc.
-# Shows nice progress messages for each step.
+# 🔄 Updates devkit tools (Flutter, Homebrew, gcloud, NPM, etc.)
+# 💡 Usage: devkit-pc-update
 function devkit-pc-update() {
     local log_dir="$DEVKIT_ROOT/logs/devkit/update"
     mkdir -p "$log_dir"
@@ -255,7 +259,8 @@ function devkit-pc-update() {
     } 2>&1 | tee -a "$log_file"
 }
 
-# 📦 Show versions of commonly used dev tools and warn if missing
+# 📋 Checks installed versions of common tools
+# 💡 Usage: devkit-check-tools
 function devkit-check-tools() {
     echo "🔧 Development Environment Status:"
     echo "────────────────────────────────────"
@@ -346,6 +351,8 @@ function devkit-check-tools() {
     fi
 }
 
+# 🧪 Full diagnostic on dev environment (gcloud, Xcode, Firebase, etc.)
+# 💡 Usage: devkit-doctor
 function devkit-doctor() {
     local log_dir="$DEVKIT_ROOT/logs/devkit/doctor"
     mkdir -p "$log_dir"

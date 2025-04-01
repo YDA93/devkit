@@ -1,7 +1,11 @@
+# ------------------------------------------------------------------------------
+# 🚀 GitHub Workflow Automation
+# ------------------------------------------------------------------------------
+
 # 🚀 Commits all changes and pushes to remote
-# - Prompts for confirmation
-# - Uses default commit message if none is provided
-# - Example: github-commit-and-push "Refactored login logic"
+# - Uses default commit message if none provided
+# - Prompts before pushing
+# 💡 Usage: github-commit-and-push ["Your commit message"]
 function github-commit-and-push() {
 
     _confirm-or-abort "This action will commit all changes and push them to the remote repository. Continue?" "$@" || return 1
@@ -22,9 +26,9 @@ function github-commit-and-push() {
 }
 
 # 🔄 Clears Git cache and recommits all files
-# - Useful after .gitignore updates
-# - Prompts before resetting index
-# - Forcefully re-commits everything
+# - Useful after updating .gitignore
+# - Prompts for confirmation
+# 💡 Usage: github-clear-cache-and-recommit-all-files
 function github-clear-cache-and-recommit-all-files() {
 
     _confirm-or-abort "This action will reset the Git cache and recommit all files. Continue?" "$@" || return 1
@@ -42,9 +46,10 @@ function github-clear-cache-and-recommit-all-files() {
     git push origin main
 }
 
-# ⏪ Reverts the last commit on GitHub (remote only)
-# - Local repo remains unchanged
-# - Force pushes to remove the last commit from remote
+# ⏪ Reverts the last commit from the remote repository only
+# - Local history remains unchanged
+# - Force-pushes to main
+# 💡 Usage: github-undo-last-commit
 function github-undo-last-commit() {
 
     _confirm-or-abort "This action will revert the last commit on GitHub only. Continue?" "$@" || return 1
@@ -57,8 +62,12 @@ function github-undo-last-commit() {
     echo "The last commit has been reverted on GitHub only. Your local repository remains unchanged."
 }
 
-# 📝 Renames the current branch locally and on GitHub
-# 📥 Usage: github-branch-rename <new-branch-name>
+# ------------------------------------------------------------------------------
+# 🌿 Branch Management Shortcuts
+# ------------------------------------------------------------------------------
+
+# 📝 Renames the current Git branch locally and remotely
+# 💡 Usage: github-branch-rename <new-branch-name>
 function github-branch-rename() {
     if [[ -z "$1" ]]; then
         echo "❌ Usage: github-rename-branch <new-branch-name>"
@@ -77,8 +86,8 @@ function github-branch-rename() {
     echo "✅ Renamed branch '$old_branch' to '$new_branch'"
 }
 
-# 🌿 Creates a new branch and switches to it
-# 📥 Usage: github-create-branch <branch-name>
+# 🌿 Creates and switches to a new Git branch
+# 💡 Usage: github-branch-create <branch-name>
 function github-branch-create() {
     if [[ -z "$1" ]]; then
         echo "❌ Usage: github-create-branch <branch-name>"
@@ -91,8 +100,8 @@ function github-branch-create() {
     echo "✅ Created and switched to branch: $1"
 }
 
-# 🔥 Deletes a local and/or remote Git branch (with confirmation)
-# 📥 Usage: github-delete-branch <branch-name>
+# 🔥 Deletes a local and/or remote Git branch with confirmation
+# 💡 Usage: github-branch-delete <branch-name>
 function github-branch-delete() {
     local branch="$1"
 
@@ -105,7 +114,8 @@ function github-branch-delete() {
     _confirm-or-abort "Delete remote branch '$branch'?" "$@" && git push origin --delete "$branch"
 }
 
-# 🌲 Shows all branches with the current one highlighted
+# 🌲 Lists all local and remote branches
+# 💡 Usage: github-branch-list
 function github-branch-list() {
     echo "📄 Local branches:"
     git branch
@@ -116,6 +126,7 @@ function github-branch-list() {
 }
 
 # 🧹 Deletes all local branches merged into main
+# 💡 Usage: github-branches-clean
 function github-branches-clean() {
     _confirm-or-abort "This will delete all branches already merged into 'main'. Continue?" "$@" || return 1
 
@@ -123,7 +134,8 @@ function github-branches-clean() {
     echo "✅ Cleaned up merged branches."
 }
 
-# 🔄 Resets local branch to match remote (forcefully)
+# 🔄 Resets local branch to match the remote (destructive)
+# 💡 Usage: github-reset-to-remote
 function github-reset-to-remote() {
     _confirm-or-abort "This will reset your local branch to match remote. All local changes will be lost. Continue?" "$@" || return 1
 
@@ -132,7 +144,12 @@ function github-reset-to-remote() {
     echo "✅ Local branch reset to match remote."
 }
 
-# 📥 Safely pulls latest changes after stashing
+# ------------------------------------------------------------------------------
+# 📥 Pulling & Tagging Enhancements
+# ------------------------------------------------------------------------------
+
+# 📥 Safely stashes changes, pulls, and reapplies stashed work
+# 💡 Usage: github-stash-and-pull
 function github-stash-and-pull() {
     _confirm-or-abort "This will stash your local changes, pull the latest changes from remote, and then reapply your stashed changes. Continue?" "$@" || return 1
 
@@ -144,14 +161,8 @@ function github-stash-and-pull() {
     git stash pop
 }
 
-# 📊 Shows a short, clean Git status and branch
-function github-status-short() {
-    echo "🔎 Current branch: $(git branch --show-current)"
-    git status -s
-}
-
-# 🏷️ Creates and pushes a Git tag
-# 📥 Usage: github-push-tag v1.0.0 [optional-message]
+# 🏷️ Creates a Git tag and pushes it to origin
+# 💡 Usage: github-push-tag <tag-name> [message]
 function github-push-tag() {
     if [[ -z "$1" ]]; then
         echo "❌ Usage: github-push-tag <tag-name> [message]"
@@ -168,8 +179,8 @@ function github-push-tag() {
     echo "✅ Tag '$tag' pushed to origin."
 }
 
-# 🔁 Rebases the current branch onto the latest main (or other)
-# 📥 Usage: github-rebase-current [target-branch]
+# 🔁 Rebases current branch onto another (default: main)
+# 💡 Usage: github-rebase-current [target-branch]
 function github-rebase-current() {
     local target="${1:-main}"
 
@@ -179,7 +190,9 @@ function github-rebase-current() {
     git rebase origin/"$target"
 }
 
-# 🔄 Syncs your fork with upstream main
+# 🔄 Syncs your forked repo with upstream/main
+# - Requires upstream to be configured
+# 💡 Usage: github-sync-fork
 function github-sync-fork() {
     if ! git remote get-url upstream &>/dev/null; then
         echo "❌ No upstream remote found. Add one like:"
@@ -194,4 +207,15 @@ function github-sync-fork() {
     git reset --hard upstream/main
     git push origin main --force
     echo "✅ Fork synced with upstream."
+}
+
+# ------------------------------------------------------------------------------
+# 📊 Git Status & Info
+# ------------------------------------------------------------------------------
+
+# 📊 Shows current Git branch and a short status summary
+# 💡 Usage: github-status-short
+function github-status-short() {
+    echo "🔎 Current branch: $(git branch --show-current)"
+    git status -s
 }

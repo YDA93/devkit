@@ -1,5 +1,10 @@
-# 📦 Saves a list of top-level global npm packages (excluding dependencies)
-# 📄 Output: /$DEVKIT_MODULES_PATH/npm/packages.txt
+# ------------------------------------------------------------------------------
+# 📦 npm Global Package Management
+# ------------------------------------------------------------------------------
+
+# 💾 Saves a list of globally installed npm packages (top-level only)
+# 📄 Output: $DEVKIT_MODULES_PATH/npm/packages.txt
+# 💡 Usage: npm-save-packages
 function npm-save-packages() {
     local output="$DEVKIT_MODULES_PATH/npm/packages.txt"
     echo "📦 Saving global npm packages to $output"
@@ -15,8 +20,9 @@ function npm-save-packages() {
     echo "✅ Saved npm packages to $output"
 }
 
-# 📦 Installs global npm packages from saved list
+# 📥 Installs global npm packages from saved list
 # 📄 Input: $DEVKIT_MODULES_PATH/npm/packages.txt
+# 💡 Usage: npm-install-packages
 function npm-install-packages() {
     local input="$DEVKIT_MODULES_PATH/npm/packages.txt"
 
@@ -45,8 +51,9 @@ function npm-install-packages() {
     echo "✅ Installed global npm packages"
 }
 
-# 🧹 Uninstalls global npm packages from saved list
+# 🧹 Uninstalls global npm packages listed in packages.txt
 # 📄 Input: $DEVKIT_MODULES_PATH/npm/packages.txt
+# 💡 Usage: npm-uninstall-packages
 function npm-uninstall-packages() {
     local input="$DEVKIT_MODULES_PATH/npm/packages.txt"
 
@@ -75,6 +82,8 @@ function npm-uninstall-packages() {
     echo "✅ Uninstalled global npm packages"
 }
 
+# ♻️ Repairs npm environment by reinstalling Node, uninstalling, and restoring global packages
+# 💡 Usage: npm-repair
 function npm-repair() {
     LATEST_NODE=$(echo "$DEVKIT_REQUIRED_FORMULAE" | grep '^node@' | sort -V | tail -n 1) || {
         echo "❌ Failed to find the latest Node.js version."
@@ -90,7 +99,9 @@ function npm-repair() {
     echo "✅ npm repair complete"
 }
 
-# 🔥 Uninstalls global npm packages not in packages.txt (with confirmation)
+# 🔥 Uninstalls global npm packages not listed in packages.txt (with confirmation)
+# 📄 Input: $DEVKIT_MODULES_PATH/npm/packages.txt
+# 💡 Usage: npm-prune-packages
 function npm-prune-packages() {
     local file="$DEVKIT_MODULES_PATH/npm/packages.txt"
 
@@ -121,11 +132,15 @@ function npm-prune-packages() {
     echo "✅ npm cleanup complete."
 }
 
+# ⚙️ Full npm setup: prune and install from saved package list
+# 💡 Usage: npm-setup
 function npm-setup() {
     npm-prune-packages || return 1
     npm-install-packages || return 1
 }
 
+# 📋 Lists all globally installed npm packages
+# 💡 Usage: npm-list-packages
 function npm-list-packages() {
     echo "📦 Installed global npm packages:"
     npm list -g || {
@@ -134,6 +149,11 @@ function npm-list-packages() {
     }
 }
 
+# 🩺 Diagnoses npm and Node.js setup
+# - Verifies executables and prefix
+# - Checks registry and permissions
+# - Runs `npm doctor`
+# 💡 Usage: npm-doctor
 function npm-doctor() {
     echo "📦 Checking npm and Node.js..."
 

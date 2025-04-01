@@ -1,4 +1,14 @@
-# 🛠️ Sets up Xcode, CLI tools, and related developer apps
+# ------------------------------------------------------------------------------
+# 🍎 Xcode & macOS Developer Tools
+# ------------------------------------------------------------------------------
+
+# 🛠️ Sets up Xcode, CLI tools, CocoaPods, and Rosetta (if needed)
+# - Installs macOS software updates
+# - Accepts Xcode license
+# - Installs Rosetta for Apple Silicon
+# - Updates CocoaPods specs (if installed)
+# - Ensures Xcode and CLI tools are installed
+# 💡 Usage: xcode-setup
 function xcode-setup() {
     echo "🚀 Starting Xcode setup..."
 
@@ -51,7 +61,10 @@ function xcode-setup() {
     echo "🎉 Xcode setup completed successfully."
 }
 
-# 🚀 Launch the iOS Simulator once to complete its first-run setup
+# 📱 Launches iOS Simulator to complete first-run setup
+# - Runs `xcode-select` and `xcodebuild -runFirstLaunch`
+# - Optionally pre-downloads iOS platform support
+# 💡 Usage: xcode-simulator-first-launch
 function xcode-simulator-first-launch() {
     echo "📱 Launching iOS Simulator for initial setup..."
 
@@ -69,12 +82,9 @@ function xcode-simulator-first-launch() {
     echo "✅ Xcode and Simulator first-launch setup complete."
 }
 
-# xcode-doctor: Verifies Xcode and related development tools are properly set up.
-# - Checks if Xcode is installed and selected via xcode-select.
-# - Confirms availability of 'xcrun' and CLI tools.
-# - Ensures iOS simulators are available via simctl.
-# - On Apple Silicon, checks if Rosetta is installed.
-# Provides helpful guidance if any part of the setup is missing.
+# 🩺 Verifies Xcode setup and tools
+# - Checks for `xcode-select`, `xcrun`, iOS simulators, and Rosetta (if Apple Silicon)
+# 💡 Usage: xcode-doctor
 function xcode-doctor() {
     echo "🔧 Checking Xcode..."
 

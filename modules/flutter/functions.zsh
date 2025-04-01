@@ -1,7 +1,9 @@
 # ------------------------------------------------------------------------------
-# 🔥 FlutterFire Utilities
+# 🔥 FlutterFire Initialization & Integration
 # ------------------------------------------------------------------------------
 
+# 🔥 Initializes Firebase and FlutterFire CLI for the project
+# 💡 Usage: flutter-flutterfire-init
 function flutter-flutterfire-init() {
     firebase login || {
         echo "❌ Firebase login failed. Please log in to Firebase CLI."
@@ -17,6 +19,8 @@ function flutter-flutterfire-init() {
     }
 }
 
+# 🌱 Creates and activates a new Python virtual environment (for Firebase functions)
+# 💡 Usage: flutter-firebase-environment-create
 function flutter-firebase-environment-create() {
     python3.12 -m venv venv || {
         echo "❌ Failed to create virtual environment."
@@ -32,6 +36,8 @@ function flutter-firebase-environment-create() {
     }
 }
 
+# 🧹 Deletes existing env and creates a fresh one, then updates pip
+# 💡 Usage: flutter-firebase-environment-setup
 function flutter-firebase-environment-setup() {
     python-environment-delete || {
         echo "❌ Failed to delete existing virtual environment."
@@ -47,6 +53,8 @@ function flutter-firebase-environment-setup() {
     }
 }
 
+# ♻️ Rebuilds Firebase functions environment from scratch
+# 💡 Usage: flutter-firebase-update-functions
 function flutter-firebase-update-functions() {
     cd firebase/functions || {
         echo "❌ Failed to change directory to firebase/functions."
@@ -62,12 +70,9 @@ function flutter-firebase-update-functions() {
     }
 }
 
-# Upload debug symbols to Firebase Crashlytics
-# 💡 Usage: flutter-upload-crashlytics-symbols
-# 👉 You can find your appId in `firebase_options.dart`:
-#    Look for: `FirebaseOptions.android` → `appId: '...'`
-
-function flutter-upload-crashlytics-symbols() {
+# 🚀 Uploads obfuscation symbols to Firebase Crashlytics
+# 💡 Usage: flutter-firebase-upload-crashlytics-symbols
+function flutter-firebase-upload-crashlytics-symbols() {
     local SYMBOLS_PATH="./symbols"
 
     # Prompt user for Firebase App ID
@@ -108,9 +113,126 @@ function flutter-upload-crashlytics-symbols() {
 }
 
 # ------------------------------------------------------------------------------
-# 🛠️ Flutter Utility Commands
+# 🧠 Android & JDK Setup Helpers
 # ------------------------------------------------------------------------------
 
+# 🔍 Gets the latest available Android build-tools version
+# 💡 Usage: _android-latest-build-tools
+function _android-latest-build-tools() {
+    sdkmanager --list 2>/dev/null |
+        awk '/^ +build-tools;[0-9]/ { gsub(/^ +| +$/, "", $1); split($1, parts, ";"); print parts[2] }' |
+        grep -Ev 'rc|beta|alpha' |
+        sort -Vr | head -n1
+}
+
+# ☕️ Symlinks Homebrew-installed OpenJDK to macOS Java VirtualMachines
+# 💡 Usage: java-symlink-latest
+function java-symlink-latest() {
+    local brew_jdk_path="$HOMEBREW_OPT_PREFIX/openjdk/libexec/openjdk.jdk"
+
+    if [[ ! -d "$brew_jdk_path" ]]; then
+        echo "❌ Homebrew OpenJDK not found at $brew_jdk_path"
+        return 1
+    fi
+
+    # Extract the actual JDK version using `java -version`
+    local version
+    version=$("$brew_jdk_path/Contents/Home/bin/java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d. -f1)
+
+    local target="/Library/Java/JavaVirtualMachines/openjdk-${version}.jdk"
+
+    if [[ ! -d "$target" ]]; then
+        echo "☕️ Symlinking OpenJDK $version to $target..."
+        sudo ln -sfn "$brew_jdk_path" "$target" || {
+            echo "❌ Failed to create symlink at $target"
+            return 1
+        }
+    else
+        echo "☕️ OpenJDK $version already symlinked at $target"
+    fi
+}
+
+# ⚙️ Sets up Android SDK and accepts licenses
+# 💡 Usage: flutter-android-sdk-setup
+function flutter-android-sdk-setup() {
+    _run-or-abort "☕️ Symlinking OpenJDK" \
+        "✅ OpenJDK symlinked." \
+        java-symlink-latest || return 1
+
+    local latest_build_tools
+    latest_build_tools=$(_android-latest-build-tools)
+
+    _run-or-abort "📦 Installing Android SDK packages (build-tools:$latest_build_tools)" \
+        "" \
+        sdkmanager \
+        "platforms;android-35" \
+        "build-tools;$latest_build_tools" \
+        "platform-tools" \
+        "emulator" \
+        "cmdline-tools;latest" || return 1
+
+    _run-or-abort "📜 Accepting Android SDK licenses (non-interactive)" \
+        "" \
+        bash -c "yes | sdkmanager --licenses" || return 1
+
+    _run-or-abort "📜 Accepting Flutter Android licenses (interactive)" \
+        "" \
+        flutter doctor --android-licenses || return 1
+
+}
+
+# ------------------------------------------------------------------------------
+# 🎨 Flutter App Visuals
+# ------------------------------------------------------------------------------
+
+# 🌊 Updates splash screen assets using flutter_native_splash
+# 💡 Usage: flutter-update-splash
+function flutter-update-splash() {
+    dart run flutter_native_splash:remove || {
+        echo "❌ Failed to remove existing splash screen."
+        return 1
+    }
+    dart run flutter_native_splash:create || {
+        echo "❌ Failed to create new splash screen."
+        return 1
+    }
+}
+
+# 🎨 Updates FontAwesome icons from the CLI utility
+# 💡 Usage: flutter-update-fontawesome
+function flutter-update-fontawesome() {
+    cd assets/font_awesome_flutter || {
+        echo "❌ Failed to change directory to assets/font_awesome_flutter."
+        return 1
+    }
+    flutter-clean || {
+        echo "❌ Failed to clean Flutter project."
+        return 1
+    }
+    flutter-dart-fix || {
+        echo "❌ Failed to apply Dart fixes."
+        return 1
+    }
+    cd util || {
+        echo "❌ Failed to change directory to util."
+        return 1
+    }
+    sh ./configurator.sh || {
+        echo "❌ Failed to run configurator.sh."
+        return 1
+    }
+    cd ../../.. || {
+        echo "❌ Failed to change directory back to root."
+        return 1
+    }
+}
+
+# ------------------------------------------------------------------------------
+# 🔌 Flutter Development Utilities
+# ------------------------------------------------------------------------------
+
+# 🌐 Connects to a device over ADB and updates .vscode/launch.json
+# 💡 Usage: flutter-adb-connect <IP_ADDRESS> <PORT>
 function flutter-adb-connect() {
     # Assign the first and second argument to variables
     IP_ADDRESS=$1
@@ -152,113 +274,11 @@ function flutter-adb-connect() {
 }
 
 # ------------------------------------------------------------------------------
-# 🔄 Flutter Update Commands
-# ------------------------------------------------------------------------------
-
-# 🔎 Gets the latest stable Android build-tools version (excludes rc/beta)
-function _android-latest-build-tools() {
-    sdkmanager --list 2>/dev/null |
-        awk '/^ +build-tools;[0-9]/ { gsub(/^ +| +$/, "", $1); split($1, parts, ";"); print parts[2] }' |
-        grep -Ev 'rc|beta|alpha' |
-        sort -Vr | head -n1
-}
-
-# ☕️ Automatically symlinks the installed OpenJDK into macOS’s expected location
-function java-symlink-latest() {
-    local brew_jdk_path="$HOMEBREW_OPT_PREFIX/openjdk/libexec/openjdk.jdk"
-
-    if [[ ! -d "$brew_jdk_path" ]]; then
-        echo "❌ Homebrew OpenJDK not found at $brew_jdk_path"
-        return 1
-    fi
-
-    # Extract the actual JDK version using `java -version`
-    local version
-    version=$("$brew_jdk_path/Contents/Home/bin/java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d. -f1)
-
-    local target="/Library/Java/JavaVirtualMachines/openjdk-${version}.jdk"
-
-    if [[ ! -d "$target" ]]; then
-        echo "☕️ Symlinking OpenJDK $version to $target..."
-        sudo ln -sfn "$brew_jdk_path" "$target" || {
-            echo "❌ Failed to create symlink at $target"
-            return 1
-        }
-    else
-        echo "☕️ OpenJDK $version already symlinked at $target"
-    fi
-}
-
-# 📱 Sets up the Android SDK environment for CLI builds and emulators
-function flutter-android-sdk-setup() {
-    _run-or-abort "☕️ Symlinking OpenJDK" \
-        "✅ OpenJDK symlinked." \
-        java-symlink-latest || return 1
-
-    local latest_build_tools
-    latest_build_tools=$(_android-latest-build-tools)
-
-    _run-or-abort "📦 Installing Android SDK packages (build-tools:$latest_build_tools)" \
-        "" \
-        sdkmanager \
-        "platforms;android-35" \
-        "build-tools;$latest_build_tools" \
-        "platform-tools" \
-        "emulator" \
-        "cmdline-tools;latest" || return 1
-
-    _run-or-abort "📜 Accepting Android SDK licenses (non-interactive)" \
-        "" \
-        bash -c "yes | sdkmanager --licenses" || return 1
-
-    _run-or-abort "📜 Accepting Flutter Android licenses (interactive)" \
-        "" \
-        flutter doctor --android-licenses || return 1
-
-}
-
-function flutter-update-splash() {
-    dart run flutter_native_splash:remove || {
-        echo "❌ Failed to remove existing splash screen."
-        return 1
-    }
-    dart run flutter_native_splash:create || {
-        echo "❌ Failed to create new splash screen."
-        return 1
-    }
-}
-
-function flutter-update-fontawesome() {
-    cd assets/font_awesome_flutter || {
-        echo "❌ Failed to change directory to assets/font_awesome_flutter."
-        return 1
-    }
-    flutter-clean || {
-        echo "❌ Failed to clean Flutter project."
-        return 1
-    }
-    flutter-dart-fix || {
-        echo "❌ Failed to apply Dart fixes."
-        return 1
-    }
-    cd util || {
-        echo "❌ Failed to change directory to util."
-        return 1
-    }
-    sh ./configurator.sh || {
-        echo "❌ Failed to run configurator.sh."
-        return 1
-    }
-    cd ../../.. || {
-        echo "❌ Failed to change directory back to root."
-        return 1
-    }
-}
-
-# ------------------------------------------------------------------------------
 # 🧹 Flutter Clean-Up Commands
 # ------------------------------------------------------------------------------
 
+# 🧼 Deletes unused translation keys from .arb files
+# 💡 Usage: flutter-delete-unused-strings
 function flutter-delete-unused-strings() {
     dart pub global activate l10nization_cli || {
         echo "❌ Failed to activate l10nization_cli."
@@ -309,6 +329,8 @@ function flutter-delete-unused-strings() {
     echo "Cleanup completed."
 }
 
+# 🧹 Clears Pod, Flutter, and Ccache caches
+# 💡 Usage: flutter-cache-reset
 function flutter-cache-reset() {
     echo "Clearing cache of Pod, Flutter, and Ccache..."
     cd ios || {
@@ -337,6 +359,8 @@ function flutter-cache-reset() {
     }
 }
 
+# 🔧 Reinstalls iOS Podfile dependencies from scratch
+# 💡 Usage: flutter-ios-reinstall-podfile
 function flutter-ios-reinstall-podfile() {
     cd ios || {
         echo "❌ Failed to change directory to ios."
@@ -354,12 +378,10 @@ function flutter-ios-reinstall-podfile() {
         echo "❌ Failed to change directory back to root."
         return 1
     }
-    flutter-clean || {
-        echo "❌ Failed to clean Flutter project."
-        return 1
-    }
 }
 
+# 🧽 Runs a full Flutter clean and updates dependencies
+# 💡 Usage: flutter-clean
 function flutter-clean() {
     flutter clean || {
         echo "❌ Failed to clean Flutter project."
@@ -383,6 +405,8 @@ function flutter-clean() {
     }
 }
 
+# 🧼 Performs a deep clean and rebuild of the entire Flutter project
+# 💡 Usage: flutter-clean-deep
 function flutter-clean-deep() {
     {
         flutter-flutterfire-activate || {
@@ -411,6 +435,10 @@ function flutter-clean-deep() {
         }
         flutter-build-runner || {
             echo "❌ Failed to run build_runner."
+            return 1
+        }
+        flutter-clean || {
+            echo "❌ Failed to clean Flutter project."
             return 1
         }
     } | tee -a ./flutter-clean-deep.log

@@ -1,6 +1,9 @@
-# Function to build image
-# This function builds a Docker image, tags it, pushes it to Artifact Registry, and configures
-# Cloud Build permissions before initiating the build process.
+# ------------------------------------------------------------------------------
+# 🚀 Google Cloud Run Deployment Utilities
+# ------------------------------------------------------------------------------
+
+# 🔨 Builds a Docker image, pushes to Artifact Registry, and triggers Cloud Build
+# 💡 Usage: gcloud-run-build-image
 function gcloud-run-build-image() {
     gcloud-config-load-and-validate || return 1
 
@@ -44,9 +47,8 @@ function gcloud-run-build-image() {
             --quiet
 }
 
-# Function to deploy the service to Cloud Run for the first time
-# This function deploys the Cloud Run service using the built Docker image, configuring it with
-# CPU, memory, and database connectivity settings while allowing unauthenticated access.
+# 🚀 Deploys the service to Cloud Run for the first time
+# 💡 Usage: gcloud-run-deploy-initial
 function gcloud-run-deploy-initial() {
     gcloud-config-load-and-validate || return 1
 
@@ -67,8 +69,8 @@ function gcloud-run-deploy-initial() {
         --quiet
 }
 
-# Function to redeploy the service to Cloud Run
-# This function redeploys an updated version of the Cloud Run service using the latest image from Artifact Registry.
+# 🔁 Redeploys the service to Cloud Run using the latest image
+# 💡 Usage: gcloud-run-deploy-latest
 function gcloud-run-deploy-latest() {
     gcloud-config-load-and-validate || return 1
 
@@ -87,8 +89,8 @@ function gcloud-run-deploy-latest() {
         --quiet
 }
 
-# Function to update the service URLs environment variable in Cloud Run
-# This function retrieves the Cloud Run service's URL and updates it as an environment variable in the service configuration.
+# 🌐 Updates the CLOUDRUN_SERVICE_URLS environment variable
+# 💡 Usage: gcloud-run-set-service-urls-env
 function gcloud-run-set-service-urls-env() {
     gcloud-config-load-and-validate || return 1
 
@@ -110,8 +112,8 @@ function gcloud-run-set-service-urls-env() {
 
 }
 
-# Function to build the image and deploy the service to Cloud Run for the first time
-# This function builds the Docker image, deploys it to Cloud Run, and updates the service URL environment variable.
+# 🚀 Builds image and deploys service to Cloud Run (first-time setup)
+# 💡 Usage: gcloud-run-build-and-deploy-initial
 function gcloud-run-build-and-deploy-initial() {
     gcloud-config-load-and-validate || return 1
 
@@ -122,8 +124,8 @@ function gcloud-run-build-and-deploy-initial() {
     gcloud-run-build-image --quiet && gcloud-run-deploy-initial --quiet && gcloud-run-set-service-urls-env --quiet
 }
 
-# Function to build the image and redeploy the service to Cloud Run
-# This function builds the Docker image, redeploys the Cloud Run service, and updates the service URL environment variable.
+# 🔁 Builds image and redeploys service to Cloud Run (update)
+# 💡 Usage: gcloud-run-build-and-deploy-latest
 function gcloud-run-build-and-deploy-latest() {
     gcloud-config-load-and-validate || return 1
 
@@ -135,8 +137,8 @@ function gcloud-run-build-and-deploy-latest() {
     gcloud-run-build-image --quiet && gcloud-run-deploy-latest --quiet && gcloud-run-set-service-urls-env --quiet
 }
 
-# Function to delete the service from Cloud Run with user confirmation
-# This function permanently deletes a Cloud Run service along with its associated job after user confirmation.
+# 🗑️ Deletes Cloud Run service and job with confirmation
+# 💡 Usage: gcloud-run-service-delete
 function gcloud-run-service-delete() {
     gcloud-config-load-and-validate || return 1
 

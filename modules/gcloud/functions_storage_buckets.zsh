@@ -1,7 +1,12 @@
-# Function to create a new static and media bucket with Fine-grained access control and public access
-# This function provisions static and media buckets in Google Cloud Storage with fine-grained access control,
-# sets public read access, applies cross-origin settings, and syncs static files. Additionally, it creates
-# a Cloud Build artifacts bucket for storing build outputs.
+# ------------------------------------------------------------------------------
+# 🗃️ Google Cloud Storage Management
+# ------------------------------------------------------------------------------
+
+# 🗃️ Creates static, media, and artifacts buckets in GCS
+# - Enables fine-grained access control
+# - Sets public read and CORS policies
+# - Syncs static files automatically
+# 💡 Usage: gcloud-storage-buckets-create
 function gcloud-storage-buckets-create() {
     gcloud-config-load-and-validate || return 1
 
@@ -16,15 +21,15 @@ function gcloud-storage-buckets-create() {
         gsutil mb -b on -c standard -l $GCP_REGION gs://$GS_BUCKET_NAME/ &&
         gcloud-storage-buckets-set-public-read --quiet &&
         gcloud-storage-buckets-set-cross-origin --quiet &&
-        gcloud-storage-buckets-sync_static --quiet &&
+        gcloud-storage-buckets-sync-static --quiet &&
 
         # Create a new bucket for Cloud Build artifacts
         gsutil mb -l $GCP_REGION gs://$GCP_PROJECT_ID-cloudbuild-artifacts/
 }
 
-# Function to delete the static and media buckets forcefully with confirmation
-# This function permanently deletes the static and media buckets along with their contents,
-# as well as the Cloud Build artifacts bucket, after user confirmation.
+# 🗑️ Deletes static, media, and artifacts buckets from GCS
+# - Removes all contents before deletion
+# 💡 Usage: gcloud-storage-buckets-delete
 function gcloud-storage-buckets-delete() {
     gcloud-config-load-and-validate || return 1
 
@@ -38,10 +43,10 @@ function gcloud-storage-buckets-delete() {
 
 }
 
-# Function to sync static files to the static bucket
-# This function uploads local static files to the Google Cloud Storage static bucket using rsync
-# while compressing specific file types for optimized delivery.
-function gcloud-storage-buckets-sync_static() {
+# 📤 Uploads local static files to the static bucket
+# - Uses `gsutil rsync` with compression for web assets
+# 💡 Usage: gcloud-storage-buckets-sync-static
+function gcloud-storage-buckets-sync-static() {
     gcloud-config-load-and-validate || return 1
 
     _confirm-or-abort "Are you sure you want to sync static files to the storage bucket?" "$@" || return 1
@@ -52,9 +57,9 @@ function gcloud-storage-buckets-sync_static() {
     gsutil -o "GSUtil:parallel_process_count=1" -m rsync -r -j html,txt,css,js ./static gs://$GS_BUCKET_STATIC/
 }
 
-# Function to set public read permissions to the static and media buckets
-# This function grants public read access to the static and media buckets,
-# allowing users to access stored objects without authentication.
+# 🌐 Sets public read access on static and media buckets
+# - Grants `roles/storage.objectViewer` to `allUsers`
+# 💡 Usage: gcloud-storage-buckets-set-public-read
 function gcloud-storage-buckets-set-public-read() {
     gcloud-config-load-and-validate || return 1
 
@@ -74,9 +79,9 @@ function gcloud-storage-buckets-set-public-read() {
             --quiet
 }
 
-# Function to set cross-origin policy to the static and media buckets
-# This function configures Cross-Origin Resource Sharing (CORS) settings on the static and media buckets
-# using a predefined JSON configuration file.
+# 🔄 Applies CORS policy to static and media buckets
+# - Uses configuration from `cross-origin.json`
+# 💡 Usage: gcloud-storage-buckets-set-cross-origin
 function gcloud-storage-buckets-set-cross-origin() {
     gcloud-config-load-and-validate || return 1
 

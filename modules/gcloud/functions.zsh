@@ -1,5 +1,11 @@
-# Function to load and validate GCloud configuration
-# Ensures necessary environment variables and secrets are available
+# ------------------------------------------------------------------------------
+# ☁️ Google Cloud Platform (GCP) Configuration
+# ------------------------------------------------------------------------------
+
+# ☁️ Loads GCloud config from .env and validates secrets
+# - Parses .env values
+# - Supports multiline secret decoding into secure exports
+# 💡 Internal utility – used by higher-level GCP commands
 function gcloud-config-load-and-validate() {
     local env_file=".env"
     local secrets_dir="/tmp/env_secrets"
@@ -53,21 +59,20 @@ function gcloud-config-load-and-validate() {
     done <"$env_file"
 }
 
-# 🧼 Converts $GCP_PROJECT_NAME into a safe, lowercase, GCP-friendly slug
-# - Removes spaces
-# - Lowercases everything
-# - Keeps only a-z, 0-9, _ and -
-# -----------------------------------------------------------------------------
+# 🧼 Converts GCP project name into a clean, lowercase slug
+# - Removes spaces and special characters
+# 💡 Internal utility – used in naming conventions
 function _gcloud-slugify-project-name() {
     echo "$GCP_PROJECT_NAME" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_-]//g'
 }
 
 # ------------------------------------------------------------------------------
-# ☁️ Google Cloud Platform - Django Project Shortcuts
+# 🛠️ GCP Django Deployment Shortcuts
 # ------------------------------------------------------------------------------
 
-# Function to set up a Django application in Google Cloud
-# This function performs all required steps including creating a database, storage, and deploying the app
+# 🚀 Sets up a complete Django project on Google Cloud
+# - Creates SQL, buckets, secrets, and deploys to Cloud Run
+# 💡 Usage: gcloud-project-django-setup
 function gcloud-project-django-setup() {
     gcloud-config-load-and-validate || return 1
 
@@ -136,8 +141,9 @@ function gcloud-project-django-setup() {
     } 2>&1 | tee -a "$log_file"
 }
 
-# Function to tear down the Django setup in Google Cloud
-# Deletes all resources including the database, storage, and Cloud Run service
+# 💣 Tears down all GCP resources used by the Django project
+# - Destroys Cloud SQL, Run, buckets, secrets, etc.
+# 💡 Usage: gcloud-project-django-teardown
 function gcloud-project-django-teardown() {
     gcloud-config-load-and-validate || return 1
     local log_file="gcloud_teardown_$(date +'%Y%m%d%H%M%S').log"
@@ -172,8 +178,9 @@ function gcloud-project-django-teardown() {
 
 }
 
-# Function to update an existing Django deployment in Google Cloud
-# This function redeploys the latest version, updates secrets, and syncs storage
+# 🔁 Updates an existing Django project on Google Cloud
+# - Redeploys image, updates secrets, storage, and scheduler
+# 💡 Usage: gcloud-project-django-update
 function gcloud-project-django-update() {
     gcloud-config-load-and-validate || return 1
     local log_file="gcloud_update_$(date +'%Y%m%d%H%M%S').log"
@@ -202,7 +209,7 @@ function gcloud-project-django-update() {
         fi
 
         # Step 4: Update Cloud Storage buckets
-        if ! gcloud-storage-buckets-sync_static --quiet; then
+        if ! gcloud-storage-buckets-sync-static --quiet; then
             echo "❌ Error updating Cloud Storage buckets."
             return 1
         fi

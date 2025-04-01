@@ -1,6 +1,10 @@
-# Function to create .env file in Secret Manager
-# This function creates a new secret in Google Cloud Secret Manager using the contents of the local .env file
-# and grants the necessary permissions to the compute service account.
+# ------------------------------------------------------------------------------
+# 🔐 Google Secret Manager - Environment File Utilities
+# ------------------------------------------------------------------------------
+
+# 🔐 Creates a new secret in Secret Manager from the local `.env` file
+# - Grants access to the Compute Engine default service account
+# 💡 Usage: gcloud-secret-manager-env-create
 function gcloud-secret-manager-env-create() {
     gcloud-config-load-and-validate || return 1
 
@@ -20,9 +24,9 @@ function gcloud-secret-manager-env-create() {
             --quiet
 }
 
-# Function to update .env file in Secret Manager and disable only active previous versions
-# This function adds a new version of the secret in Google Cloud Secret Manager and disables
-# all previously active versions to ensure only the latest version remains accessible.
+# 🔄 Updates the secret in Secret Manager with a new version
+# - Automatically disables all previously active versions
+# 💡 Usage: gcloud-secret-manager-env-update
 function gcloud-secret-manager-env-update() {
     gcloud-config-load-and-validate || return 1
 
@@ -51,13 +55,14 @@ function gcloud-secret-manager-env-update() {
 
 }
 
-# Function to delete .env file from Secret Manager
-# This function permanently deletes a secret from Google Cloud Secret Manager after user confirmation.
+# 🗑️ Permanently deletes the secret from Secret Manager
+# - Deletes all versions and metadata
+# 💡 Usage: gcloud-secret-manager-env-delete
 function gcloud-secret-manager-env-delete() {
     gcloud-config-load-and-validate || return 1
 
     _confirm-or-abort "Are you sure you want to delete the secret from Secret Manager
-This action is irreversible and will permanently delete the secret." "$@" || return 1
+    This action is irreversible and will permanently delete the secret." "$@" || return 1
 
     echo "🔹 Deleting the secret '$GCP_SECRET_NAME' from Secret Manager..."
 
@@ -65,6 +70,9 @@ This action is irreversible and will permanently delete the secret." "$@" || ret
     gcloud secrets delete $GCP_SECRET_NAME --quiet
 }
 
+# 📥 Downloads a secret and saves it to a local `.env` file
+# - Prompts user to select from available secrets
+# 💡 Usage: gcloud-secret-manager-env-download
 function gcloud-secret-manager-env-download() {
     echo "📃 Fetching available secrets..."
 

@@ -1,5 +1,10 @@
+# ------------------------------------------------------------------------------
+# 🛒 Mac App Store (mas-cli) Utilities
+# ------------------------------------------------------------------------------
+
 # 💾 Saves a filtered list of App Store apps (excludes cask-preferred ones)
 # 📄 Output: $DEVKIT_MODULES_PATH/mas/apps.txt
+# 💡 Usage: mas-save-apps
 function mas-save-apps() {
     local output="$DEVKIT_MODULES_PATH/mas/apps.txt"
     mkdir -p "$(dirname "$output")"
@@ -31,6 +36,7 @@ function mas-save-apps() {
 }
 
 # 📦 Installs apps listed in apps.txt using mas
+# 💡 Usage: mas-install-apps
 function mas-install-apps() {
     local input="$DEVKIT_MODULES_PATH/mas/apps.txt"
 
@@ -50,6 +56,7 @@ function mas-install-apps() {
 }
 
 # 🔄 Updates installed App Store apps via mas
+# 💡 Usage: mas-maintain
 function mas-maintain() {
     echo "🔍 Checking for App Store updates..."
     mas outdated || return 1
@@ -58,7 +65,8 @@ function mas-maintain() {
     echo "✅ App Store apps updated."
 }
 
-# ⚙️ Full mas setup: installs mas, then installs saved apps
+# ⚙️ Full mas setup: installs saved apps and applies updates
+# 💡 Usage: mas-setup
 function mas-setup() {
     mas-install-apps || return 1
     mas-maintain || return 1

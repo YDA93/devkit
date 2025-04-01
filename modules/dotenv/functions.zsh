@@ -1,6 +1,9 @@
-# Checks if a specific environment variable exists and is non-empty in a .env file.
-# Usage:
-#   environment-variable-exists [variable_name] [env_file]
+# ------------------------------------------------------------------------------
+# 🌱 Environment Variable Utilities
+# ------------------------------------------------------------------------------
+
+# ✅ Checks if a specific environment variable exists and is non-empty in a .env file
+# 💡 Usage: environment-variable-exists [VARIABLE_NAME] [env_file]
 function environment-variable-exists() {
     local var_name="$1"
     local env_file="${2:-.env}"
@@ -26,9 +29,8 @@ function environment-variable-exists() {
     return 0
 }
 
-# Updates or adds a key-value pair in the .env file.
-# Usage:
-#   environment-variable-set [key] [value]
+# 🛠️ Updates or adds a key-value pair in the .env file
+# 💡 Usage: environment-variable-set [KEY] [VALUE]
 function environment-variable-set() {
     local key="$1"
     local value="$2"
@@ -63,14 +65,9 @@ function environment-variable-set() {
     echo "✅ $key successfully set."
 }
 
-# environment-variable-get – Retrieve the value of a variable from a .env file
-# Usage:
-#   environment-variable-get KEY [--env-file path] [--preserve-quotes] [--raw]
-#
-# Flags:
-#   --env-file         Path to the .env file (default: ".env")
-#   --preserve-quotes  Preserve surrounding quotes
-#   --raw              Output raw value (preserve escape sequences like \n)
+# 🔍 Retrieves the value of a variable from a .env file
+# - Supports --env-file, --preserve-quotes, and --raw flags
+# 💡 Usage: environment-variable-get KEY [--env-file path] [--preserve-quotes] [--raw]
 function environment-variable-get() {
     local key=""
     local env_file=".env"

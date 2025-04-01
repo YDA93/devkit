@@ -1,5 +1,9 @@
-# Function to create a new IPv4 address for Google Compute Engine
-# This function reserves a global static IP address that can be used for load balancing
+# ------------------------------------------------------------------------------
+# 🌐 Google Compute Engine - Load Balancer Setup
+# ------------------------------------------------------------------------------
+
+# 🌐 Creates a global static IPv4 address for use with a load balancer
+# 💡 Usage: gcloud-compute-engine-ipv4-create
 function gcloud-compute-engine-ipv4-create {
     gcloud-config-load-and-validate || return 1
 
@@ -15,8 +19,8 @@ function gcloud-compute-engine-ipv4-create {
         gcloud compute addresses describe $GCP_PROJECT_ID-ipv4 --global --format="get(address)" --quiet
 }
 
-# Function to delete the reserved IPv4 address from Google Compute Engine
-# This function releases the static IP address from the global address pool
+# 🗑️ Deletes the reserved global static IPv4 address
+# 💡 Usage: gcloud-compute-engine-ipv4-delete
 function gcloud-compute-engine-ipv4-delete() {
     gcloud-config-load-and-validate || return 1
 
@@ -27,8 +31,8 @@ function gcloud-compute-engine-ipv4-delete() {
     gcloud compute addresses delete $GCP_PROJECT_ID-ipv4 --global --quiet
 }
 
-# Function to create a new SSL certificate for Google Compute Engine
-# This function provisions a Google-managed SSL certificate for securing HTTPS traffic
+# 🔐 Creates a Google-managed SSL certificate for your domain
+# 💡 Usage: gcloud-compute-engine-ssl-certificate-create
 function gcloud-compute-engine-ssl-certificate-create() {
     gcloud-config-load-and-validate || return 1
 
@@ -43,8 +47,8 @@ function gcloud-compute-engine-ssl-certificate-create() {
         gcloud compute ssl-certificates describe $GCP_PROJECT_ID-ssl-certificate --global --format="get(managed.status)" --quiet
 }
 
-# Function to delete an existing SSL certificate from Google Compute Engine
-# This function removes a Google-managed SSL certificate from the system
+# 🗑️ Deletes the Google-managed SSL certificate
+# 💡 Usage: gcloud-compute-engine-ssl-certificate-delete
 function gcloud-compute-engine-ssl-certificate-delete() {
     gcloud-config-load-and-validate || return 1
 
@@ -55,9 +59,8 @@ function gcloud-compute-engine-ssl-certificate-delete() {
     gcloud compute ssl-certificates delete $GCP_PROJECT_ID-ssl-certificate --global --quiet
 }
 
-# Function to create a new Network Endpoint Group for Google Compute Engine
-# This function provisions a serverless Network Endpoint Group (NEG) for Cloud Run integration
-# to be used in backend services for load balancing.
+# 🔌 Creates a serverless NEG (Network Endpoint Group) for Cloud Run
+# 💡 Usage: gcloud-compute-engine-network-endpoint-group-create
 function gcloud-compute-engine-network-endpoint-group-create() {
     gcloud-config-load-and-validate || return 1
 
@@ -73,8 +76,8 @@ function gcloud-compute-engine-network-endpoint-group-create() {
 
 }
 
-# Function to delete the Network Endpoint Group from Google Compute Engine
-# This function removes a serverless Network Endpoint Group (NEG) associated with Cloud Run.
+# 🗑️ Deletes the serverless NEG used for Cloud Run
+# 💡 Usage: gcloud-compute-engine-network-endpoint-group-delete
 function gcloud-compute-engine-network-endpoint-group-delete() {
     gcloud-config-load-and-validate || return 1
 
@@ -85,9 +88,8 @@ function gcloud-compute-engine-network-endpoint-group-delete() {
     gcloud compute network-endpoint-groups delete $GCP_PROJECT_ID-neg --region=$GCP_REGION --quiet
 }
 
-# Function to create a new backend service for Google Compute Engine and attach the Network Endpoint Group (NEG)
-# This function provisions a global backend service and links it to a Network Endpoint Group (NEG)
-# for HTTP load balancing.
+# 🔄 Creates a backend service and attaches the NEG
+# 💡 Usage: gcloud-compute-engine-backend-service-create
 function gcloud-compute-engine-backend-service-create() {
     gcloud-config-load-and-validate || return 1
 
@@ -107,8 +109,8 @@ function gcloud-compute-engine-backend-service-create() {
             --quiet
 }
 
-# Function to detach the Network Endpoint Group (NEG) from the backend service and delete the backend service
-# This function removes the NEG from the backend service and deletes the backend service from the global scope.
+# 🗑️ Removes NEG from backend service and deletes the service
+# 💡 Usage: gcloud-compute-engine-backend-service-delete
 function gcloud-compute-engine-backend-service-delete() {
     gcloud-config-load-and-validate || return 1
 
@@ -124,8 +126,8 @@ function gcloud-compute-engine-backend-service-delete() {
     gcloud compute backend-services delete $GCP_PROJECT_ID-backend-service --global --quiet
 }
 
-# Function to create a new URL Map for Google Compute Engine
-# This function establishes a URL map that directs HTTP traffic to the correct backend service.
+# 🗺️ Creates a URL map to route requests to the backend service
+# 💡 Usage: gcloud-compute-engine-url-map-create
 function gcloud-compute-engine-url-map-create() {
     gcloud-config-load-and-validate || return 1
 
@@ -141,8 +143,8 @@ function gcloud-compute-engine-url-map-create() {
 
 }
 
-# Function to delete the URL Map from Google Compute Engine
-# This function removes the previously created URL map used for traffic routing.
+# 🗑️ Deletes the URL map from Compute Engine
+# 💡 Usage: gcloud-compute-engine-url-map-delete
 function gcloud-compute-engine-url-map-delete() {
     gcloud-config-load-and-validate || return 1
 
@@ -153,8 +155,8 @@ function gcloud-compute-engine-url-map-delete() {
     gcloud compute url-maps delete $GCP_PROJECT_ID-url-map --global --quiet
 }
 
-# Function to create a new Target HTTPS Proxy and attach the SSL certificate for Google Compute Engine
-# This function provisions an HTTPS target proxy and binds it with a Google-managed SSL certificate.
+# 🔐 Creates HTTP & HTTPS target proxies and attaches SSL certificate
+# 💡 Usage: gcloud-compute-engine-target-https-proxy-and-attach-ssl-certificate
 function gcloud-compute-engine-target-https-proxy-and-attach-ssl-certificate() {
     gcloud-config-load-and-validate || return 1
 
@@ -176,8 +178,8 @@ function gcloud-compute-engine-target-https-proxy-and-attach-ssl-certificate() {
 
 }
 
-# Function to delete the Target HTTPS Proxy from Google Compute Engine
-# This function removes both the HTTP and HTTPS target proxies associated with the load balancer.
+# 🗑️ Deletes HTTP and HTTPS target proxies
+# 💡 Usage: gcloud-compute-engine-target-https-proxy-delete
 function gcloud-compute-engine-target-https-proxy-delete() {
     gcloud-config-load-and-validate || return 1
 
@@ -192,9 +194,8 @@ function gcloud-compute-engine-target-https-proxy-delete() {
 
 }
 
-# Function to create a new Global Forwarding Rule for Google Compute Engine
-# This function provisions forwarding rules that route HTTP (port 80) and HTTPS (port 443) traffic
-# to the appropriate proxies.
+# 🚦 Creates forwarding rules for HTTP (80) and HTTPS (443) traffic
+# 💡 Usage: gcloud-compute-engine-global-forwarding-rule-create
 function gcloud-compute-engine-global-forwarding-rule-create() {
     gcloud-config-load-and-validate || return 1
 
@@ -224,8 +225,8 @@ function gcloud-compute-engine-global-forwarding-rule-create() {
 
 }
 
-# Function to delete the Global Forwarding Rule from Google Compute Engine
-# This function removes the HTTP and HTTPS forwarding rules that direct traffic to the load balancer.
+# 🗑️ Deletes forwarding rules for HTTP and HTTPS
+# 💡 Usage: gcloud-compute-engine-global-forwarding-rule-delete
 function gcloud-compute-engine-global-forwarding-rule-delete() {
     gcloud-config-load-and-validate || return 1
 
@@ -241,9 +242,8 @@ function gcloud-compute-engine-global-forwarding-rule-delete() {
 
 }
 
-# Function to setup the Cloud Load Balancer on Google Compute Engine
-# This function orchestrates the complete setup of a Cloud Load Balancer, including the creation of a static IP,
-# SSL certificate, Network Endpoint Group, backend service, URL map, HTTPS proxy, and forwarding rules.
+# ⚙️ Sets up a full Cloud Load Balancer with IP, SSL, proxy, URL map, and forwarding rules
+# 💡 Usage: gcloud-compute-engine-cloud-load-balancer-setup
 function gcloud-compute-engine-cloud-load-balancer-setup() {
     # Validate Google Cloud configuration before proceeding
     gcloud-config-load-and-validate || return 1
@@ -302,9 +302,8 @@ function gcloud-compute-engine-cloud-load-balancer-setup() {
     echo "🎉 Cloud Load Balancer setup completed successfully!"
 }
 
-# Function to teardown the Cloud Load Balancer on Google Compute Engine
-# This function reverses the load balancer setup by sequentially deleting the forwarding rules, target proxies,
-# URL map, backend service, Network Endpoint Group, SSL certificate, and static IP.
+# 🔄 Teardown of all Cloud Load Balancer components
+# 💡 Usage: gcloud-compute-engine-cloud-load-balancer-teardown
 function gcloud-compute-engine-cloud-load-balancer-teardown() {
     # Validate Google Cloud configuration before proceeding
     gcloud-config-load-and-validate || return 1

@@ -1,6 +1,9 @@
-# 🔤 Returns a job name based on the project and cron URL path.
-# 📦 Usage:
-#   _gcloud-scheduler-jobs-generate-name "https://..."
+# ------------------------------------------------------------------------------
+# 📆 Google Cloud Scheduler Utilities
+# ------------------------------------------------------------------------------
+
+# 🔤 Generates a job name based on the project and cron URL path
+# 💡 Usage: _gcloud-scheduler-jobs-generate-name "https://..."
 function _gcloud-scheduler-jobs-generate-name() {
     local url="$1"
     local project_name=$(_gcloud-slugify-project-name)
@@ -8,9 +11,8 @@ function _gcloud-scheduler-jobs-generate-name() {
     echo "${project_name}_${cron_path}"
 }
 
-# 📝 Turns a cron URL into a readable job description.
-# 📦 Usage:
-#   _gcloud-scheduler-jobs-generate-description "https://..."
+# 📝 Converts a cron URL into a human-readable job description
+# 💡 Usage: _gcloud-scheduler-jobs-generate-description "https://..."
 function _gcloud-scheduler-jobs-generate-description() {
     local url="$1"
     local domain=$(echo "$url" | awk -F '/' '{print $3}')
@@ -26,10 +28,8 @@ function _gcloud-scheduler-jobs-generate-description() {
     echo "$domain > $app_cap > $path_cap"
 }
 
-# ✅ Prompts user to confirm creating or deleting jobs.
-# 📦 Usage:
-#   _gcloud-scheduler-jobs-prompt create "${urls[@]}"
-#   _gcloud-scheduler-jobs-prompt delete "${urls[@]}"
+# ✅ Prompts user to confirm Cloud Scheduler job creation/deletion
+# 💡 Usage: _gcloud-scheduler-jobs-prompt [create|delete] <url...>
 function _gcloud-scheduler-jobs-prompt() {
     local mode="$1"
     shift
@@ -50,7 +50,8 @@ function _gcloud-scheduler-jobs-prompt() {
     _confirm-or-abort "$message" "$@" || return 1
 }
 
-# 🗑️ Deletes all Cloud Scheduler jobs in the current project and region.
+# 🗑️ Deletes all Cloud Scheduler jobs in the current project and region
+# 💡 Usage: gcloud-scheduler-jobs-delete
 function gcloud-scheduler-jobs-delete() {
     gcloud-config-load-and-validate || return 1
 
@@ -82,9 +83,8 @@ function gcloud-scheduler-jobs-delete() {
     echo "✅ Deleted ${#urls[@]} Cloud Scheduler job(s)."
 }
 
-# 🔄 Syncs GCP Cloud Scheduler with your Django cron URLs.
-#    - Adds new jobs
-#    - Removes jobs no longer in code
+# 🔄 Syncs local Django cron jobs with Cloud Scheduler (create/delete as needed)
+# 💡 Usage: gcloud-scheduler-jobs-sync
 function gcloud-scheduler-jobs-sync() {
     gcloud-config-load-and-validate || return 1
 
@@ -194,7 +194,8 @@ function gcloud-scheduler-jobs-sync() {
     fi
 }
 
-# 📋 Lists all Cloud Scheduler jobs in the current project and region.
+# 📋 Lists all Cloud Scheduler jobs in the current project and region
+# 💡 Usage: gcloud-scheduler-jobs-list
 function gcloud-scheduler-jobs-list() {
     gcloud-config-load-and-validate || return 1
 

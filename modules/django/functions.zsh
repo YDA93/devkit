@@ -1,8 +1,25 @@
 # ------------------------------------------------------------------------------
-# ⚙️ Django Settings Management
+# 🎬 Project Bootstrap & Configuration
 # ------------------------------------------------------------------------------
 
+# 📦 Starts a new Django app inside the current project
+# - Must be run from a Django project root
+# 💡 Usage: django-app-start <app_name>
+function django-project-start() {
+    site_name=$1 # First Aurgment
+    django-admin startproject $site_name
+}
+
+# 📦 Starts a new Django app inside the current project
+# 💡 Usage: django-app-start <app_name>
+function django-app-start() {
+    app_name=$1 # First Aurgment
+    python manage.py startapp $app_name
+}
+
 # ⚙️ Sets the DJANGO_SETTINGS_MODULE environment variable based on the selected environment
+# - Activates the Python environment
+# - Supports local, dev, prod, and test
 # 💡 Usage: django-settings [local|dev|prod|test]
 function django-settings() {
     local env=$1
@@ -48,147 +65,57 @@ function django-secret-key-generate() {
 }
 
 # ------------------------------------------------------------------------------
-# 🚀 Django Server Shortcuts
+# 🧱 Database Schema & Migrations
 # ------------------------------------------------------------------------------
 
-# 🚀 Runs Django dev server on 0.0.0.0 (default: port 8000)
-# 💡 Usage: django-run-server [port]
-function django-run-server() {
-    if [ $# -eq 0 ]; then
-        python manage.py runserver 0.0.0.0:8000
-    else
-        python manage.py runserver 0.0.0.0:$@
-
-    fi
-}
-
-# ------------------------------------------------------------------------------
-# 🌍 Django Translations Shortcuts
-# ------------------------------------------------------------------------------
-
-# 🌐 Creates `.po` files for Arabic translations in all apps with a `locale` directory
-# 💡 Usage: django-translations-make
-function django-translations-make() {
-    echo -e $(django-admin makemessages -l ar --ignore="venv/*" --ignore="static/*")" in main directory"
-    # Loop through directories
-    for d in */; do
-        # Go to directory
-        cd $d
-
-        # Search for locale directory
-        if [ -d "locale" ]; then
-            echo -e $(django-admin makemessages -l ar)" in ${d::-1}"
-        fi
-
-        cd ..
-    done
-}
-
-# 🛠️ Compiles `.po` translation files into `.mo` for all apps with a `locale` directory
-# 💡 Usage: django-translations-compile
-function django-translations-compile() {
-    # Loop through directories
-    for d in */; do
-        # Go to directory
-        cd $d
-
-        # Search for locale directory
-        if [ -d "locale" ]; then
-            echo -e $(django-admin compilemessages)" in $d"
-        fi
-
-        cd ..
-    done
-}
-
-# ------------------------------------------------------------------------------
-# 🧱 Django Project Management Shortcuts
-# ------------------------------------------------------------------------------
-
-# 🚀 Starts a new Django project
-# 💡 Usage: django-project-start <project_name>
-function django-project-start() {
-    site_name=$1 # First Aurgment
-    django-admin startproject $site_name
-}
-
-# 📦 Starts a new Django app inside the current project
-# 💡 Usage: django-app-start <app_name>
-function django-app-start() {
-    app_name=$1 # First Aurgment
-    python manage.py startapp $app_name
-}
-
-# ------------------------------------------------------------------------------
-# 🗃️ Django Database Management Shortcuts
-# ------------------------------------------------------------------------------
-# 💾 Loads data from a Django fixture and resets DB sequences
-# 💡 Usage: django-loaddata <project_dir> [backup_file]
-function django-loaddata() {
-    local project_directory=$1
-    local backup_file=$2
-
-    # Check if project_directory is provided
-    if [ -z "$project_directory" ]; then
-        echo "Error: Project directory is not provided!"
-        return 1
-    fi
-
-    # Use default backup file if none provided
-    if [ -z "$backup_file" ]; then
-        backup_file="data.json"
-    fi
-
-    # Perform restoration using loaddata
-    echo "Restoring django data using 'loaddata' from $backup_file..."
-    python "$project_directory"/manage.py loaddata "$backup_file" --traceback
-    echo "Data restoration complete."
-    sleep 2
-
-    # Reset database sequences for all installed apps
-    echo "Resetting database sequences..."
-    apps=$(python "$project_directory"/manage.py shell -c "from django.apps import apps; print('\n'.join([app.label for app in apps.get_app_configs()]))")
-    echo "$apps" | while IFS= read -r app; do
-        echo "Resetting sequences for $app..."
-        python "$project_directory"/manage.py sqlsequencereset $app | python "$project_directory"/manage.py dbshell
-    done
-    echo "Database sequences reset."
-    sleep 2
-}
-
-# 📤 Dumps all Django data to data.json (for backup or migration)
-# 💡 Usage: django-dumpdata <project_dir>
-function django-dumpdata() {
-    local project_directory=$1
-
-    # Check if project_directory is provided
-    if [ -z "$project_directory" ]; then
-        echo "Error: Project directory is not provided!"
-        return 1
-    fi
-
-    # Perform data backup using dumpdata
-    echo "Performing django data backup using 'dumpdata'..."
-    python "$project_directory"/manage.py dumpdata --natural-foreign --natural-primary --indent 2 >data.json
-    echo "Data backup complete."
-    sleep 2
-}
-
-# 🛠️ Runs makemigrations (passes through args)
-# 💡 Usage: django-make-migrations [args]
-function django-make-migrations() {
+# 🛠️ Wrapper for makemigrations (passes through args)
+# 💡 Usage: django-migrate-make [args]
+function django-migrate-make() {
     python manage.py makemigrations $@
 }
 
-# 🧱 Applies migrations (passes through args)
+# 🧱 Wrapper for migrate (passes through args)
 # 💡 Usage: django-migrate [args]
 function django-migrate() {
     python manage.py migrate $@
 }
 
-# 🧼 Deletes all app migration files and __pycache__ folders (excluding venv)
-# 💡 Usage: django-delete-migrations-and-cache
-function django-delete-migrations-and-cache() {
+# 🔄 Runs a full initial migration cycle
+# - Deletes existing migrations and caches
+# - Temporarily disables URLs to avoid import issues
+# - Runs makemigrations, createcachetable, and migrate
+# - Restores the original `urls.py`
+# 💡 Usage: django-migrate-initial
+function django-migrate-initial() {
+    # 1. Delete all migrations and cache files
+    django-migrate-and-cache-delete || return 1
+
+    # 2. Handle URLs
+    # Store the original content of the urls.py
+    echo "Updating project URLs..."
+    local original_content=$(cat ./project/urls.py)
+    # Comment out the entire content of the file
+    sed -i '' 's/^/# /' ./project/urls.py
+    # Create an empty urlpatterns block
+    echo "urlpatterns = []" >>./project/urls.py
+
+    # 3. Run makemigrations
+    python "$PWD"/manage.py makemigrations || return 1
+    # 4. Create cache table
+    python "$PWD"/manage.py createcachetable || return 1
+    # 5. Run migrate
+    python "$PWD"/manage.py migrate || return 1
+
+    # 6. Restore original URLs
+    echo "Restoring original project URLs..."
+    echo "$original_content" >./project/urls.py
+}
+
+# 🧼 Deletes all Django migration files and `__pycache__` folders (excluding venv)
+# - Cleans migrations except `__init__.py`
+# - Skips any path under `./venv/`
+# 💡 Usage: django-migrate-and-cache-delete
+function django-migrate-and-cache-delete() {
     # Get the current directory
     project_directory="$PWD"
 
@@ -212,142 +139,175 @@ function django-delete-migrations-and-cache() {
 # - Optionally backs up data
 # - Creates a new database and updates .env
 # - Runs migrations and restores data
-# 💡 Usage: django-migrate-to-new-database
-function django-migrate-to-new-database() {
-
+# 💡 Usage: django-database-init
+function django-database-init() {
     # Redirect output to a log file
     local log_file="migration_$(date +'%Y%m%d%H%M%S').log"
 
-    # Get the current directory
-    local project_directory="$PWD"
-
     {
+        # Get the current directory
+        local project_directory="$PWD"
+
         # 1. Validations
         python-environment-is-active || return 1
         django-settings local || return 1
         environment-variable-exists LOCAL_DB_NAME || return 1
         environment-variable-exists LOCAL_DB_PASSWORD || return 1
 
-        # 2. Set the PGPASSWORD environment variable
-        export PGPASSWORD=$(environment-variable-get LOCAL_DB_PASSWORD)
-        postgres-password-validation || return 1
-
         # Prompt user for confirmation
-        _confirm-or-abort "This action will reset the project to its initial state. Proceed?" || return 1
+        _confirm-or-abort "⚠️ This action will reset the project to its initial state. Proceed?" || return 1
+
+        # 2. Export the PGPASSWORD environment variable
+        postgres-connect || return 1
 
         # 3. Backup data if needed
         local backup_performed=false
-        if _confirm-or-abort "Do you want to backup data?"; then
-            django-dumpdata "$project_directory" || return 1
-            backup_performed=true
-        else
-            echo "Skipping data backup..."
-        fi
+        django-data-backup || return 1
 
-        # 4. Manage database creation
-        postgres-database-create-interactive || return 1
-        unset PGPASSWORD
+        # 4. Create a new database
+        postgres-database-create || return 1
 
         # 5. Update the .env file with the correct database name
         environment-variable-set "LOCAL_DB_NAME" "$db_name" || return 1
 
-        # 6. Initialize the database
-        django-database-initialize "$project_directory" "$backup_performed" || return 1
+        # 6. Run initial migrations
+        django-migrate-initial || return 1
 
-        echo "✅ Project reset and migration complete."
+        # 7. Restoration of data
+        django-data-restore
+
+        echo "✅ Database initialization complete."
 
     } 2>&1 | tee -a "$log_file"
 
 }
 
-# 🧱 Re-initializes the Django database and restores data
-# - Deletes migrations and __pycache__
-# - Runs makemigrations, createcachetable, and migrate
-# - Restores data from backup or prompts for file
-# - Temporarily disables and then restores project URLs
-# 💡 Usage: django-database-initialize <project_directory> <backup_performed>
-function django-database-initialize() {
-    local project_directory=$1
-    local backup_performed=$2
+# ------------------------------------------------------------------------------
+# 💾 Data Backup & Restore
+# ------------------------------------------------------------------------------
 
-    # 1. Delete all migrations and cache files
-    django-delete-migrations-and-cache || return 1
+# 📤 Backs up Django data to a local JSON fixture
+# - Prompts user for confirmation before proceeding
+# - Runs `dumpdata` and saves output to `data.json`
+# - Sets `backup_performed=true` to allow automatic restore
+# 💡 Usage: django-data-backup
+function django-data-backup() {
+    if ! _confirm-or-abort "Do you want to back up Django data?"; then
+        echo "ℹ️ Skipping data backup..."
+        return 0
+    fi
 
-    # 2. Handle URLs
-    # Store the original content of the urls.py
-    echo "Updating project URLs..."
-    local original_content=$(cat ./project/urls.py)
-    # Comment out the entire content of the file
-    sed -i '' 's/^/# /' ./project/urls.py
-    # Create an empty urlpatterns block
-    echo "urlpatterns = []" >>./project/urls.py
+    echo "📤 Performing Django data backup using 'dumpdata'..."
+    python "$PWD/manage.py" dumpdata \
+        --natural-foreign --natural-primary --indent 2 >data.json || return 1
 
-    # 3. Run makemigrations
-    python "$project_directory"/manage.py makemigrations || return 1
-    # 4. Create cache table
-    python "$project_directory"/manage.py createcachetable || return 1
-    # 5. Run migrate
-    python "$project_directory"/manage.py migrate || return 1
+    echo "✅ Data backup completed and saved to data.json."
+    backup_performed=true
+    sleep 1
+}
 
-    # 6. Restoration of data
-    if [ "$backup_performed" = true ]; then
-        django-loaddata "$project_directory" || return 1 # Using the default "data.json"
+# 🔁 Restores Django data from a fixture file
+# - Restores from `data.json` if a backup was just made
+# - Otherwise prompts the user to select a file and validates it
+# - Uses `loaddata` to load the fixture, then resets DB sequences
+# 💡 Usage: django-data-restore
+function django-data-restore() {
+    local backup_file=""
 
+    if [[ "$backup_performed" = true ]]; then
+        echo "♻️  Restoring from default backup (data.json)..."
+        backup_file="data.json"
     else
-        if _confirm-or-abort "Do you want to restore data from a backup file?"; then
-            echo "Please provide the path to the backup file:"
-            read backup_file || return 1
-            django-loaddata "$project_directory" "$backup_file" || return 1 # Using the user-specified backup file
+        if ! _confirm-or-abort "Do you want to restore data from a backup file?"; then
+            echo "ℹ️ Skipping data restore..."
+            return 0
+        fi
+
+        echo -n "📂 Enter the path to the backup file: "
+        if ! read -r backup_file || [[ -z "$backup_file" ]]; then
+            echo "⚠️  No file path entered. Skipping restore."
+            return 1
+        fi
+
+        if [[ ! -f "$backup_file" ]]; then
+            echo "❌ File '$backup_file' does not exist. Aborting restore."
+            return 1
         fi
     fi
 
-    # 7. Restore original URLs
-    echo "Restoring original project URLs..."
-    echo "$original_content" >./project/urls.py
+    echo "📥 Restoring Django data from '$backup_file'..."
+    python "$PWD/manage.py" loaddata "$backup_file" --traceback || return 1
+    echo "✅ Data restoration complete."
+
+    echo "🔁 Resetting database sequences..."
+    apps=$(python "$PWD/manage.py" shell -c \
+        "from django.apps import apps; print('\n'.join([app.label for app in apps.get_app_configs()]))")
+
+    echo "$apps" | while IFS= read -r app; do
+        echo "🔧 Resetting sequences for $app..."
+        python "$PWD/manage.py" sqlsequencereset "$app" |
+            python "$PWD/manage.py" dbshell
+    done
+
+    echo "✅ Database sequences reset."
 }
 
 # ------------------------------------------------------------------------------
-# 🧪 Django Test Shortcuts
+# 🌍 Translations & Localization
 # ------------------------------------------------------------------------------
 
-# 🧪 Runs pytest with coverage using the test settings
-# - Accepts optional test path (e.g., app/tests/test_views.py::TestView::test_get)
-# 💡 Usage: django-run-pytest [path/to/test.py::TestClass::test_method]
-function django-run-pytest() {
-    django-settings test
+# 🌐 Creates `.po` files for Arabic translations in apps with a `locale` directory
+# - Recursively checks subdirectories for `locale/`
+# - Skips venv and static files
+# 💡 Usage: django-translations-make
+function django-translations-make() {
+    echo -e $(django-admin makemessages -l ar --ignore="venv/*" --ignore="static/*")" in main directory"
+    # Loop through directories
+    for d in */; do
+        # Go to directory
+        cd $d
 
-    # Replace '/' with '.', remove '.py::', and replace '::' with '.'
-    modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
-    if [[ -n "$modified_arg" ]]; then
-        echo "Testing: $modified_arg"
+        # Search for locale directory
+        if [ -d "locale" ]; then
+            echo -e $(django-admin makemessages -l ar)" in ${d::-1}"
+        fi
+
+        cd ..
+    done
+}
+
+# 🛠️ Compiles translation `.po` files into `.mo` format
+# - Recursively processes all subdirectories with a `locale/`
+# 💡 Usage: django-translations-compile
+function django-translations-compile() {
+    # Loop through directories
+    for d in */; do
+        # Go to directory
+        cd $d
+
+        # Search for locale directory
+        if [ -d "locale" ]; then
+            echo -e $(django-admin compilemessages)" in $d"
+        fi
+
+        cd ..
+    done
+}
+# ------------------------------------------------------------------------------
+# 🚀 Development & Deployment Tools
+# ------------------------------------------------------------------------------
+
+# 🚀 Runs Django dev server on 0.0.0.0
+# - Defaults to port 8000 if no port is specified
+# 💡 Usage: django-run-server [port]
+function django-run-server() {
+    if [ $# -eq 0 ]; then
+        python manage.py runserver 0.0.0.0:8000
     else
-        echo "Testing: All"
+        python manage.py runserver 0.0.0.0:$@
+
     fi
-
-    coverage run -m pytest -v -n auto $modified_arg
-    coverage report
 }
-
-# 🧪 Runs Django tests using manage.py and test settings
-# - Accepts optional test path in pytest-like format
-# 💡 Usage: django-run-test [path/to/test.py::TestClass::test_method]
-function django-run-test() {
-    django-settings test
-
-    # Replace '/' with '.', remove '.py::', and replace '::' with '.'
-    modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
-    if [[ -n "$modified_arg" ]]; then
-        echo "Testing: $modified_arg"
-    else
-        echo "Testing: All"
-    fi
-
-    python manage.py test $modified_arg
-}
-
-# ------------------------------------------------------------------------------
-# 🗝️ GitHub Secrets & Environment Management
-# ------------------------------------------------------------------------------
 
 # 🔐 Uploads .env file and GCP_CREDENTIALS to GitHub Secrets
 # 💡 Usage: django-upload-env-to-github-secrets
@@ -391,7 +351,45 @@ function django-upload-env-to-github-secrets() {
 }
 
 # ------------------------------------------------------------------------------
-# 🔍 Django Cron URL Tools
+# 🧪 Testing & Quality Assurance
+# ------------------------------------------------------------------------------
+
+# 🧪 Runs pytest with coverage using the test settings
+# - Accepts optional test path (e.g., app/tests/test_views.py::TestView::test_get)
+# 💡 Usage: django-run-pytest [path/to/test.py::TestClass::test_method]
+function django-run-pytest() {
+    django-settings test
+
+    # Replace '/' with '.', remove '.py::', and replace '::' with '.'
+    modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
+    if [[ -n "$modified_arg" ]]; then
+        echo "Testing: $modified_arg"
+    else
+        echo "Testing: All"
+    fi
+
+    coverage run -m pytest -v -n auto $modified_arg
+    coverage report
+}
+
+# 🧪 Runs Django tests using manage.py and test settings
+# - Accepts optional test path in pytest-like format
+# 💡 Usage: django-run-test [path/to/test.py::TestClass::test_method]
+function django-run-test() {
+    django-settings test
+
+    # Replace '/' with '.', remove '.py::', and replace '::' with '.'
+    modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
+    if [[ -n "$modified_arg" ]]; then
+        echo "Testing: $modified_arg"
+    else
+        echo "Testing: All"
+    fi
+
+    python manage.py test $modified_arg
+}
+# ------------------------------------------------------------------------------
+# 🔍 Introspection & Automation
 # ------------------------------------------------------------------------------
 
 # 🔍 Finds all cron URL patterns in internal Django apps

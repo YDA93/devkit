@@ -1,7 +1,11 @@
-# 🔄 Syncs your custom .gitconfig to the system/global Git config
-#    - Backs up existing ~/.gitconfig if present
-#    - Symlinks from your custom path to ~/.gitconfig
+# ------------------------------------------------------------------------------
+# 🔧 Git Configuration & Diagnostics
+# ------------------------------------------------------------------------------
 
+# 🔄 Syncs your custom .gitconfig to the global Git config
+# - Backs up any existing ~/.gitconfig (unless it's already a symlink)
+# - Creates a symlink from your custom path
+# 💡 Usage: git-sync-config
 function git-sync-config() {
     local source="$DEVKIT_MODULES_PATH/git/.gitconfig"
     local target="$HOME/.gitconfig"
@@ -22,6 +26,11 @@ function git-sync-config() {
     echo "✅ Linked $source → $target"
 }
 
+# 🩺 Checks if Git is properly installed and configured
+# - Verifies Git is installed
+# - Checks user.name, user.email, and global .gitignore
+# - Ensures an SSH key exists and GitHub connection works
+# 💡 Usage: git-doctor
 function git-doctor() {
     echo "🔧 Checking Git..."
 

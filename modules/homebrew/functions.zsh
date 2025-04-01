@@ -1,3 +1,10 @@
+# ------------------------------------------------------------------------------
+# 🍺 Homebrew Setup & Initialization
+# ------------------------------------------------------------------------------
+
+# 🍺 Installs Homebrew if not already installed
+# - Ensures brew is functional afterward
+# 💡 Usage: homebrew-install
 function homebrew-install() {
     # Check if Homebrew is installed
     if ! command -v brew &>/dev/null; then
@@ -19,8 +26,24 @@ function homebrew-install() {
     echo "✅ Homebrew is installed and working."
 }
 
+# ⚙️ Runs the full Homebrew environment setup:
+# - Installs Homebrew if needed
+# - Prunes unlisted packages
+# - Installs saved formula and casks
+# 💡 Usage: homebrew-setup
+function homebrew-setup() {
+    homebrew-install || return 1
+    homebrew-prune-packages || return 1
+    homebrew-install-packages || return 1
+}
+
+# ------------------------------------------------------------------------------
+# 💾 Homebrew Package Management
+# ------------------------------------------------------------------------------
+
 # 💾 Saves lists of top-level Homebrew formula and casks
 # 📄 Output: $DEVKIT_MODULES_PATH/homebrew/formulas.txt and casks.txt
+# 💡 Usage: homebrew-save-packages
 function homebrew-save-packages() {
     local base_dir="$DEVKIT_MODULES_PATH/homebrew"
     local formula_output="$base_dir/formulas.txt"
@@ -40,6 +63,7 @@ function homebrew-save-packages() {
 
 # 📦 Installs Homebrew formula and casks from saved package lists
 # 📄 Input: $DEVKIT_MODULES_PATH/homebrew/formulas.txt and casks.txt
+# 💡 Usage: homebrew-install-packages
 function homebrew-install-packages() {
     local base_dir="$DEVKIT_MODULES_PATH/homebrew"
     local formula_input="$base_dir/formulas.txt"
@@ -72,9 +96,9 @@ function homebrew-install-packages() {
     echo "✅ Finished installing Homebrew packages"
 }
 
-# 🔥 Uninstalls Homebrew formula and casks not listed in formulas.txt / casks.txt
-# 🧹 Prompts for confirmation before uninstalling each package
-# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/formulas.txt and casks.txt
+# 🔥 Uninstalls packages not listed in saved package files
+# - Prompts before each uninstall
+# 💡 Usage: homebrew-prune-packages
 function homebrew-prune-packages() {
     local base_dir="$DEVKIT_MODULES_PATH/homebrew"
     local formula_file="$base_dir/formulas.txt"
@@ -138,17 +162,9 @@ function homebrew-prune-packages() {
 
     echo "✅ Cleanup complete. Only packages from the saved lists remain."
 }
-# ⚙️ Runs the full Homebrew environment setup:
-#    - Prunes unlisted formula and casks
-#    - Installs listed formula and casks
-#    - Resets Zsh configuration
-function homebrew-setup() {
-    homebrew-install || return 1
-    homebrew-prune-packages || return 1
-    homebrew-install-packages || return 1
-}
 
-# 📋 Lists all currently installed Homebrew packages (formula and casks)
+# 📋 Lists all currently installed Homebrew packages
+# 💡 Usage: homebrew-list-packages
 function homebrew-list-packages() {
     echo "🍺 Installed Homebrew formula:"
     brew list --formula --installed-on-request
@@ -156,11 +172,15 @@ function homebrew-list-packages() {
     brew list --cask
 }
 
+# ------------------------------------------------------------------------------
+# ♻️ Homebrew Maintenance & Health Checks
+# ------------------------------------------------------------------------------
+
 # ♻️ Performs full Homebrew maintenance:
-#    - Checks system health
-#    - Updates Homebrew and all packages
-#    - Upgrades formula and casks
-#    - Removes unused dependencies and cleans up
+# - Runs doctor
+# - Updates and upgrades all packages
+# - Cleans unused dependencies
+# 💡 Usage: homebrew-maintain
 function homebrew-maintain() {
     echo "🩺 Checking system health..."
     brew doctor || echo "⚠️ brew doctor reported issues."
@@ -186,11 +206,11 @@ function homebrew-maintain() {
     echo "✅ Homebrew maintenance complete!"
 }
 
-# homebrew-doctor: Checks the status of Homebrew on your system.
-# - Verifies that Homebrew is installed.
-# - Runs 'brew doctor' to detect potential issues.
-# - Checks for outdated packages and suggests maintenance tips.
-# Provides clear, helpful output and guidance if problems are found.
+# 🔧 Checks the status of Homebrew on your system
+# - Verifies installation
+# - Runs 'brew doctor'
+# - Checks for outdated packages
+# 💡 Usage: homebrew-doctor
 function homebrew-doctor() {
     echo "🔧 Checking Homebrew..."
 
