@@ -181,7 +181,7 @@ function devkit-pc-setup() {
 
         _check-software-updates || return 1
 
-        # 🔄 Syncs your custom .gitconfig to the system/global Git config
+        # 🔄 Setup Git configuration
         git-setup || return 1
 
         # Install Homebrew and packages
