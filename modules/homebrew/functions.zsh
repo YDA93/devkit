@@ -35,6 +35,7 @@ function homebrew-setup() {
     homebrew-install || return 1
     homebrew-prune-packages || return 1
     homebrew-install-packages || return 1
+    homebrew-maintain || return 1
 }
 
 # ------------------------------------------------------------------------------
@@ -81,6 +82,13 @@ function homebrew-install-packages() {
             return 1
         }
     fi
+
+    source "$HOME/devkit/bin/devkit.zsh"
+
+    postgres-setup || {
+        echo "❌ Failed to set up PostgreSQL. Please check the setup."
+        return 1
+    }
 
     if [[ -f "$casks_input" ]]; then
         echo "🧴 Installing Homebrew casks from $casks_input"
@@ -189,7 +197,7 @@ function homebrew-maintain() {
     brew update
 
     echo "🔄 Upgrading formula..."
-    brew upgrade
+    brew upgrade --formula
 
     echo "🧴 Upgrading casks..."
     brew upgrade --cask
@@ -198,7 +206,7 @@ function homebrew-maintain() {
     brew autoremove
 
     echo "🗑️ Cleaning up old versions and cache..."
-    brew cleanup -s --prune=7
+    brew cleanup
 
     echo "📦 Verifying installed packages..."
     brew missing || echo "✅ No missing dependencies."

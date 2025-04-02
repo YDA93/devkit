@@ -1,3 +1,33 @@
+# 🛠️ Sets up PostgreSQL for the first time
+# - Starts PostgreSQL service via Homebrew if not already running
+# - Creates a default 'postgres' superuser if missing
+# - Skips setup if already connected successfully
+# 💡 Usage: postgres-setup
+function postgres-setup() {
+    # 🐘 Initialize PostgreSQL only if not already running or user missing
+    if ! psql -U postgres -c '\q' &>/dev/null; then
+        echo "⚙️  Setting up PostgreSQL for the first time..."
+
+        # Start PostgreSQL if not already running
+        if ! brew services list | grep -q "^$LATEST_PG.*started"; then
+            echo "🔄 Starting PostgreSQL service..."
+            # brew services start "$LATEST_PG"
+        else
+            echo "✅ PostgreSQL service is already running."
+        fi
+
+        # Create postgres superuser if missing
+        if ! psql postgres -c '\du' | cut -d \| -f 1 | grep -qw postgres; then
+            echo "➕ Creating default 'postgres' superuser..."
+            createuser -s postgres
+        else
+            echo "✅ 'postgres' user already exists."
+        fi
+    else
+        echo "✅ PostgreSQL is already set up and ready."
+    fi
+}
+
 # ------------------------------------------------------------------------------
 # 🐘 PostgreSQL Connection & Diagnostics
 # ------------------------------------------------------------------------------
@@ -76,7 +106,7 @@ function postgres-doctor() {
         echo "✅ PostgreSQL service appears to be installed"
     else
         echo "⚠️  PostgreSQL service not running or not installed"
-        echo "💡 Start with: brew services start postgresql"
+        echo "💡 Start with: brew services start $LATEST_PG"
     fi
 
     echo "🔑 Checking connection as 'postgres' user..."
@@ -84,8 +114,16 @@ function postgres-doctor() {
         echo "✅ Able to connect as 'postgres'"
     else
         echo "⚠️  Cannot connect as 'postgres'"
-        echo "💡 You might need to create the user: createuser -s postgres"
-        echo "   Or ensure the service is running and permissions are correct."
+        echo "💡 Try creating the user with:"
+        echo "   createuser -s postgres"
+        echo ""
+        echo "🔐 To create a password for the user (optional but recommended):"
+        echo "   psql -U postgres"
+        echo "   Then inside psql, run:"
+        echo "     \\password postgres"
+        echo ""
+        echo "⚙️  Also ensure the PostgreSQL service is running:"
+        echo "   brew services start $LATEST_PG     "
     fi
 
     return 0

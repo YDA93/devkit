@@ -1,4 +1,171 @@
 # ------------------------------------------------------------------------------
+# 🔐 GitHub SSH Key Utilities
+# ------------------------------------------------------------------------------
+
+# 📋 Lists SSH key pairs found in ~/.ssh/
+# - Shows private and public key pairs with optional comments
+# 💡 Usage: github-ssh-list
+function github-ssh-list() {
+    echo "📂 SSH keys in ~/.ssh/:"
+
+    setopt local_options null_glob # Allow empty glob without error
+
+    found_any=false
+
+    # Loop through all private keys (id_*) that are not .pub files
+    for priv in ~/.ssh/id_*; do
+        [[ "$priv" == *.pub ]] && continue
+        [[ -e "$priv" ]] || continue
+
+        echo "🗝️  Private Key: $priv"
+        pub="${priv}.pub"
+        if [[ -f "$pub" ]]; then
+            echo "🔑 Public Key: $pub"
+            comment=$(awk '{print $3}' "$pub")
+            [[ -n "$comment" ]] && echo "   └─ Comment: $comment"
+        fi
+        found_any=true
+    done
+
+    if [[ "$found_any" == false ]]; then
+        echo "❌ No SSH keys found in ~/.ssh/"
+    fi
+}
+
+# 🛠️ Creates and sets up an SSH key for GitHub (with port 443 fallback)
+# - Generates key if missing, adds to ssh-agent, and copies to clipboard
+# - Opens GitHub SSH key page for easy paste
+# 💡 Usage: github-ssh-setup
+function github-ssh-setup() {
+    echo "📧 Enter your GitHub email:"
+    read -r github_email
+
+    key_path="$HOME/.ssh/id_ed25519"
+
+    # Check if key already exists
+    if [[ -f "$key_path" ]]; then
+        echo "✅ SSH key already exists at $key_path"
+    else
+        echo "🔑 Generating new SSH key..."
+        ssh-keygen -t ed25519 -C "$github_email" -f "$key_path"
+    fi
+
+    echo "📋 Your public SSH key:"
+    cat "${key_path}.pub"
+
+    echo "🛠️  Updating SSH config to use port 443 for GitHub..."
+    mkdir -p ~/.ssh
+    touch ~/.ssh/config
+
+    # Append config if it doesn't already exist
+    if ! grep -q "Host github.com" ~/.ssh/config; then
+        {
+            echo ""
+            echo "Host github.com"
+            echo "  Hostname ssh.github.com"
+            echo "  Port 443"
+            echo "  User git"
+        } >>~/.ssh/config
+        echo "✅ SSH config updated."
+    else
+        echo "⚠️  SSH config already contains a block for github.com. Skipping."
+    fi
+
+    echo "🔐 Starting ssh-agent and adding your key..."
+    eval "$(ssh-agent -s)"
+    if ! ssh-add -l | grep -q "$key_path"; then
+        ssh-add "$key_path"
+        echo "✅ SSH key added to agent."
+    else
+        echo "ℹ️  SSH key already added to agent. Skipping."
+    fi
+
+    echo ""
+    echo "📎 Your SSH public key is now copied below. Add it to GitHub:"
+    echo "👉 https://github.com/settings/keys"
+    echo "----- COPY BELOW -----"
+    cat "${key_path}.pub"
+    echo "------ END KEY -------"
+
+    pbcopy <~/.ssh/id_ed25519.pub
+    open "https://github.com/settings/keys"
+
+    echo ""
+    echo "📎 Your SSH key has been copied to the clipboard."
+    echo "💡 To add it to GitHub:"
+    echo "1. Go to https://github.com/settings/keys"
+    echo "2. Click the green button: 'New SSH key'"
+    echo "3. Give it a title like 'My MacBook' or 'Dev Machine'"
+    echo "4. Paste the key into the 'Key' field (Cmd+V)"
+    echo "5. Click 'Add SSH key'"
+
+    echo ""
+    echo "📌 Press enter after you've added the key to GitHub..."
+    read
+
+    echo "🚀 Testing SSH connection to GitHub..."
+    ssh -T git@github.com
+
+    echo ""
+    echo "📂 SSH keys currently loaded into your agent:"
+    ssh-add -l
+}
+
+# 🗑️ Deletes an SSH key from your system and ssh-agent
+# - Lists key pairs and allows you to select which to delete
+# 💡 Usage: github-ssh-delete
+function github-ssh-delete() {
+    echo "📂 SSH key pairs found in ~/.ssh/:"
+
+    setopt local_options null_glob # 👈 This prevents errors if no matches
+
+    keys=()
+    i=1
+    for key in ~/.ssh/id_*; do
+        [[ "$key" == *.pub ]] && continue
+        [[ -e "$key" ]] || continue
+
+        keys+=("$key")
+        echo "$i. $key"
+        ((i++))
+    done
+
+    if [[ ${#keys[@]} -eq 0 ]]; then
+        echo "❌ No SSH key pairs found."
+        return
+    fi
+
+    echo ""
+    echo "🗑️  Enter the number of the key you want to delete (or press Enter to cancel):"
+    read -r choice
+
+    if [[ -z "$choice" ]]; then
+        echo "❌ Cancelled. No key deleted."
+        return
+    fi
+
+    if ! [[ "$choice" =~ ^[0-9]+$ ]] || ((choice < 1 || choice > ${#keys[@]})); then
+        echo "❌ Invalid selection."
+        return
+    fi
+
+    key_path="${keys[$choice]}"
+
+    echo ""
+    echo "⚠️  You selected: $key_path"
+    echo "Are you sure you want to delete this key from disk and unload from agent? (yes/no)"
+    read -r confirm
+
+    if [[ "$confirm" == "yes" ]]; then
+        ssh-add -d "$key_path" 2>/dev/null && echo "🧼 Removed from ssh-agent."
+        [[ -f "$key_path" ]] && rm "$key_path" && echo "🗑️  Deleted: $key_path"
+        [[ -f "${key_path}.pub" ]] && rm "${key_path}.pub" && echo "🗑️  Deleted: ${key_path}.pub"
+    else
+        echo "❌ Cancelled. No key deleted."
+    fi
+}
+
+# ------------------------------------------------------------------------------
 # 🚀 GitHub Workflow Automation
 # ------------------------------------------------------------------------------
 

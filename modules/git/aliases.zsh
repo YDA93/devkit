@@ -1,1 +1,1 @@
-alias git_open_settings="code $HOME/.gitconfig"
+alias git-open-settings="code $HOME/.gitconfig"

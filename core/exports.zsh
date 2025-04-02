@@ -3,14 +3,19 @@
 # ─────────────────────────────────────────────
 
 # 🍺 Homebrew paths
-export HOMEBREW_PREFIX="$(brew --prefix)"
-export HOMEBREW_OPT_PREFIX="$HOMEBREW_PREFIX/opt"
-export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
+if command -v brew &>/dev/null; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+
+    export HOMEBREW_PREFIX="$(brew --prefix)"
+    export HOMEBREW_OPT_PREFIX="$HOMEBREW_PREFIX/opt"
+    export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
+fi
 
 # 🧾 Extract top-level Homebrew formula from formulas.txt
-DEVKIT_REQUIRED_FORMULAE=$(awk '!/^#/ && NF' "$DEVKIT_MODULES_PATH/homebrew/formulas.txt")
-
-export DEVKIT_REQUIRED_FORMULAE
+if [[ -f "$DEVKIT_MODULES_PATH/homebrew/formulas.txt" ]]; then
+    DEVKIT_REQUIRED_FORMULAE=$(awk '!/^#/ && NF' "$DEVKIT_MODULES_PATH/homebrew/formulas.txt")
+    export DEVKIT_REQUIRED_FORMULAE
+fi
 
 # ☕ Java (latest openjdk@)
 if LATEST_JAVA=$(echo "$DEVKIT_REQUIRED_FORMULAE" | grep '^openjdk@' | sort -V | tail -n 1); then

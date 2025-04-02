@@ -2,28 +2,43 @@
 # 🔧 Git Configuration & Diagnostics
 # ------------------------------------------------------------------------------
 
-# 🔄 Syncs your custom .gitconfig to the global Git config
-# - Backs up any existing ~/.gitconfig (unless it's already a symlink)
-# - Creates a symlink from your custom path
-# 💡 Usage: git-sync-config
-function git-sync-config() {
-    local source="$DEVKIT_MODULES_PATH/git/.gitconfig"
-    local target="$HOME/.gitconfig"
+# 🧾 Sets Git global user name, email, and core preferences
+# - Prompts for user.name and user.email
+# - Applies essential Git settings (no extras)
+# 💡 Usage: git-setup
+function git-setup() {
+    echo "📛 Enter your Git user name:"
+    read -r git_name
 
-    if [[ ! -f "$source" ]]; then
-        echo "❌ Custom .gitconfig not found at: $source"
+    echo "📧 Enter your Git email:"
+    read -r git_email
+
+    if [[ -z "$git_name" || -z "$git_email" ]]; then
+        echo "❌ Git name and email cannot be empty. Aborting."
         return 1
     fi
 
-    # Backup existing ~/.gitconfig if it's not already a symlink
-    if [[ -f "$target" && ! -L "$target" ]]; then
-        mv "$target" "$target.backup.$(date +%s)"
-        echo "📦 Backed up existing ~/.gitconfig"
-    fi
+    git config --global user.name "$git_name"
+    git config --global user.email "$git_email"
 
-    # Create symlink
-    ln -sf "$source" "$target"
-    echo "✅ Linked $source → $target"
+    git config --global core.editor "code --wait"
+    git config --global core.autocrlf input
+    git config --global core.excludesfile "$HOME/.gitignore_global"
+    git config --global init.defaultBranch main
+
+    git config --global filter.lfs.required true
+    git config --global filter.lfs.clean "git-lfs clean -- %f"
+    git config --global filter.lfs.smudge "git-lfs smudge -- %f"
+    git config --global filter.lfs.process "git-lfs filter-process"
+
+    git config --global diff.tool vscode
+    git config --global difftool.vscode "code --wait --diff \$LOCAL \$REMOTE"
+    git config --global difftool.vscode.cmd "code --wait --diff \$LOCAL \$REMOTE"
+
+    git config --global color.ui auto
+    git config --global pull.ff only
+
+    echo "✅ Git global config has been updated."
 }
 
 # 🩺 Checks if Git is properly installed and configured

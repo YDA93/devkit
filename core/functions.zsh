@@ -182,7 +182,7 @@ function devkit-pc-setup() {
         _check-software-updates || return 1
 
         # 🔄 Syncs your custom .gitconfig to the system/global Git config
-        git-sync-config || return 1
+        git-setup || return 1
 
         # Install Homebrew and packages
         homebrew-setup || return 1
@@ -218,9 +218,6 @@ function devkit-pc-update() {
     local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
     {
-        # Run sudo upfront and clear terminal
-        clear
-
         # --- Brew ---
         _log-update-step "Homebrew and Packages" "homebrew-maintain"
 
@@ -314,7 +311,7 @@ function devkit-check-tools() {
 
     print_section_title "📱 Mobile Dev Tools"
 
-    print_version "🛠️" "Xcode" "xcodebuild" "xcodebuild -version | head -n 1 | awk '{print \$2}'"
+    print_version "🛠️ " "Xcode" "xcodebuild" "xcodebuild -version | head -n 1 | awk '{print \$2}'"
     print_version "🍎" "CocoaPods" "pod" "pod --version"
     print_version "💙" "Flutter" "flutter" "flutter --version 2>/dev/null | head -n 1 | awk '{print \$2}'"
     print_version "📱" "Android SDK" "sdkmanager" "sdkmanager --version"
