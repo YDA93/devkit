@@ -10,34 +10,34 @@ Whether you’re spinning up a new machine or maintaining an existing one, DevKi
 
 DevKit is more than just a shell script — it’s a full developer environment manager designed for macOS power users. Here’s what it brings to the table:
 
-- 🔧 One-Line Environment Setup  
+- **🔧 One-Line Environment Setup**  
   devkit-pc-setup walks you through a full system bootstrap: CLI tools, SDKs, dev apps, shell configuration — personalized and persistent.
 
-- ♻️ Smart Updater for Your Stack  
+- **♻️ Smart Updater for Your Stack**  
   devkit-pc-update upgrades everything in one sweep: Homebrew, Flutter, Firebase, gcloud, NPM, CocoaPods, App Store apps, system updates — all logged.
 
-- 🧪 Full Environment Diagnostics  
+- **🧪 Full Environment Diagnostics**  
   devkit-doctor checks health across languages, tools, SDKs, mobile stacks, and cloud SDKs — and surfaces actionable fixes.
 
-- 🔍 Tool Version Checker  
+- **🔍 Tool Version Checker**  
   devkit-check-tools reports what’s installed, what’s outdated, and what’s missing — with clean, emoji-labeled output.
 
-- 🌐 Cloud & Mobile Ready  
+- **🌐 Cloud & Mobile Ready**  
   Built-in support for Firebase, Google Cloud, Flutter, Dart, Android SDK, Postgres, Docker, CocoaPods, and more — no extra wiring.
 
-- 🧠 Smart Prompts & Safe Defaults  
+- **🧠 Smart Prompts & Safe Defaults**  
   Interactive prompts with --quiet overrides for automation. Clean fail-safes, confirmations, and shell-safe user input.
 
-- 🧩 Modular Architecture  
+- **🧩 Modular Architecture**  
   Each tool lives in its own modules/[tool] folder — easy to extend, maintain, or override with your own logic.
 
-- 📜 Self-Updating CLI  
+- **📜 Self-Updating CLI**  
   devkit-update syncs your CLI with the latest version from GitHub and reloads it without needing to restart your terminal.
 
-- 📚 Auto-Logging & Audit Trail  
+- **📚 Auto-Logging & Audit Trail**  
   All setup, updates, and diagnostics are logged under ~/devkit/logs with timestamped filenames — great for debugging or history.
 
-- 💻 Mac-First System Utilities  
+- **💻 Mac-First System Utilities**  
   Includes aliases for flushing DNS, checking public IP, restarting Terminal, getting macOS version, and more macOS-specific goodness.
 
 ---
