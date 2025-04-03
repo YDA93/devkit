@@ -62,6 +62,57 @@ function mas-install-apps() {
     echo "✅ App Store app installation complete."
 }
 
+function _get-app-name-from-id() {
+    local app_id="$1"
+    curl -s "https://itunes.apple.com/lookup?id=$app_id" |
+        grep -o '"trackName":"[^"]*"' |
+        sed 's/"trackName":"\(.*\)"/\1/'
+}
+
+# 📦 Installs App Store apps based on .settings (dynamic app list)
+# - Installs only apps marked as "y" (mas_install_<id>)
+# - Gets app name dynamically via `mas info`
+# 💡 Usage: mas-install-from-settings
+function mas-install-from-settings() {
+    local settings_file="$DEVKIT_ROOT/.settings"
+
+    if [[ ! -f "$settings_file" ]]; then
+        echo "❌ Settings file not found at $settings_file"
+        echo "💡 Run: devkit-settings-setup"
+        return 1
+    fi
+
+    echo "🛍️ Installing selected Mac App Store apps from $settings_file"
+    echo ""
+
+    source "$settings_file"
+
+    _get-app-name-from-id() {
+        local app_id="$1"
+        curl -s "https://itunes.apple.com/lookup?id=$app_id" |
+            grep -o '"trackName":"[^"]*"' |
+            sed 's/"trackName":"\(.*\)"/\1/'
+    }
+
+    while IFS='=' read -r key value; do
+        [[ "$value" != "\"y\"" ]] && continue
+
+        if [[ "$key" == mas_install_* ]]; then
+            local app_id="${key#mas_install_}"
+            local app_name=$(_get-app-name-from-id "$app_id")
+
+            [[ -z "$app_name" ]] && app_name="App ID $app_id"
+
+            echo "🛍️ $app_name ($app_id)"
+            install-if-missing "$app_name" "$app_id"
+            sleep 2
+        fi
+    done <"$settings_file"
+
+    echo ""
+    echo "✅ App Store app installation (from settings) complete."
+}
+
 # 🔄 Updates installed App Store apps via mas
 # 💡 Usage: mas-maintain
 function mas-maintain() {
@@ -76,6 +127,7 @@ function mas-maintain() {
 # 💡 Usage: mas-setup
 function mas-setup() {
     mas-install-apps || return 1
+    mas-install-from-settings || return 1
     mas-maintain || return 1
 }
 

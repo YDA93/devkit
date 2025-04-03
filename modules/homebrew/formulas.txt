@@ -11,4 +11,3 @@ mas
 node@22
 openjdk
 postgresql@16
-weasyprint

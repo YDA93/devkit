@@ -9,16 +9,3 @@ ngrok
 pgadmin4
 google-cloud-sdk
 postman
-cloudflare-warp
-firefox
-onedrive
-whatsapp
-zoom
-font-twitter-color-emoji
-microsoft-auto-update
-microsoft-edge
-microsoft-excel
-microsoft-outlook
-microsoft-powerpoint
-microsoft-teams
-microsoft-word

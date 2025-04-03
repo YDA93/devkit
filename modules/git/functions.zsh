@@ -7,19 +7,23 @@
 # - Applies essential Git settings (no extras)
 # 💡 Usage: git-setup
 function git-setup() {
-    echo "📛 Enter your Git user name:"
-    read -r git_name
+    local settings_file="$DEVKIT_ROOT/.settings"
 
-    echo "📧 Enter your Git email:"
-    read -r git_email
-
-    if [[ -z "$git_name" || -z "$git_email" ]]; then
-        echo "❌ Git name and email cannot be empty. Aborting."
+    if [[ ! -f "$settings_file" ]]; then
+        echo "❌ Settings file not found at $settings_file"
+        echo "💡 Run: devkit-settings-setup"
         return 1
     fi
 
-    git config --global user.name "$git_name"
-    git config --global user.email "$git_email"
+    source "$settings_file"
+
+    if [[ -z "$full_name" || -z "$email" ]]; then
+        echo "❌ Name or email missing from settings file. Aborting."
+        return 1
+    fi
+
+    git config --global user.name "$full_name"
+    git config --global user.email "$email"
 
     git config --global core.editor "code --wait"
     git config --global core.autocrlf input

@@ -35,6 +35,7 @@ function homebrew-setup() {
     homebrew-install || return 1
     homebrew-prune-packages || return 1
     homebrew-install-packages || return 1
+    homebrew-install-from-settings || return 1
     homebrew-maintain || return 1
 }
 
@@ -104,36 +105,47 @@ function homebrew-install-packages() {
     echo "✅ Finished installing Homebrew packages"
 }
 
-# 🔥 Uninstalls packages not listed in saved package files
+# 🔥 Uninstalls Homebrew packages not listed in saved package files or .settings
+# - Reads from: formulas.txt, casks.txt, and .settings
 # - Prompts before each uninstall
 # 💡 Usage: homebrew-prune-packages
 function homebrew-prune-packages() {
     local base_dir="$DEVKIT_MODULES_PATH/homebrew"
     local formula_file="$base_dir/formulas.txt"
     local casks_file="$base_dir/casks.txt"
+    local settings_file="$DEVKIT_ROOT/.settings"
 
-    if [[ ! -f "$formula_file" && ! -f "$casks_file" ]]; then
-        echo "❌ No package lists found in $base_dir"
+    if [[ ! -f "$formula_file" && ! -f "$casks_file" && ! -f "$settings_file" ]]; then
+        echo "❌ No package lists or settings file found."
         return 1
     fi
 
     echo "🧹 Checking for Homebrew packages to uninstall..."
+    [[ -f "$settings_file" ]] && source "$settings_file"
 
-    local current_formula=($(brew list --formula --installed-on-request))
+    local current_formulae=($(brew list --formula --installed-on-request))
     local current_casks=($(brew list --cask))
 
-    local desired_formula=()
+    local desired_formulae=()
     local desired_casks=()
 
-    # Read formula
+    # 1. From formulas.txt
     if [[ -f "$formula_file" ]]; then
         while IFS= read -r line || [[ -n "$line" ]]; do
             [[ -z "$line" || "$line" =~ ^# ]] && continue
-            desired_formula+=("$line")
+            desired_formulae+=("$line")
         done <"$formula_file"
     fi
 
-    # Read casks
+    # 2. From .settings (formula)
+    if [[ -f "$settings_file" ]]; then
+        while IFS='=' read -r key value; do
+            [[ "$value" != "\"y\"" ]] && continue
+            [[ "$key" == formula_install_* ]] && desired_formulae+=("${key#formula_install_}")
+        done <"$settings_file"
+    fi
+
+    # 3. From casks.txt
     if [[ -f "$casks_file" ]]; then
         while IFS= read -r line || [[ -n "$line" ]]; do
             [[ -z "$line" || "$line" =~ ^# ]] && continue
@@ -141,10 +153,25 @@ function homebrew-prune-packages() {
         done <"$casks_file"
     fi
 
-    # Prune formula
-    for pkg in "${current_formula[@]}"; do
-        if ! printf '%s\n' "${desired_formula[@]}" | grep -qx "$pkg"; then
-            if _confirm-or-abort "Uninstall formula \"$pkg\"? It's not in formulas.txt." "$@"; then
+    # 4. From .settings (cask)
+    if [[ -f "$settings_file" ]]; then
+        while IFS='=' read -r key value; do
+            [[ "$value" != "\"y\"" ]] && continue
+            if [[ "$key" == cask_install_* ]]; then
+                local raw="${key#cask_install_}"
+                desired_casks+=("${raw//_/-}") # Convert back to real cask name
+            fi
+        done <"$settings_file"
+    fi
+
+    # Remove duplicates from arrays
+    desired_formulae=($(printf "%s\n" "${desired_formulae[@]}" | sort -u))
+    desired_casks=($(printf "%s\n" "${desired_casks[@]}" | sort -u))
+
+    # 🔥 Prune formulae
+    for pkg in "${current_formulae[@]}"; do
+        if ! printf '%s\n' "${desired_formulae[@]}" | grep -qx "$pkg"; then
+            if _confirm-or-abort "Uninstall formula \"$pkg\"? It's not in formulas.txt or settings." "$@"; then
                 echo "❌ Uninstalling formula: $pkg"
                 brew uninstall --ignore-dependencies "$pkg"
             else
@@ -153,10 +180,10 @@ function homebrew-prune-packages() {
         fi
     done
 
-    # Prune casks
+    # 🔥 Prune casks
     for cask in "${current_casks[@]}"; do
         if ! printf '%s\n' "${desired_casks[@]}" | grep -qx "$cask"; then
-            if _confirm-or-abort "Uninstall cask \"$cask\"? It's not in casks.txt." "$@"; then
+            if _confirm-or-abort "Uninstall cask \"$cask\"? It's not in casks.txt or settings." "$@"; then
                 echo "❌ Uninstalling cask: $cask"
                 brew uninstall --cask "$cask"
             else
@@ -168,7 +195,7 @@ function homebrew-prune-packages() {
     brew cleanup
     brew autoremove
 
-    echo "✅ Cleanup complete. Only packages from the saved lists remain."
+    echo "✅ Cleanup complete. Only desired packages remain."
 }
 
 # 📋 Lists all currently installed Homebrew packages
@@ -178,6 +205,54 @@ function homebrew-list-packages() {
     brew list --formula --installed-on-request
     echo "🧴 Installed Homebrew casks:"
     brew list --cask
+}
+
+# 📦 Installs Homebrew formulae and casks based on user settings
+# - Reads $DEVKIT_ROOT/.settings
+# - Only installs entries marked "y"
+# 💡 Usage: homebrew-install-from-settings
+function homebrew-install-from-settings() {
+    local settings_file="$DEVKIT_ROOT/.settings"
+
+    if [[ ! -f "$settings_file" ]]; then
+        echo "❌ Settings file not found at $settings_file"
+        echo "💡 Run: devkit-settings-setup"
+        return 1
+    fi
+
+    echo "🔧 Installing Homebrew packages based on your saved settings..."
+    echo "📄 Source: $settings_file"
+    echo ""
+
+    source "$settings_file"
+
+    echo "🍺 Installing selected Homebrew formulae..."
+    local installed_formulae=0
+    while IFS='=' read -r key value; do
+        if [[ "$key" == formula_install_* && "$value" == "\"y\"" ]]; then
+            local formula="${key#formula_install_}"
+            echo "🔧 Installing formula: $formula"
+            brew install "$formula" && ((installed_formulae++))
+        fi
+    done <"$settings_file"
+
+    echo ""
+    echo "🧴 Installing selected Homebrew casks..."
+    local installed_casks=0
+    while IFS='=' read -r key value; do
+        if [[ "$key" == cask_install_* && "$value" == "\"y\"" ]]; then
+            local raw_cask="${key#cask_install_}"
+            local cask="${raw_cask//_/-}" # 🔁 Replace underscores back to hyphens
+            echo "📦 Installing cask: $cask"
+            brew install --cask "$cask" && ((installed_casks++))
+        fi
+    done <"$settings_file"
+
+    echo ""
+    brew cleanup
+    brew autoremove
+
+    echo "✅ Done! Installed $installed_formulae formulae and $installed_casks casks from saved settings."
 }
 
 # ------------------------------------------------------------------------------

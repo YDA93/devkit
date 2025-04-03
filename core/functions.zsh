@@ -117,9 +117,110 @@ function _check-software-updates() {
         return 1 # Signal that a reboot is needed
     fi
 }
+
+# 🧰 Initializes your CLI by asking user for name, email, and per-app install choices
+# - Stores results in ~/devkit/.settings
+# 💡 Usage: devkit-settings-setup
+function devkit-settings-setup() {
+    local settings_file="$DEVKIT_ROOT/.settings"
+    mkdir -p "$(dirname "$settings_file")"
+
+    echo "👋 Welcome! Let's set up devkit CLI environment."
+
+    # Zsh-compatible prompts
+    echo -n "👤 Full name: "
+    read full_name
+
+    echo -n "📧 Email address: "
+    read email
+
+    echo ""
+    echo "🛠️  We'll now ask which apps you'd like to install (one by one). Please type y or n."
+
+    local mas_apps=(
+        "1450874784|Transporter"
+        "899247664|TestFlight"
+        "1287239339|ColorSlurp"
+        "409183694|Keynote"
+        "409201541|Pages"
+        "409203825|Numbers"
+    )
+
+    local cask_apps=(
+        cloudflare-warp firefox onedrive whatsapp zoom
+        microsoft-auto-update microsoft-edge microsoft-excel
+        microsoft-outlook microsoft-powerpoint microsoft-teams
+        microsoft-word
+    )
+
+    local formula_apps=(
+        weasyprint
+    )
+
+    echo "full_name=\"$full_name\"" >"$settings_file"
+    echo "email=\"$email\"" >>"$settings_file"
+
+    echo "" >>"$settings_file"
+    echo "# mas apps" >>"$settings_file"
+    for app in "${mas_apps[@]}"; do
+        IFS='|' read -r app_id app_name <<<"$app"
+
+        while true; do
+            echo -n "🛍️  Install $app_name (App Store)? [y/n]: "
+            read choice
+            choice="${choice:l}"
+            [[ "$choice" == "y" || "$choice" == "n" ]] && break
+            echo "⚠️  Please type y or n"
+        done
+
+        echo "mas_install_$app_id=\"$choice\"" >>"$settings_file"
+    done
+
+    echo "" >>"$settings_file"
+    echo "# cask apps" >>"$settings_file"
+    for app in "${cask_apps[@]}"; do
+        safe_app_var=${app//-/_}
+
+        while true; do
+            echo -n "📦 Install $app (Homebrew Cask)? [y/n]: "
+            read choice
+            choice="${choice:l}"
+            [[ "$choice" == "y" || "$choice" == "n" ]] && break
+            echo "⚠️  Please type y or n"
+        done
+
+        echo "cask_install_${safe_app_var}=\"$choice\"" >>"$settings_file"
+    done
+
+    echo "" >>"$settings_file"
+    echo "# formula apps" >>"$settings_file"
+    for app in "${formula_apps[@]}"; do
+        while true; do
+            echo -n "🔧 Install $app (Homebrew Formula)? [y/n]: "
+            read choice
+            choice="${choice:l}"
+            [[ "$choice" == "y" || "$choice" == "n" ]] && break
+            echo "⚠️  Please type y or n"
+        done
+
+        echo "formula_install_$app=\"$choice\"" >>"$settings_file"
+    done
+
+    echo ""
+    echo "✅ Settings saved to $settings_file"
+}
+
 # ✅ Checks if all required tools are installed
 # 💡 Usage: devkit-is-setup [--quiet]
 function devkit-is-setup() {
+    local settings_file="$DEVKIT_ROOT/.settings"
+
+    if [[ ! -f "$settings_file" ]]; then
+        echo "❌ Settings file not found at $settings_file"
+        echo "💡 Run: devkit-settings-setup"
+        return 1
+    fi
+
     local quiet=false
     if [[ "$1" == "--quiet" || "$1" == "-q" ]]; then
         quiet=true
@@ -178,6 +279,8 @@ function devkit-pc-setup() {
 
     {
         _confirm-or-abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
+
+        devkit-settings-setup || return 1
 
         _check-software-updates || return 1
 
