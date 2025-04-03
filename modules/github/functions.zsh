@@ -165,6 +165,14 @@ function github-ssh-delete() {
     fi
 }
 
+# 🔍 Tests your GitHub SSH connection
+# - Verifies if SSH access to GitHub is working correctly
+# 💡 Usage: github-ssh-connection-test
+function github-ssh-connection-test() {
+    echo "🚀 Testing SSH connection to GitHub..."
+    ssh -T git@github.com
+}
+
 # ------------------------------------------------------------------------------
 # 🚀 GitHub Workflow Automation
 # ------------------------------------------------------------------------------

@@ -6,13 +6,39 @@
 # - Must be run from a Django project root
 # 💡 Usage: django-app-start <app_name>
 function django-project-start() {
-    site_name=$1 # First Aurgment
-    django-admin startproject $site_name
+    if [ -z "$1" ]; then
+        echo "Usage: django-project-start <projectname>"
+        return 1
+    fi
+
+    local projectname=$1
+
+    # Create project directory
+    mkdir "$projectname" && cd "$projectname" || return
+
+    # Create the Python environment
+    python-environment-create || return 1
+
+    # Activate the Python environment
+    python-environment-activate || return 1
+
+    # Install Django
+    pip install django || return 1
+
+    # Start Django project
+    django-admin startproject "$projectname" . || return 1
+
+    echo "✅ Django project '$projectname' created and ready!"
 }
 
 # 📦 Starts a new Django app inside the current project
 # 💡 Usage: django-app-start <app_name>
 function django-app-start() {
+    if [ -z "$1" ]; then
+        echo "Usage: django-app-start <app_name>"
+        return 1
+    fi
+
     app_name=$1 # First Aurgment
     python manage.py startapp $app_name
 }

@@ -51,7 +51,13 @@ To auto-load DevKit in every terminal session, add the line above to your `.zshr
 
 ### 🔧 `devkit-pc-setup`
 
-Set up your full dev environment — prompts for tool installs and configurations.
+Sets up your full development environment from scratch.
+• 🧭 Interactive setup with confirmations
+• 📦 Installs:
+• Git, Homebrew, MAS apps, Casks, npm, Xcode, Flutter SDK, etc.
+• 🧠 Uses: devkit-settings-setup, \_check-software-updates, \_confirm-or-abort, and a bunch of \*-setup commands
+• 🗂 Logs saved to: ~/devkit/logs/devkit/setup/[timestamp].log
+• 💬 Prompts for configuration pauses (e.g., to manually launch IDEs like VS Code)
 
 ```bash
 devkit-pc-setup
@@ -59,7 +65,14 @@ devkit-pc-setup
 
 ### 🔄 `devkit-pc-update`
 
-Keep your dev environment up to date.
+Updates all major development tools and system software.
+• 🔄 Updates via:
+• Homebrew (formulas and casks)
+• pip3, gcloud, flutter, npm, CocoaPods
+• Rosetta 2, MAS apps
+• 📥 Also updates DevKit CLI (devkit-update)
+• 🗂 Logs saved to: ~/devkit/logs/devkit/update/[timestamp].log
+• 🧰 Uses helper: \_log-update-step for clear, consistent output
 
 ```bash
 devkit-pc-update
@@ -67,7 +80,11 @@ devkit-pc-update
 
 ### 📋 `devkit-check-tools`
 
-Print current versions of all major development tools.
+Prints versions of all important dev tools in a categorized, emoji-friendly layout.
+• 🕵️ Checks:
+• Shell, editors, languages, mobile SDKs, cloud CLIs, databases, etc.
+• ⚠️ Warns about missing tools
+• 🧠 Uses inline print_version() helper with dynamic formatting
 
 ```bash
 devkit-check-tools
@@ -75,7 +92,12 @@ devkit-check-tools
 
 ### 🧪 `devkit-doctor`
 
-Run deep diagnostics to validate your entire setup.
+Deep diagnostic tool that checks configuration and environment health.
+• Runs devkit-check-tools first
+• Validates:
+• Homebrew, Git, Xcode, Firebase, PostgreSQL, npm
+• Default shell and PATH
+• 🗂 Logs saved to: ~/devkit/logs/devkit/doctor/[timestamp].log
 
 ```bash
 devkit-doctor
@@ -83,7 +105,11 @@ devkit-doctor
 
 ### 📥 `devkit-update`
 
-Update the DevKit CLI itself from GitHub.
+Checks GitHub for new commits and updates the DevKit CLI if needed.
+• Compares current vs remote Git commit
+• Offers to git pull if out-of-date
+• 🔁 Reloads the CLI if updated (source bin/devkit.zsh)
+• 🗂 Installs to / updates: ~/devkit
 
 ```bash
 devkit-update
@@ -93,7 +119,13 @@ devkit-update
 
 ### `devkit-settings-setup`
 
-Interactive onboarding that collects user info and preferred app installs.
+🧰 devkit-settings-setup
+
+Interactive onboarding to gather user info and app install preferences.
+• Prompts for:
+• Full name and email
+• App installs from MAS, Homebrew Casks, and formulas (with y/n)
+• 📝 Saves all choices to: ~/devkit/.settings
 
 ```bash
 devkit-settings-setup
@@ -104,7 +136,11 @@ devkit-settings-setup
 
 ### `devkit-is-setup`
 
-Check if your DevKit setup is complete and all required tools are installed.
+Quick check to verify if your system meets all required DevKit prerequisites.
+• Checks for:
+• Presence of all critical tools (git, zsh, node, java, docker, flutter, etc.)
+• ✅ Returns 0 if everything is installed
+• 🔇 Use --quiet to suppress output
 
 ```bash
 devkit-is-setup [--quiet]
@@ -114,9 +150,9 @@ devkit-is-setup [--quiet]
 
 ## 🔧 Requirements
 
-- macOS (tested on Monterey and later)
+- macOS
 - Zsh shell
-- Git, Homebrew, and standard developer tools
+- Git
 - Internet access (for installs and updates)
 
 ---
@@ -290,6 +326,7 @@ DevKit includes powerful GitHub utilities to manage SSH keys, simplify Git workf
 - `github-ssh-list` — List all SSH keys found in `~/.ssh/`
 - `github-ssh-setup` — Generate and configure SSH key for GitHub access (port 443 fallback)
 - `github-ssh-delete` — Interactively delete a selected SSH key
+- `github-ssh-connection-test` - Test SSH connection to GitHub
 
 ### 🚀 Workflow Helpers
 
