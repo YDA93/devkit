@@ -324,7 +324,7 @@ function devkit-pc-update() {
         # --- Brew ---
         _log-update-step "Homebrew and Packages" "homebrew-maintain"
 
-        # --- pip (Python) ---
+        # --- Pip (Python) ---
         _log-update-step "pip (Python)" bash -c '
         pip3 install --upgrade pip setuptools wheel
         '
@@ -353,8 +353,11 @@ function devkit-pc-update() {
         # --- App Store Apps ---
         _log-update-step "App Store Apps (via mas-cli)" mas-maintain
 
-        # --- devkit Software Updates ---
-        _log-update-step "devkit System Updates" softwareupdate -ia --verbose
+        # --- Devkit ---
+        _log-update-step "DevKit CLI" devkit-update
+
+        # --- Software ---
+        _log-update-step "System Updates" softwareupdate -ia --verbose
 
     } 2>&1 | tee -a "$log_file"
 }
@@ -499,4 +502,61 @@ function devkit-doctor() {
         echo "────────────────────────────────────"
 
     } 2>&1 | tee -a "$log_file"
+}
+
+# 🚀 Checks and updates the devkit CLI from GitHub if a new version is available
+# - Compares latest remote commit vs local
+# - Only pulls if out of date
+# 💡 Usage: devkit-update
+function devkit-update() {
+    local repo_url="https://github.com/YDA93/devkit"
+    local target_dir="$HOME/devkit"
+
+    echo "🔄 Checking for devkit updates..."
+
+    if [[ ! -d "$target_dir" ]]; then
+        echo "📦 devkit not found. Cloning into $target_dir..."
+        git clone "$repo_url" "$target_dir" || {
+            echo "❌ Failed to clone devkit."
+            return 1
+        }
+        echo "✅ devkit installed for the first time."
+        source "$target_dir/bin/devkit.zsh"
+        return 0
+    fi
+
+    # Fetch latest commit info
+    local current_commit remote_commit
+    current_commit=$(git -C "$target_dir" rev-parse HEAD 2>/dev/null)
+    git -C "$target_dir" fetch origin main --quiet
+    remote_commit=$(git -C "$target_dir" rev-parse origin/main 2>/dev/null)
+
+    if [[ "$current_commit" == "$remote_commit" ]]; then
+        echo "✅ devkit is already up to date (commit: ${current_commit:0:7})"
+        return 0
+    fi
+
+    # Show update summary
+    echo "📥 New update available!"
+    echo "🔸 Current: ${current_commit:0:7}"
+    echo "🔹 Latest : ${remote_commit:0:7}"
+
+    echo -n "👉 Do you want to update devkit now? (y/n): "
+    read -r confirm
+    if [[ "$confirm" != [Yy] ]]; then
+        echo "❌ Update canceled."
+        return 0
+    fi
+
+    echo "🚀 Updating devkit..."
+    git -C "$target_dir" pull --rebase --autostash || {
+        echo "❌ Failed to update devkit."
+        return 1
+    }
+
+    if [[ -f "$target_dir/bin/devkit.zsh" ]]; then
+        echo "🔁 Reloading devkit..."
+        source "$target_dir/bin/devkit.zsh"
+        echo "✅ devkit reloaded with latest changes."
+    fi
 }
