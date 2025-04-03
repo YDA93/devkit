@@ -3,9 +3,9 @@
 # ─────────────────────────────────────────────
 
 # 🍺 Homebrew paths
-if command -v brew &>/dev/null; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
+if command -v brew &>/dev/null; then
     export HOMEBREW_PREFIX="$(brew --prefix)"
     export HOMEBREW_OPT_PREFIX="$HOMEBREW_PREFIX/opt"
     export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
