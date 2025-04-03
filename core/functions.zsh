@@ -84,8 +84,8 @@ function _confirm-or-abort() {
 }
 
 # 🖨️ Prints a stylized section title to terminal
-# 💡 Usage: print_section_title "Title"
-function print_section_title() {
+# 💡 Usage: _print_section_title "Title"
+function _print_section_title() {
     local title="$1"
     local line_length=$((${#title} + 4))
     local border=$(printf '─%.0s' $(seq 1 $line_length))
@@ -388,7 +388,7 @@ function devkit-check-tools() {
             missing_tools+=("$name")
         fi
     }
-    print_section_title "💻 Shell & System Tools"
+    _print_section_title "💻 Shell & System Tools"
     print_version "🧮" "Zsh" "zsh" "zsh --version | awk '{print \$2}'"
     print_version "🛠 " "Git" "git" "git --version | awk '{print \$3}'"
     print_version "🛍 " "MAS" "mas" "mas version"
@@ -396,14 +396,14 @@ function devkit-check-tools() {
     print_version "🧪" "Expect" "expect" "expect -v | awk '{print \$3}'"
     echo
 
-    print_section_title "🧰 Developer Tools & Editors"
+    _print_section_title "🧰 Developer Tools & Editors"
 
     print_version "🖥 " "VS Code" "code" "code --version | head -n 1"
     print_version "🏗 " "Android Studio" "studio" "studio --version 2>/dev/null | head -n 1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+'"
     print_version "🧱" "Gradle" "gradle" "gradle --version | awk '/Gradle / {print \$2}'"
     echo
 
-    print_section_title "⚙️  Languages & Package Managers"
+    _print_section_title "⚙️  Languages & Package Managers"
 
     print_version "☕" "Java" "java" "java -version 2>&1 | awk -F '\"' '/version/ {print \$2}'"
     print_version "🐍" "Python" "python3" "python3 --version | awk '{print \$2}'"
@@ -415,7 +415,7 @@ function devkit-check-tools() {
     print_version "🎯" "Dart" "dart" "dart --version 2>&1 | awk '{print \$4}'"
     echo
 
-    print_section_title "📱 Mobile Dev Tools"
+    _print_section_title "📱 Mobile Dev Tools"
 
     print_version "🛠️ " "Xcode" "xcodebuild" "xcodebuild -version | head -n 1 | awk '{print \$2}'"
     print_version "🍎" "CocoaPods" "pod" "pod --version"
@@ -424,7 +424,7 @@ function devkit-check-tools() {
     print_version "🔌" "Android Platform Tools" "adb" "adb version | head -n 1 | awk '{print \$5}'"
     echo
 
-    print_section_title "🚀  Cloud & Deployment"
+    _print_section_title "🚀  Cloud & Deployment"
 
     print_version "☁️ " "Google Cloud CLI" "gcloud" "gcloud --version | grep 'Google Cloud SDK' | awk '{print \$4}'"
     print_version "🔥" "Firebase CLI" "firebase" "firebase --version"
@@ -432,13 +432,13 @@ function devkit-check-tools() {
 
     echo
 
-    print_section_title "🗄️  Databases"
+    _print_section_title "🗄️  Databases"
 
     print_version "🐘" "PostgreSQL" "psql" "psql --version | awk '{print \$3}'"
 
     echo
 
-    print_section_title "🧩 Miscellaneous Tools"
+    _print_section_title "🧩 Miscellaneous Tools"
 
     print_version "🖨 " "WeasyPrint" "weasyprint" "weasyprint --version | awk '{print \$3}'"
     echo
