@@ -1,19 +1,35 @@
 # 🧰 DevKit CLI
 
-**DevKit** is a developer environment setup and maintenance toolkit built for macOS. It streamlines the process of installing essential tools, setting up configurations, running diagnostics, and keeping your machine development-ready — all from the command line.
+**DevKit CLI** is a modular, Zsh-based toolkit that automates the setup, configuration, and maintenance of your macOS development environment.
 
-> Designed for developers who want a no-fuss, fully-scripted dev environment initialization with handy utilities baked in.
+Whether you’re spinning up a new machine or maintaining an existing one, DevKit makes it effortless to install SDKs, configure tools, manage shell environments, and keep everything up to date — from Homebrew and Flutter to Firebase, Docker, Python, Node.js, Postgres, and beyond.
 
 ---
 
 ## 🚀 Features
 
-- 🔧 One-command setup of full development environment
-- 📦 Install and configure essential tools (Xcode, Git, Flutter, Android SDK, etc.)
-- ♻️ Update system tools and SDKs (Homebrew, gcloud, CocoaPods, Flutter, etc.)
-- ✅ Run comprehensive environment checks and diagnostics
-- 📋 View installed versions of all major dev tools
-- 🔄 Auto-update DevKit from GitHub
+DevKit is more than just a shell script — it’s a full developer environment manager designed for macOS power users. Here’s what it brings to the table:
+
+- 🔧 One-Line Environment Setup
+  devkit-pc-setup walks you through a full system bootstrap: CLI tools, SDKs, dev apps, shell configuration — personalized and persistent.
+- ♻️ Smart Updater for Your Stack
+  devkit-pc-update upgrades everything in one sweep: Homebrew, Flutter, Firebase, gcloud, NPM, CocoaPods, App Store apps, system updates — all logged.
+- 🧪 Full Environment Diagnostics
+  devkit-doctor checks health across languages, tools, SDKs, mobile stacks, and cloud SDKs — and surfaces actionable fixes.
+- 🔍 Tool Version Checker
+  devkit-check-tools reports what’s installed, what’s outdated, and what’s missing — with clean, emoji-labeled output.
+- 🌐 Cloud & Mobile Ready
+  Built-in support for Firebase, Google Cloud, Flutter, Dart, Android SDK, Postgres, Docker, CocoaPods, and more — no extra wiring.
+- 🧠 Smart Prompts & Safe Defaults
+  Interactive prompts with --quiet overrides for automation. Clean fail-safes, confirmations, and shell-safe user input.
+- 🧩 Modular Architecture
+  Each tool lives in its own modules/[tool] folder — easy to extend, maintain, or override with your own logic.
+- 📜 Self-Updating CLI
+  devkit-update syncs your CLI with the latest version from GitHub and reloads it without needing to restart your terminal.
+- 📚 Auto-Logging & Audit Trail
+  All setup, updates, and diagnostics are logged under ~/devkit/logs with timestamped filenames — great for debugging or history.
+- 💻 Mac-First System Utilities
+  Includes aliases for flushing DNS, checking public IP, restarting Terminal, getting macOS version, and more macOS-specific goodness.
 
 ---
 
@@ -21,129 +37,16 @@
 
 Open your terminal and run:
 
-## 1. Change into the DevKit directory
+### 1. Change into the DevKit directory
 
 ```bash
 cd ~/devkit
 ```
 
-## 2. Run the installer script
+### 2. Run the installer script
 
 ```bash
 zsh install.zsh
-```
-
----
-
-```bash
-# Clone DevKit CLI into your home directory
-git clone https://github.com/YDA93/devkit ~/devkit
-
-# Source the CLI
-source ~/devkit/bin/devkit.zsh
-```
-
-To auto-load DevKit in every terminal session, add the line above to your `.zshrc`.
-
----
-
-## 🛠️ Core Commands
-
-### 🔧 `devkit-pc-setup`
-
-Sets up your full development environment from scratch.
-• 🧭 Interactive setup with confirmations
-• 📦 Installs:
-• Git, Homebrew, MAS apps, Casks, npm, Xcode, Flutter SDK, etc.
-• 🧠 Uses: devkit-settings-setup, \_check-software-updates, \_confirm-or-abort, and a bunch of \*-setup commands
-• 🗂 Logs saved to: ~/devkit/logs/devkit/setup/[timestamp].log
-• 💬 Prompts for configuration pauses (e.g., to manually launch IDEs like VS Code)
-
-```bash
-devkit-pc-setup
-```
-
-### 🔄 `devkit-pc-update`
-
-Updates all major development tools and system software.
-• 🔄 Updates via:
-• Homebrew (formulas and casks)
-• pip3, gcloud, flutter, npm, CocoaPods
-• Rosetta 2, MAS apps
-• 📥 Also updates DevKit CLI (devkit-update)
-• 🗂 Logs saved to: ~/devkit/logs/devkit/update/[timestamp].log
-• 🧰 Uses helper: \_log-update-step for clear, consistent output
-
-```bash
-devkit-pc-update
-```
-
-### 📋 `devkit-check-tools`
-
-Prints versions of all important dev tools in a categorized, emoji-friendly layout.
-• 🕵️ Checks:
-• Shell, editors, languages, mobile SDKs, cloud CLIs, databases, etc.
-• ⚠️ Warns about missing tools
-• 🧠 Uses inline print_version() helper with dynamic formatting
-
-```bash
-devkit-check-tools
-```
-
-### 🧪 `devkit-doctor`
-
-Deep diagnostic tool that checks configuration and environment health.
-• Runs devkit-check-tools first
-• Validates:
-• Homebrew, Git, Xcode, Firebase, PostgreSQL, npm
-• Default shell and PATH
-• 🗂 Logs saved to: ~/devkit/logs/devkit/doctor/[timestamp].log
-
-```bash
-devkit-doctor
-```
-
-### 📥 `devkit-update`
-
-Checks GitHub for new commits and updates the DevKit CLI if needed.
-• Compares current vs remote Git commit
-• Offers to git pull if out-of-date
-• 🔁 Reloads the CLI if updated (source bin/devkit.zsh)
-• 🗂 Installs to / updates: ~/devkit
-
-```bash
-devkit-update
-```
-
-## ⚙️ Settings & Initialization
-
-### `devkit-settings-setup`
-
-🧰 devkit-settings-setup
-
-Interactive onboarding to gather user info and app install preferences.
-• Prompts for:
-• Full name and email
-• App installs from MAS, Homebrew Casks, and formulas (with y/n)
-• 📝 Saves all choices to: ~/devkit/.settings
-
-```bash
-devkit-settings-setup
-```
-
-- Stores results in: `~/devkit/.settings`
-- Supports MAS, Cask, and Homebrew formula installs
-
-### `devkit-is-setup`
-
-Quick check to verify if your system meets all required DevKit prerequisites.
-• Checks for:
-• Presence of all critical tools (git, zsh, node, java, docker, flutter, etc.)
-• ✅ Returns 0 if everything is installed
-• 🔇 Use --quiet to suppress output
-
-```bash
-devkit-is-setup [--quiet]
 ```
 
 ---
@@ -169,6 +72,126 @@ DevKit helps manage a wide range of tools:
 - 🎨 Misc: WeasyPrint, ccache, expect
 
 ---
+
+## 🛠️ Core Commands
+
+### 🔧 `devkit-pc-setup`
+
+🧰 Bootstraps your entire dev environment — guided, interactive, and persistent.
+
+- 👤 Asks for your name, email, and app/tool preferences
+- 📦 Installs:
+- Git, Homebrew (formulas + casks)
+- MAS apps, NPM packages, Xcode, Flutter SDK
+- 🧠 Uses helpers: \_confirm-or-abort, \_check-software-updates, devkit-settings-setup
+- 🖥️ Prompts you to launch & configure downloaded GUI apps (e.g., VS Code)
+- 🗂 Logs everything to: ~/devkit/logs/devkit/setup/[timestamp].log
+
+```bash
+devkit-pc-setup
+```
+
+### 🔄 `devkit-pc-update`
+
+♻️ Runs a full system + dev stack update in one command.
+
+- 📦 Updates:
+- 🧪 Homebrew formulas & casks
+- 🐍 Python (pip3)
+- ☁️ Google Cloud CLI
+- 💙 Flutter SDK
+- 🟢 Node.js & NPM
+- 🍎 CocoaPods
+- 🧠 Rosetta 2
+- 🛍️ App Store apps via mas-cli
+- 🛠️ DevKit itself (devkit-update)
+- 🖥 macOS system software
+- 🧾 Uses \_log-update-step for clean progress logs
+- 🗂 Logs everything to: ~/devkit/logs/devkit/update/[timestamp].log
+
+```bash
+devkit-pc-update
+```
+
+### 📋 `devkit-check-tools`
+
+🔍 Prints installed versions of all essential dev tools — organized by category with emoji labels.
+
+- ✅ Checks:
+  - 💻 Shell & system tools
+  - 🧰 Dev tools & editors
+  - ⚙️ Languages & package managers
+  - 📱 Mobile SDKs
+  - ☁️ Cloud CLIs
+  - 🗄️ Databases
+- ⚠️ Warns about missing tools with suggestions
+
+```bash
+devkit-check-tools
+```
+
+### 🧪 `devkit-doctor`
+
+🩺 Runs full diagnostics on your environment — catch problems before they catch you.
+
+- 📋 Starts with devkit-check-tools
+- 🧠 Validates config via:
+- homebrew-doctor, xcode-doctor, git-doctor, firebase-doctor, etc.
+- 🐚 Verifies shell + $PATH
+- 🗂 Logs output to: ~/devkit/logs/devkit/doctor/[timestamp].log
+
+```bash
+devkit-doctor
+```
+
+### 📥 `devkit-update`
+
+🚀 Self-updates DevKit from GitHub if new changes exist.
+
+- 🔍 Compares local commit vs origin/main
+- ✅ Offers to pull changes & reloads CLI
+- 📦 Auto-installs if DevKit is missing
+- 💡 No external dependencies required
+
+```bash
+devkit-update
+```
+
+## ⚙️ Settings & Initialization
+
+### `devkit-settings-setup`
+
+🧰 devkit-settings-setup
+
+📋 Interactive onboarding flow to personalize your DevKit setup.
+
+- 👤 Prompts for:
+- Full name & email
+- Preferred installs from:
+- 🛍️ Mac App Store (MAS)
+- 🍺 Homebrew Casks
+- 🧪 Homebrew Formulas
+- 📝 Saves all preferences to: ~/devkit/.settings
+- 🔄 Used automatically by devkit-pc-setup
+
+```bash
+devkit-settings-setup
+```
+
+### `devkit-is-setup`
+
+🔎 Quick system check to ensure all critical tools are installed.
+
+- Verifies presence of:
+  - ⚙️ Git, Zsh, Node, NPM, Python, Java
+  - 🐳 Docker, ☁️ GCloud, 🔥 Firebase
+  - 💙 Flutter, 🍎 CocoaPods, 🐘 Postgres, and more
+  - ✅ Returns 0 if everything is ready
+  - 🔇 Add --quiet to suppress output (for scripts)
+
+```bash
+devkit-is-setup [--quiet]
+```
 
 ---
 
