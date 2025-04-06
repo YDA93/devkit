@@ -563,6 +563,12 @@ A set of powerful functions to automate Django deployments on Google Cloud:
 
 - `gcloud-project-django-update` — 🔁 Redeploy and update services: deploy latest image, sync storage and secrets, update scheduler jobs.
 
+**💡 Notes**  
+All setup, teardown, and update functions automatically validate environment variables and .env secrets before execution.  
+Log files are generated automatically for setup, teardown, and update steps, with timestamps for easy tracking.  
+Secret files are written to /tmp/env_secrets securely during execution and deleted after loading.  
+With these GCloud integrations, DevKit boosts your cloud automation game by allowing you to fully manage GCP Django deployments from the terminal — from project provisioning to full teardown and redeployment. ☁️🚀
+
 #### 🚨 Important: Prepare your .env file
 
 All Django Deployment Shortcuts and GCP automations rely on environment variables defined in your local .env file.
@@ -722,12 +728,5 @@ Full control over your static, media, and artifact storage buckets — create, c
 - `gcloud-storage-buckets-sync-static` — 📤 Upload and sync local static files to the bucket
 - `gcloud-storage-buckets-set-public-read` — 🌐 Set public read access on static and media buckets
 - `gcloud-storage-buckets-set-cross-origin` — 🔄 Apply CORS policy to buckets
-
-#### 💡 Notes
-
-All setup, teardown, and update functions automatically validate environment variables and .env secrets before execution.  
-Log files are generated automatically for setup, teardown, and update steps, with timestamps for easy tracking.  
-Secret files are written to /tmp/env_secrets securely during execution and deleted after loading.  
-With these GCloud integrations, DevKit boosts your cloud automation game by allowing you to fully manage GCP Django deployments from the terminal — from project provisioning to full teardown and redeployment. ☁️🚀
 
 > DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building.
