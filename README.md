@@ -521,8 +521,6 @@ Boost your productivity with quick commands to manage Firebase functions, Androi
 - `flutter-cache-reset` - Clear Pod, Flutter, and Ccache caches.
 - `flutter-ios-reinstall-podfile` - Reinstall iOS Podfile dependencies.
 
-_DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building._
-
 ## 🌐 Google Cloud
 
 Google Cloud support in DevKit gives you powerful CLI shortcuts, automation workflows, and project setup utilities for Django deployments on GCP. Manage accounts, projects, services, databases, storage, secrets, and deploy your application end-to-end.
@@ -731,3 +729,5 @@ All setup, teardown, and update functions automatically validate environment var
 Log files are generated automatically for setup, teardown, and update steps, with timestamps for easy tracking.  
 Secret files are written to /tmp/env_secrets securely during execution and deleted after loading.  
 With these GCloud integrations, DevKit boosts your cloud automation game by allowing you to fully manage GCP Django deployments from the terminal — from project provisioning to full teardown and redeployment. ☁️🚀
+
+> DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building.
