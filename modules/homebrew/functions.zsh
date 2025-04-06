@@ -59,7 +59,7 @@ function homebrew-save-packages() {
     brew list --cask >"$casks_output"
 
     echo "✅ Saved installed packages:"
-    echo "   📄 Formulae: $formula_output"
+    echo "   📄 Formulas: $formula_output"
     echo "   📄 Casks:    $casks_output"
 }
 
@@ -99,8 +99,7 @@ function homebrew-install-packages() {
         }
     fi
 
-    brew cleanup
-    brew autoremove
+    homebrew-clean || return 1
 
     echo "✅ Finished installing Homebrew packages"
 }
@@ -123,17 +122,17 @@ function homebrew-prune-packages() {
     echo "🧹 Checking for Homebrew packages to uninstall..."
     [[ -f "$settings_file" ]] && source "$settings_file"
 
-    local current_formulae=($(brew list --formula --installed-on-request))
+    local current_formula=($(brew list --formula --installed-on-request))
     local current_casks=($(brew list --cask))
 
-    local desired_formulae=()
+    local desired_formula=()
     local desired_casks=()
 
     # 1. From formulas.txt
     if [[ -f "$formula_file" ]]; then
         while IFS= read -r line || [[ -n "$line" ]]; do
             [[ -z "$line" || "$line" =~ ^# ]] && continue
-            desired_formulae+=("$line")
+            desired_formula+=("$line")
         done <"$formula_file"
     fi
 
@@ -141,7 +140,7 @@ function homebrew-prune-packages() {
     if [[ -f "$settings_file" ]]; then
         while IFS='=' read -r key value; do
             [[ "$value" != "\"y\"" ]] && continue
-            [[ "$key" == formula_install_* ]] && desired_formulae+=("${key#formula_install_}")
+            [[ "$key" == formula_install_* ]] && desired_formula+=("${key#formula_install_}")
         done <"$settings_file"
     fi
 
@@ -165,12 +164,12 @@ function homebrew-prune-packages() {
     fi
 
     # Remove duplicates from arrays
-    desired_formulae=($(printf "%s\n" "${desired_formulae[@]}" | sort -u))
+    desired_formula=($(printf "%s\n" "${desired_formula[@]}" | sort -u))
     desired_casks=($(printf "%s\n" "${desired_casks[@]}" | sort -u))
 
-    # 🔥 Prune formulae
-    for pkg in "${current_formulae[@]}"; do
-        if ! printf '%s\n' "${desired_formulae[@]}" | grep -qx "$pkg"; then
+    # 🔥 Prune formula
+    for pkg in "${current_formula[@]}"; do
+        if ! printf '%s\n' "${desired_formula[@]}" | grep -qx "$pkg"; then
             if _confirm-or-abort "Uninstall formula \"$pkg\"? It's not in formulas.txt or settings." "$@"; then
                 echo "❌ Uninstalling formula: $pkg"
                 brew uninstall --ignore-dependencies "$pkg"
@@ -192,8 +191,7 @@ function homebrew-prune-packages() {
         fi
     done
 
-    brew cleanup
-    brew autoremove
+    homebrew-clean || return 1
 
     echo "✅ Cleanup complete. Only desired packages remain."
 }
@@ -207,7 +205,7 @@ function homebrew-list-packages() {
     brew list --cask
 }
 
-# 📦 Installs Homebrew formulae and casks based on user settings
+# 📦 Installs Homebrew formula and casks based on user settings
 # - Reads $DEVKIT_ROOT/.settings
 # - Only installs entries marked "y"
 # 💡 Usage: homebrew-install-from-settings
@@ -226,13 +224,13 @@ function homebrew-install-from-settings() {
 
     source "$settings_file"
 
-    echo "🍺 Installing selected Homebrew formulae..."
-    local installed_formulae=0
+    echo "🍺 Installing selected Homebrew formula..."
+    local installed_formula=0
     while IFS='=' read -r key value; do
         if [[ "$key" == formula_install_* && "$value" == "\"y\"" ]]; then
             local formula="${key#formula_install_}"
             echo "🔧 Installing formula: $formula"
-            brew install "$formula" && ((installed_formulae++))
+            brew install "$formula" && ((installed_formula++))
         fi
     done <"$settings_file"
 
@@ -249,10 +247,9 @@ function homebrew-install-from-settings() {
     done <"$settings_file"
 
     echo ""
-    brew cleanup
-    brew autoremove
+    homebrew-clean || return 1
 
-    echo "✅ Done! Installed $installed_formulae formulae and $installed_casks casks from saved settings."
+    echo "✅ Done! Installed $installed_formula formula and $installed_casks casks from saved settings."
 }
 
 # ------------------------------------------------------------------------------
@@ -269,24 +266,39 @@ function homebrew-maintain() {
     brew doctor || echo "⚠️ brew doctor reported issues."
 
     echo "⬆️  Updating Homebrew..."
-    brew update
+    brew update || return 1
+    echo "✅ Homebrew updated."
 
-    echo "🔄 Upgrading formula..."
-    brew upgrade --formula
+    echo "🔄 Upgrading formulas..."
+    brew upgrade --formula || return 1
+    echo "✅ Upgraded formulas."
 
     echo "🧴 Upgrading casks..."
-    brew upgrade --cask
+    brew upgrade --cask || return 1
+    echo "✅ Upgraded casks."
 
-    echo "🧹 Autoremoving unused dependencies..."
-    brew autoremove
-
-    echo "🗑️ Cleaning up old versions and cache..."
-    brew cleanup
-
-    echo "📦 Verifying installed packages..."
-    brew missing || echo "✅ No missing dependencies."
+    homebrew-clean || return 1
 
     echo "✅ Homebrew maintenance complete!"
+}
+
+# ♻️ Cleans up Homebrew:
+# - Autoremoves unused dependencies
+# - Cleans up old versions and cache
+# - Verifies installed packages
+# 💡 Usage: homebrew-clean
+function homebrew-clean() {
+    echo "🧹 Autoremoving unused dependencies..."
+    brew autoremove || return 1
+    echo "✅ Removed unused dependencies."
+
+    echo "🗑️ Cleaning up old versions and cache..."
+    brew cleanup || return 1
+    echo "✅ Cleaned up old versions and cache."
+
+    echo "📦 Verifying installed packages..."
+    brew missing || return 1
+    echo "✅ Verified installed packages."
 }
 
 # 🔧 Checks the status of Homebrew on your system

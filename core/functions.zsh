@@ -322,42 +322,39 @@ function devkit-pc-update() {
 
     {
         # --- Brew ---
-        _log-update-step "Homebrew and Packages" "homebrew-maintain"
+        _log-update-step "Homebrew and Packages" "homebrew-maintain" || return 1
 
         # --- Pip (Python) ---
         _log-update-step "pip (Python)" bash -c '
         pip3 install --upgrade pip setuptools wheel
-        '
+        ' || return 1
 
         # --- gcloud ---
-        _log-update-step "gcloud CLI" gcloud components update
+        _log-update-step "gcloud CLI" gcloud components update --quiet || return 1
 
         # --- Flutter ---
-        _log-update-step "Flutter SDK" bash -c '
-        flutter upgrade --force
-        flutter doctor -v
-        '
+        _log-update-step "Flutter SDK" flutter upgrade --force || return 1
 
         # --- NPM ---
         _log-update-step "NPM and Dependencies" bash -c '
         npm install -g npm@latest
         npm-check -g -u
-        '
+        ' || return 1
 
         # --- CocoaPods ---
-        _log-update-step "CocoaPods" pod repo update
+        _log-update-step "CocoaPods" pod repo update || return 1
 
         # --- Rosetta ---
-        _log-update-step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license
+        _log-update-step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license || return 1
 
         # --- App Store Apps ---
-        _log-update-step "App Store Apps (via mas-cli)" mas-maintain
+        _log-update-step "App Store Apps (via mas-cli)" mas-maintain || return 1
 
         # --- Devkit ---
-        _log-update-step "DevKit CLI" devkit-update
+        _log-update-step "DevKit CLI" devkit-update || return 1
 
         # --- Software ---
-        _log-update-step "System Updates" softwareupdate -ia --verbose
+        _log-update-step "System Updates" softwareupdate -ia --verbose || return 1
 
     } 2>&1 | tee -a "$log_file"
 }
@@ -388,6 +385,7 @@ function devkit-check-tools() {
             missing_tools+=("$name")
         fi
     }
+
     _print_section_title "💻 Shell & System Tools"
     print_version "🧮" "Zsh" "zsh" "zsh --version | awk '{print \$2}'"
     print_version "🛠 " "Git" "git" "git --version | awk '{print \$3}'"
@@ -397,14 +395,12 @@ function devkit-check-tools() {
     echo
 
     _print_section_title "🧰 Developer Tools & Editors"
-
     print_version "🖥 " "VS Code" "code" "code --version | head -n 1"
     print_version "🏗 " "Android Studio" "studio" "studio --version 2>/dev/null | head -n 1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+'"
     print_version "🧱" "Gradle" "gradle" "gradle --version | awk '/Gradle / {print \$2}'"
     echo
 
     _print_section_title "⚙️  Languages & Package Managers"
-
     print_version "☕" "Java" "java" "java -version 2>&1 | awk -F '\"' '/version/ {print \$2}'"
     print_version "🐍" "Python" "python3" "python3 --version | awk '{print \$2}'"
     print_version "📦" "Pip" "pip3" "pip3 --version | awk '{print \$2}'"
@@ -416,7 +412,6 @@ function devkit-check-tools() {
     echo
 
     _print_section_title "📱 Mobile Dev Tools"
-
     print_version "🛠️ " "Xcode" "xcodebuild" "xcodebuild -version | head -n 1 | awk '{print \$2}'"
     print_version "🍎" "CocoaPods" "pod" "pod --version"
     print_version "💙" "Flutter" "flutter" "flutter --version 2>/dev/null | head -n 1 | awk '{print \$2}'"
@@ -425,21 +420,16 @@ function devkit-check-tools() {
     echo
 
     _print_section_title "🚀  Cloud & Deployment"
-
     print_version "☁️ " "Google Cloud CLI" "gcloud" "gcloud --version | grep 'Google Cloud SDK' | awk '{print \$4}'"
     print_version "🔥" "Firebase CLI" "firebase" "firebase --version"
     print_version "🐳" "Docker" "docker" "docker --version | awk '{gsub(/,/,\"\"); print \$3}'"
-
     echo
 
     _print_section_title "🗄️  Databases"
-
     print_version "🐘" "PostgreSQL" "psql" "psql --version | awk '{print \$3}'"
-
     echo
 
     _print_section_title "🧩 Miscellaneous Tools"
-
     print_version "🖨 " "WeasyPrint" "weasyprint" "weasyprint --version | awk '{print \$3}'"
     echo
 

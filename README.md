@@ -210,17 +210,29 @@ DevKit automates Homebrew setup, cleanup, and package installation based on your
 
 ### 🧰 Core Homebrew Commands
 
-- `homebrew-setup` — Full setup: installs Homebrew, saved packages, and prunes extras
-- `homebrew-install` — Installs Homebrew if not already installed
-- `homebrew-save-packages` — Saves current installed formulae and casks to file
-- `homebrew-install-packages` — Reinstalls from saved lists
-- `homebrew-install-from-settings` — Installs packages based on `~/.settings`
-- `homebrew-prune-packages` — Removes packages not in saved files or settings
-- `homebrew-maintain` — Runs `brew doctor`, update, upgrade, cleanup
-- `homebrew-doctor` — Checks if Homebrew is healthy
-- `homebrew-list-packages` — Lists all currently installed Homebrew packages
+These commands are used internally by DevKit during setup and updates, but you can also run them manually for fine-grained control.
 
-These commands are used internally by DevKit setup/update, but can also be used standalone.
+#### ⚙️ Setup & Initialization
+
+- `homebrew-setup` — Full setup: Full setup routine: installs Homebrew, prunes unlisted packages, restores saved packages, and performs maintenance.
+- `homebrew-install` — Installs Homebrew if it’s not already installed. Verifies Homebrew is working afterward.
+
+#### 📦 Package Management
+
+- `homebrew-save-packages` — Saves your currently installed formulae and casks to files. Useful for backups or sharing your setup.
+- `homebrew-install-packages` — Installs formulae and casks from your saved package lists.
+- `homebrew-install-from-settings` — Installs formulae and casks based on your .settings file preferences (y-marked entries).
+- `homebrew-prune-packages` — Uninstalls any Homebrew packages not listed in your saved package files or .settings. Prompts before removal.
+- `homebrew-list-packages` — Lists all currently installed Homebrew formulae and casks.
+
+#### ♻️ Maintenance & Cleanup
+
+- `homebrew-maintain` — Updates, upgrades, and cleans Homebrew. Also runs a health check and verifies packages.
+- `homebrew-clean` - Performs cleanup: removes unused dependencies, old versions, and verifies installed packages.
+
+#### 🩺 Diagnostics & Health
+
+- `homebrew-doctor` — Runs Homebrew diagnostics, checks for issues, and reports outdated packages.
 
 ---
 

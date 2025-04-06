@@ -87,7 +87,7 @@ function npm-uninstall-packages() {
 # ♻️ Repairs npm environment by reinstalling Node, uninstalling, and restoring global packages
 # 💡 Usage: npm-repair
 function npm-repair() {
-    LATEST_NODE=$(echo "$DEVKIT_REQUIRED_FORMULAE" | grep '^node@' | sort -V | tail -n 1) || {
+    LATEST_NODE=$(echo "$DEVKIT_REQUIRED_FORMULA" | grep '^node@' | sort -V | tail -n 1) || {
         echo "❌ Failed to find the latest Node.js version."
         return 1
     }
