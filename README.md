@@ -574,35 +574,36 @@ Before using these functions, ensure you:
 1. Prepare and fill the .env file properly.  
    Your .env must include all required variables, such as:
 
-   - ```GCP_PROJECT_ID=your-gcp-project-id # e.g., fecare-dae2d
-     GCP_PROJECT_NUMBER=your-gcp-project-number             # e.g., 1052922103635
-     GCP_PROJECT_NAME=your-gcp-project-name                 # e.g., Hello World
-     GCP_REGION=your-gcp-region                             # e.g., europe-west3
-     GCP_RUN_NAME=your-cloud-run-service-name               # e.g., project-django-run
-     GCP_RUN_MIN_INSTANCES=your-min-instances               # e.g., 0
-     GCP_RUN_MAX_INSTANCES=your-max-instances               # e.g., 5
-     GCP_RUN_CPU=your-cpu                                   # e.g., 1
-     GCP_RUN_MEMORY=your-memory                             # e.g., 1Gi
-     GCP_EXTENDED_IMAGE_NAME=your-extended-image-name       # e.g., project-django-extended-run-image
-     GCP_RUN_CPU=your-cpu                                   # e.g., 1
-     GCP_RUN_MEMORY=your-memory                             # e.g., 1Gi
-     GCP_SQL_INSTANCE_ID=your-sql-instance-id               # e.g., project-sql-instance
-     GCP_SQL_INSTANCE_PASSWORD=your-sql-instance-password   # e.g., your-sql-password
-     GCP_SQL_DB_NAME=your-database-name                     # e.g., project_db
-     GCP_SQL_DB_USERNAME=your-database-username             # e.g., project_db_user
-     GCP_SQL_DB_PASSWORD=your-database-password             # e.g., your-database-password
-     GCP_SQL_DB_VERSION=your-database-version               # e.g., POSTGRES_15
-     GCP_SECRET_NAME=your-secret-manager-name               # e.g., project-django-secret
-     GCP_ARTIFACT_REGISTRY_NAME=your-artifact-registry-name # e.g., project-artifact-registry
-     GCP_SCHEDULER_TOKEN=your-cloud-scheduler-bearer-token  # e.g., your-cloud-scheduler-token
-     GCP_EXTENDED_IMAGE_NAME=your-extended-image-name       # e.g., project-django-extended-run-image
-     GCP_SQL_PROXY_PORT=your-sql-proxy-port                 # e.g., 5432
-     GS_BUCKET_STATIC=your-static-bucket-name               # e.g., project-django-static
-     GS_BUCKET_NAME=your-bucket-name                        # e.g., project-django-bucket
-     OFFICIAL_DOMAIN=your-official-domain.com                # e.g., project.com
-     DJANGO_SECRET_KEY=your-django-secret-key               # e.g., your-django-secret-key
-     ADMIN_DOMAIN=your-admin-domain.com                     # e.g., admin.project.com
-     GCP_CREDS=your-gcp-credentials-file.json                # e.g., /path/to/your-credentials.json
+   - ```# Example .env file
+     GCP_PROJECT_ID=your-gcp-project-id                       # e.g., project-id
+     GCP_PROJECT_NUMBER=your-gcp-project-number               # e.g., 1052922103635
+     GCP_PROJECT_NAME=your-gcp-project-name                   # e.g., Hello World
+     GCP_REGION=your-gcp-region                               # e.g., europe-west3
+     GCP_RUN_NAME=your-cloud-run-service-name                 # e.g., project-django-run
+     GCP_RUN_MIN_INSTANCES=your-min-instances                 # e.g., 0
+     GCP_RUN_MAX_INSTANCES=your-max-instances                 # e.g., 5
+     GCP_RUN_CPU=your-cpu                                     # e.g., 1
+     GCP_RUN_MEMORY=your-memory                               # e.g., 1Gi
+     GCP_EXTENDED_IMAGE_NAME=your-extended-image-name         # e.g., project-django-extended-run-image
+     GCP_RUN_CPU=your-cpu                                     # e.g., 1
+     GCP_RUN_MEMORY=your-memory                               # e.g., 1Gi
+     GCP_SQL_INSTANCE_ID=your-sql-instance-id                 # e.g., project-sql-instance
+     GCP_SQL_INSTANCE_PASSWORD=your-sql-instance-password     # e.g., your-sql-password
+     GCP_SQL_DB_NAME=your-database-name                       # e.g., project_db
+     GCP_SQL_DB_USERNAME=your-database-username               # e.g., project_db_user
+     GCP_SQL_DB_PASSWORD=your-database-password               # e.g., your-database-password
+     GCP_SQL_DB_VERSION=your-database-version                 # e.g., POSTGRES_15
+     GCP_SECRET_NAME=your-secret-manager-name                 # e.g., project-django-secret
+     GCP_ARTIFACT_REGISTRY_NAME=your-artifact-registry-name   # e.g., project-artifact-registry
+     GCP_SCHEDULER_TOKEN=your-cloud-scheduler-bearer-token    # e.g., your-cloud-scheduler-token
+     GCP_EXTENDED_IMAGE_NAME=your-extended-image-name         # e.g., project-django-extended-run-image
+     GCP_SQL_PROXY_PORT=your-sql-proxy-port                   # e.g., 5432
+     GS_BUCKET_STATIC=your-static-bucket-name                 # e.g., project-django-static
+     GS_BUCKET_NAME=your-bucket-name                          # e.g., project-django-bucket
+     OFFICIAL_DOMAIN=your-official-domain.com                 # e.g., project.com
+     DJANGO_SECRET_KEY=your-django-secret-key                 # e.g., your-django-secret-key
+     ADMIN_DOMAIN=your-admin-domain.com                       # e.g., admin.project.com
+     GCP_CREDS=your-gcp-credentials-file.json                 # e.g., /path/to/your-credentials.json
      ```
 
 2. Follow the official GCP Django sample app for best practices.  
