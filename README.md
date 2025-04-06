@@ -47,13 +47,11 @@ _⚙️ Built for Mac power users, automation fans, and dev teams who want to sk
   - [📥 Pulling, Tagging & Sync](#-pulling-tagging--sync)
   - [📊 Git Info](#-git-info)
 - [🐳 Docker](#-docker)
-
   - [🧰 Daemon Control](#-daemon-control)
   - [🧹 Cleanup & Maintenance](#-cleanup--maintenance)
   - [📋 Listing Tools](#-listing-tools)
   - [🔍 Debugging & Interaction](#-debugging--interaction)
   - [🔨 Build Tools](#-build-tools)
-
 - [🌐 Django](#-django)
   - [🎬 Project Bootstrap & Configuration](#-project-bootstrap--configuration)
   - [🧱 Database Schema & Migrations](#-database-schema--migrations)
@@ -70,6 +68,29 @@ _⚙️ Built for Mac power users, automation fans, and dev teams who want to sk
   - [🎨 Flutter App Visuals](#-flutter-app-visuals)
   - [🔌 Development Utilities](#-development-utilities)
   - [🧹 Clean-Up & Maintenance](#-clean-up--maintenance)
+- [🌐 Google Cloud](#-google-cloud)
+  - [🧩 Essentials](#-essentials)
+  - [🔐 Account Management](#-account-management)
+  - [📂 Project Management](#-project-management)
+  - [🔧 Django Deployment Shortcuts](#-django-deployment-shortcuts)
+    - [🚨 Important: Prepare your .env file](#-important-prepare-your-env-file)
+    - [📦 Artifact Registry Utilities](#-artifact-registry-utilities)
+    - [🚀 Cloud Run Deployment Utilities](#-cloud-run-deployment-utilities)
+    - [📆 Google Cloud Scheduler Utilities](#-google-cloud-scheduler-utilities)
+    - [🐘 Google Cloud SQL for PostgreSQL](#-google-cloud-sql-for-postgresql)
+    - [🌐 Google Compute Engine - Load Balancer Automation](#-google-compute-engine---load-balancer-automation)
+      - [🚦 Load Balancer Setup & Teardown](#-load-balancer-setup--teardown)
+      - [🌍 IP Management](#-ip-management)
+      - [🔐 SSL Certificate Management](#-ssl-certificate-management)
+      - [🧩 Network Endpoint Group (NEG)](#-network-endpoint-group-neg)
+      - [🔧 Backend Service Management](#-backend-service-management)
+      - [🔧 URL Map Management](#-url-map-management)
+      - [🔐 Target Proxies (HTTP / HTTPS)](#-target-proxies-http--https)
+      - [🚦 Global Forwarding Rules](#-global-forwarding-rules)
+    - [🔐 Google Secret Manager](#-google-secret-manager)
+    - [💾 Google Cloud Storage Management](#-google-cloud-storage-management)
+      - [📂 Bucket Management](#-bucket-management)
+    - [📤 Static Files & Access Control](#-static-files--access-control)
 
 ## 🚀 Features
 
@@ -502,11 +523,11 @@ Boost your productivity with quick commands to manage Firebase functions, Androi
 
 _DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building._
 
-## ☁️ Google Cloud
+## 🌐 Google Cloud
 
 Google Cloud support in DevKit gives you powerful CLI shortcuts, automation workflows, and project setup utilities for Django deployments on GCP. Manage accounts, projects, services, databases, storage, secrets, and deploy your application end-to-end.
 
-### ☁️ Essentials
+### 🧩 Essentials
 
 - `gcloud-init` — Initialize Google Cloud SDK and set up configurations.
 
@@ -534,7 +555,7 @@ Google Cloud support in DevKit gives you powerful CLI shortcuts, automation work
 
 - `gcloud-config-project-set <project>` — Set active project for gcloud CLI.
 
-### 🛠️ Django Deployment Shortcuts
+### 🔧 Django Deployment Shortcuts
 
 A set of powerful functions to automate Django deployments on Google Cloud:
 
@@ -544,7 +565,7 @@ A set of powerful functions to automate Django deployments on Google Cloud:
 
 - `gcloud-project-django-update` — 🔁 Redeploy and update services: deploy latest image, sync storage and secrets, update scheduler jobs.
 
-#### ⚠️ Important: Prepare your .env file
+#### 🚨 Important: Prepare your .env file
 
 All Django Deployment Shortcuts and GCP automations rely on environment variables defined in your local .env file.
 
@@ -623,7 +644,7 @@ Automate Django cron jobs as scheduled Cloud Tasks using GCP Cloud Scheduler. Sy
 - `gcloud-scheduler-jobs-delete` — Delete all Cloud Scheduler jobs with confirmation
 - `gcloud-scheduler-jobs-sync` — Sync local Django cron jobs with Cloud Scheduler (creates or deletes jobs as needed)
 
-#### 🗄️ Google Cloud SQL for PostgreSQL
+#### 🐘 Google Cloud SQL for PostgreSQL
 
 Automate Cloud SQL instance creation, proxy connections, user management, and Django setup.
 
@@ -644,7 +665,7 @@ Automate the complete lifecycle of your Google Cloud Load Balancer setup, includ
 - `gcloud-compute-engine-cloud-load-balancer-setup` — ⚙️ Full setup: static IP, SSL, NEG, backend, URL map, proxies, forwarding rules
 - `gcloud-compute-engine-cloud-load-balancer-teardown` — 🔄 Full teardown of the Cloud Load Balancer components
 
-##### 🌐 IP Management
+##### 🌍 IP Management
 
 - `gcloud-compute-engine-ipv4-create` — 🌐 Create global static IPv4 address for Load Balancer
 - `gcloud-compute-engine-ipv4-delete` — 🗑️ Delete static IPv4 address
@@ -654,17 +675,17 @@ Automate the complete lifecycle of your Google Cloud Load Balancer setup, includ
 - `gcloud-compute-engine-ssl-certificate-create` — 🔐 Create Google-managed SSL certificate
 - `gcloud-compute-engine-ssl-certificate-delete` — 🗑️ Delete SSL certificate
 
-##### 🔌 Network Endpoint Group (NEG)
+##### 🧩 Network Endpoint Group (NEG)
 
 - `gcloud-compute-engine-network-endpoint-group-create` — 🔌 Create serverless NEG for Cloud Run
 - `gcloud-compute-engine-network-endpoint-group-delete` — 🗑️ Delete serverless NEG
 
-##### ⚙️ Backend Service Management
+##### 🔧 Backend Service Management
 
 - `gcloud-compute-engine-backend-service-create` — ⚙️ Create backend service and attach NEG
 - `gcloud-compute-engine-backend-service-delete` — 🗑️ Delete backend service and detach NEG
 
-##### 🗺️ URL Map Management
+##### 🔧 URL Map Management
 
 - `gcloud-compute-engine-url-map-create` — 🗺️ Create URL map to route traffic to backend
 - `gcloud-compute-engine-url-map-delete` — 🗑️ Delete URL map
@@ -688,11 +709,11 @@ Automate the management of environment secrets for your projects using Google Se
 - `gcloud-secret-manager-env-delete` — 🗑️ Delete secret from Secret Manager
 - `gcloud-secret-manager-env-download` — 📥 Download secret to local .env file
 
-#### 🗃️ Google Cloud Storage Management
+#### 💾 Google Cloud Storage Management
 
 Full control over your static, media, and artifact storage buckets — create, configure access, sync, and clean up effortlessly.
 
-##### 🗃️ Bucket Management
+##### 📂 Bucket Management
 
 - `gcloud-storage-buckets-create` — 🗃️ Create static, media, and artifacts buckets with access control and CORS
 - `gcloud-storage-buckets-delete` — 🗑️ Delete all storage buckets and their contents
