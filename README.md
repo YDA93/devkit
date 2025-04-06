@@ -6,7 +6,7 @@ Whether you’re bootstrapping a new machine, updating your dev stack, or automa
 
 DevKit automates everything from CLI tools and SDKs to macOS system utilities, package managers, App Store apps, shell configurations, cloud CLIs, and even Docker containers — all with built-in diagnostics, safe prompts, logging, and self-updating magic.
 
-⚙️ Built for Mac power users, automation fans, and dev teams who want to skip the setup pain and jump straight to building.
+_⚙️ Built for Mac power users, automation fans, and dev teams who want to skip the setup pain and jump straight to building._
 
 ---
 
