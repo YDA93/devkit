@@ -56,14 +56,22 @@ function flutter-firebase-environment-setup() {
 # ♻️ Rebuilds Firebase functions environment from scratch
 # 💡 Usage: flutter-firebase-update-functions
 function flutter-firebase-update-functions() {
+    if [ ! -d "firebase/functions" ]; then
+        echo "❌ No Firebase functions directory found at firebase/functions."
+        return 1
+    fi
+
     cd firebase/functions || {
         echo "❌ Failed to change directory to firebase/functions."
         return 1
     }
+
     flutter-firebase-environment-setup || {
         echo "❌ Failed to set up Firebase environment."
+        cd ../.. # Ensure we try to go back even on failure
         return 1
     }
+
     cd ../.. || {
         echo "❌ Failed to change directory back to root."
         return 1
@@ -201,26 +209,40 @@ function flutter-update-splash() {
 # 🎨 Updates FontAwesome icons from the CLI utility
 # 💡 Usage: flutter-update-fontawesome
 function flutter-update-fontawesome() {
+    if [ ! -d "assets/font_awesome_flutter" ]; then
+        echo "❌ No FontAwesome directory found at assets/font_awesome_flutter."
+        return 1
+    fi
+
     cd assets/font_awesome_flutter || {
         echo "❌ Failed to change directory to assets/font_awesome_flutter."
         return 1
     }
+
     flutter-clean || {
         echo "❌ Failed to clean Flutter project."
+        cd ../..
         return 1
     }
+
     flutter-dart-fix || {
         echo "❌ Failed to apply Dart fixes."
+        cd ../..
         return 1
     }
+
     cd util || {
         echo "❌ Failed to change directory to util."
+        cd ../..
         return 1
     }
+
     sh ./configurator.sh || {
         echo "❌ Failed to run configurator.sh."
+        cd ../..
         return 1
     }
+
     cd ../../.. || {
         echo "❌ Failed to change directory back to root."
         return 1
@@ -406,21 +428,15 @@ function flutter-clean() {
 }
 
 # 🧼 Performs a deep clean and rebuild of the entire Flutter project
-# 💡 Usage: flutter-clean-deep
-function flutter-clean-deep() {
+# 💡 Usage: flutter-maintain
+function flutter-maintain() {
     {
         flutter-flutterfire-activate || {
             echo "❌ Failed to activate FlutterFire CLI."
             return 1
         }
-        flutter-firebase-update-functions || {
-            echo "❌ Failed to update Firebase functions."
-            return 1
-        }
-        flutter-update-fontawesome || {
-            echo "❌ Failed to update FontAwesome."
-            return 1
-        }
+        flutter-firebase-update-functions
+        flutter-update-fontawesome
         flutter-ios-reinstall-podfile || {
             echo "❌ Failed to reinstall Podfile."
             return 1
@@ -441,5 +457,5 @@ function flutter-clean-deep() {
             echo "❌ Failed to clean Flutter project."
             return 1
         }
-    } | tee -a ./flutter-clean-deep.log
+    } | tee -a ./flutter-maintain.log
 }

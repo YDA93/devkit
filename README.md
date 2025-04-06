@@ -69,7 +69,7 @@ zsh install.zsh
 
 ---
 
-## 🧩 App Support
+## 🛠️ DevKit
 
 DevKit helps manage a wide range of tools:
 
@@ -80,144 +80,119 @@ DevKit helps manage a wide range of tools:
 - 🐘 Databases: PostgreSQL
 - 🎨 Misc: WeasyPrint, ccache, expect
 
----
+### 🛠️ Core Commands
 
-## 🛠️ Core Commands
+- 🔧 `devkit-pc-setup` -  
+  🧰 Bootstraps your entire dev environment — guided, interactive, and persistent.
 
-### 🔧 `devkit-pc-setup`
+  - 👤 Asks for your name, email, and app/tool preferences
+  - 📦 Installs:
+  - Git, Homebrew (formulas + casks)
+  - MAS apps, NPM packages, Xcode, Flutter SDK
+  - 🧠 Uses helpers: \_confirm-or-abort, \_check-software-updates, devkit-settings-setup
+  - 🖥️ Prompts you to launch & configure downloaded GUI apps (e.g., VS Code)
+  - 🗂 Logs everything to: ~/devkit/logs/devkit/setup/[timestamp].log
 
-🧰 Bootstraps your entire dev environment — guided, interactive, and persistent.
+- 🔄 `devkit-pc-update` -  
+  ♻️ Runs a full system + dev stack update in one command.
 
-- 👤 Asks for your name, email, and app/tool preferences
-- 📦 Installs:
-- Git, Homebrew (formulas + casks)
-- MAS apps, NPM packages, Xcode, Flutter SDK
-- 🧠 Uses helpers: \_confirm-or-abort, \_check-software-updates, devkit-settings-setup
-- 🖥️ Prompts you to launch & configure downloaded GUI apps (e.g., VS Code)
-- 🗂 Logs everything to: ~/devkit/logs/devkit/setup/[timestamp].log
+  - 📦 Updates:
+  - 🧪 Homebrew formulas & casks
+  - 🐍 Python (pip3)
+  - ☁️ Google Cloud CLI
+  - 💙 Flutter SDK
+  - 🟢 Node.js & NPM
+  - 🍎 CocoaPods
+  - 🧠 Rosetta 2
+  - 🛍️ App Store apps via mas-cli
+  - 🛠️ DevKit itself (devkit-update)
+  - 🖥 macOS system software
+  - 🧾 Uses \_log-update-step for clean progress logs
+  - 🗂 Logs everything to: ~/devkit/logs/devkit/update/[timestamp].log
 
-```bash
-devkit-pc-setup
-```
+- 📋 `devkit-check-tools` -  
+  🔍 Prints installed versions of all essential dev tools — organized by category with emoji labels.
 
-### 🔄 `devkit-pc-update`
+  - ✅ Checks:
+    - 💻 Shell & system tools
+    - 🧰 Dev tools & editors
+    - ⚙️ Languages & package managers
+    - 📱 Mobile SDKs
+    - ☁️ Cloud CLIs
+    - 🗄️ Databases
+  - ⚠️ Warns about missing tools with suggestions
 
-♻️ Runs a full system + dev stack update in one command.
+- 🧪 `devkit-doctor` -  
+  🩺 Runs full diagnostics on your environment — catch problems before they catch you.
 
-- 📦 Updates:
-- 🧪 Homebrew formulas & casks
-- 🐍 Python (pip3)
-- ☁️ Google Cloud CLI
-- 💙 Flutter SDK
-- 🟢 Node.js & NPM
-- 🍎 CocoaPods
-- 🧠 Rosetta 2
-- 🛍️ App Store apps via mas-cli
-- 🛠️ DevKit itself (devkit-update)
-- 🖥 macOS system software
-- 🧾 Uses \_log-update-step for clean progress logs
-- 🗂 Logs everything to: ~/devkit/logs/devkit/update/[timestamp].log
+  - 📋 Starts with devkit-check-tools
+  - 🧠 Validates config via:
+  - homebrew-doctor, xcode-doctor, git-doctor, firebase-doctor, etc.
+  - 🐚 Verifies shell + $PATH
+  - 🗂 Logs output to: ~/devkit/logs/devkit/doctor/[timestamp].log
 
-```bash
-devkit-pc-update
-```
+- 📥 `devkit-update` -  
+  🚀 Self-updates DevKit from GitHub if new changes exist.
 
-### 📋 `devkit-check-tools`
+  - 🔍 Compares local commit vs origin/main
+  - ✅ Offers to pull changes & reloads CLI
+  - 📦 Auto-installs if DevKit is missing
+  - 💡 No external dependencies required
 
-🔍 Prints installed versions of all essential dev tools — organized by category with emoji labels.
+### ⚙️ Settings & Initialization
 
-- ✅ Checks:
-  - 💻 Shell & system tools
-  - 🧰 Dev tools & editors
-  - ⚙️ Languages & package managers
-  - 📱 Mobile SDKs
-  - ☁️ Cloud CLIs
-  - 🗄️ Databases
-- ⚠️ Warns about missing tools with suggestions
+- 🧰 `devkit-settings-setup` -  
+  📋 Interactive onboarding flow to personalize your DevKit setup.
 
-```bash
-devkit-check-tools
-```
+  - 👤 Prompts for:
+  - Full name & email
+  - Preferred installs from:
+  - 🛍️ Mac App Store (MAS)
+  - 🍺 Homebrew Casks
+  - 🧪 Homebrew Formulas
+  - 📝 Saves all preferences to: ~/devkit/.settings
+  - 🔄 Used automatically by devkit-pc-setup
 
-### 🧪 `devkit-doctor`
+- 🔎 `devkit-is-setup` -  
+  Quick system check to ensure all critical tools are installed.
 
-🩺 Runs full diagnostics on your environment — catch problems before they catch you.
+  - Verifies presence of:
+    - ⚙️ Git, Zsh, Node, NPM, Python, Java
+    - 🐳 Docker, ☁️ GCloud, 🔥 Firebase
+    - 💙 Flutter, 🍎 CocoaPods, 🐘 Postgres, and more
+    - ✅ Returns 0 if everything is ready
+    - 🔇 Add --quiet to suppress output (for scripts)
 
-- 📋 Starts with devkit-check-tools
-- 🧠 Validates config via:
-- homebrew-doctor, xcode-doctor, git-doctor, firebase-doctor, etc.
-- 🐚 Verifies shell + $PATH
-- 🗂 Logs output to: ~/devkit/logs/devkit/doctor/[timestamp].log
+#### 🖥️ System Utilities
 
-```bash
-devkit-doctor
-```
-
-### 📥 `devkit-update`
-
-🚀 Self-updates DevKit from GitHub if new changes exist.
-
-- 🔍 Compares local commit vs origin/main
-- ✅ Offers to pull changes & reloads CLI
-- 📦 Auto-installs if DevKit is missing
-- 💡 No external dependencies required
-
-```bash
-devkit-update
-```
-
-## ⚙️ Settings & Initialization
-
-### `devkit-settings-setup`
-
-🧰 devkit-settings-setup
-
-📋 Interactive onboarding flow to personalize your DevKit setup.
-
-- 👤 Prompts for:
-- Full name & email
-- Preferred installs from:
-- 🛍️ Mac App Store (MAS)
-- 🍺 Homebrew Casks
-- 🧪 Homebrew Formulas
-- 📝 Saves all preferences to: ~/devkit/.settings
-- 🔄 Used automatically by devkit-pc-setup
-
-```bash
-devkit-settings-setup
-```
-
-### `devkit-is-setup`
-
-🔎 Quick system check to ensure all critical tools are installed.
-
-- Verifies presence of:
-  - ⚙️ Git, Zsh, Node, NPM, Python, Java
-  - 🐳 Docker, ☁️ GCloud, 🔥 Firebase
-  - 💙 Flutter, 🍎 CocoaPods, 🐘 Postgres, and more
-  - ✅ Returns 0 if everything is ready
-  - 🔇 Add --quiet to suppress output (for scripts)
-
-```bash
-devkit-is-setup [--quiet]
-```
+- 🌐 `devkit-pc-ip-address` — Get local Wi-Fi IP address
+- 🌍 `devkit-pc-public-ip` — Get your public IP address
+- 📡 `devkit-pc-ping` — Check internet connection (Google DNS ping)
+- 📴 `devkit-pc-shutdown` — Shut down the Mac
+- 🔁 `devkit-pc-restart` — Restart the Mac
+- 🧹 `devkit-pc-dns-flush` — Flush DNS cache
+- 🧼 `devkit-pc-clear-cache` — Clear user/system cache folders
+- 🗑️ `devkit-pc-empty-trash` — Force empty the trash folder
+- 💽 `devkit-pc-disk` — Show disk usage
+- 🔋 `devkit-pc-battery` — Show battery status
+- 📊 `devkit-pc-stats` — Top resource usage
+- 💻 `devkit-pc-version` — Show macOS version
+- 🐚 `devkit-shell-info` — Show shell and interpreter info
+- 🐚 `devkit-bash-reset` — Restart Bash shell
+- 🔁 `devkit-terminal-restart` — Restart Terminal app
 
 ---
 
-## 🍺 Homebrew Management
+## 🍺 Homebrew
 
 DevKit automates Homebrew setup, cleanup, and package installation based on your preferences.
 
-### 🧰 Core Homebrew Commands
-
-These commands are used internally by DevKit during setup and updates, but you can also run them manually for fine-grained control.
-
-#### ⚙️ Setup & Initialization
+### ⚙️ Setup & Initialization
 
 - `homebrew-setup` — Full setup: Full setup routine: installs Homebrew, prunes unlisted packages, restores saved packages, and performs maintenance.
 - `homebrew-install` — Installs Homebrew if it’s not already installed. Verifies Homebrew is working afterward.
 
-#### 📦 Package Management
+### 📦 Package Management
 
 - `homebrew-save-packages` — Saves your currently installed formulae and casks to files. Useful for backups or sharing your setup.
 - `homebrew-install-packages` — Installs formulae and casks from your saved package lists.
@@ -225,18 +200,18 @@ These commands are used internally by DevKit during setup and updates, but you c
 - `homebrew-prune-packages` — Uninstalls any Homebrew packages not listed in your saved package files or .settings. Prompts before removal.
 - `homebrew-list-packages` — Lists all currently installed Homebrew formulae and casks.
 
-#### ♻️ Maintenance & Cleanup
+### ♻️ Maintenance & Cleanup
 
 - `homebrew-maintain` — Updates, upgrades, and cleans Homebrew. Also runs a health check and verifies packages.
 - `homebrew-clean` - Performs cleanup: removes unused dependencies, old versions, and verifies installed packages.
 
-#### 🩺 Diagnostics & Health
+### 🩺 Diagnostics & Health
 
 - `homebrew-doctor` — Runs Homebrew diagnostics, checks for issues, and reports outdated packages.
 
 ---
 
-## 🔧 Git Configuration
+## 🔧 Git
 
 DevKit ensures your Git environment is properly set up with global configurations and helpful defaults.
 
@@ -244,14 +219,11 @@ DevKit ensures your Git environment is properly set up with global configuration
 
 - `git-setup` — Configure Git global user info and preferences (runs automatically during setup)
 - `git-doctor` — Diagnose Git installation, user config, SSH key, and GitHub connectivity
-
-### 🧩 Git Alias
-
 - `git-open-settings` — Open global Git config in VS Code
 
 ---
 
-## 🍎 Xcode & CLI Tools
+## 🍎 Xcode
 
 DevKit automates macOS dev tools setup and ensures Xcode is ready for iOS/macOS development.
 
@@ -263,7 +235,7 @@ DevKit automates macOS dev tools setup and ensures Xcode is ready for iOS/macOS 
 
 ---
 
-## 🐚 Zsh Shortcuts
+## 🐚 Zsh
 
 DevKit includes useful aliases to manage your Zsh shell quickly:
 
@@ -274,7 +246,7 @@ DevKit includes useful aliases to manage your Zsh shell quickly:
 
 ---
 
-## 🐍 Python Environment & Pip Management
+## 🐍 Python
 
 DevKit includes helpers to manage Python virtual environments and dependencies with ease.
 
@@ -303,7 +275,7 @@ DevKit includes helpers to manage Python virtual environments and dependencies w
 
 ---
 
-## 🐘 PostgreSQL Management
+## 🐘 PostgreSQL
 
 DevKit provides powerful helpers for PostgreSQL setup, diagnostics, and local development workflows.
 
@@ -329,7 +301,7 @@ DevKit provides powerful helpers for PostgreSQL setup, diagnostics, and local de
 
 ---
 
-## 📦 npm Package Management
+## 📦 NPM
 
 DevKit includes tooling to back up, restore, prune, and repair global npm packages — perfect for maintaining a clean Node.js environment.
 
@@ -400,7 +372,7 @@ DevKit includes powerful GitHub utilities to manage SSH keys, simplify Git workf
 
 ---
 
-## 🐳 Docker Utilities
+## 🐳 Docker
 
 DevKit offers convenient functions to manage Docker Desktop, containers, images, and debug your environment.
 
@@ -433,29 +405,9 @@ DevKit offers convenient functions to manage Docker Desktop, containers, images,
 
 - `docker-build <image_name>` — Build a Docker image from the current directory
 
-## 🧩 Handy Aliases
-
-These built-in aliases provide quick access to system info and common tasks:
-
-- 🌐 `devkit-pc-ip-address` — Get local Wi-Fi IP address
-- 🌍 `devkit-pc-public-ip` — Get your public IP address
-- 📡 `devkit-pc-ping` — Check internet connection (Google DNS ping)
-- 📴 `devkit-pc-shutdown` — Shut down the Mac
-- 🔁 `devkit-pc-restart` — Restart the Mac
-- 🧹 `devkit-pc-dns-flush` — Flush DNS cache
-- 🧼 `devkit-pc-clear-cache` — Clear user/system cache folders
-- 🗑️ `devkit-pc-empty-trash` — Force empty the trash folder
-- 💽 `devkit-pc-disk` — Show disk usage
-- 🔋 `devkit-pc-battery` — Show battery status
-- 📊 `devkit-pc-stats` — Top resource usage
-- 💻 `devkit-pc-version` — Show macOS version
-- 🐚 `devkit-shell-info` — Show shell and interpreter info
-- 🐚 `devkit-bash-reset` — Restart Bash shell
-- 🔁 `devkit-terminal-restart` — Restart Terminal app
-
 ---
 
-## 🌐 Django Utilities
+## 🌐 Django
 
 DevKit includes a full suite of Django utilities to bootstrap, manage, and automate your Django projects.
 
@@ -507,3 +459,48 @@ DevKit includes a full suite of Django utilities to bootstrap, manage, and autom
 - `django-project-setup` — Sets up the environment, installs packages, and initializes the database in one command.
 - `django-find-templates` — Prints the location of Django’s internal template directories.
 - `django-format-documents` — Formats the codebase using `isort` and `black` (line length 80).
+
+## 💙 Flutter
+
+A collection of custom Zsh functions and aliases to automate Flutter, Firebase, and Android/iOS environment setup and maintenance.
+
+Boost your productivity with quick commands to manage Firebase functions, Android tools, iOS Pods, icons, translations, and more!
+
+### 🔥 Firebase & FlutterFire
+
+- `flutter-flutterfire-init` — Initialize Firebase & FlutterFire CLI for your project.
+- `flutter-firebase-environment-create` - Create and activate a new Python venv for Firebase functions.
+- `flutter-firebase-environment-setup` - Delete and recreate Firebase functions virtual environment.
+- `flutter-firebase-update-functions` - Rebuild Firebase functions environment from scratch.
+- `flutter-firebase-upload-crashlytics-symbols` - Upload obfuscation symbols to Firebase Crashlytics manually.
+- `flutter-flutterfire-activate` - Activate FlutterFire CLI.
+- `flutter-flutterfire-configure` - Launch Firebase project config tool.
+
+### 🧠 Android & JDK Setup
+
+- `java-symlink-latest` - Symlink latest Homebrew-installed OpenJDK to system.
+- `flutter-android-sdk-setup` - Install Android SDK packages and accept licenses.
+
+### 🎨 Flutter App Visuals
+
+- `flutter-update-icon` - Update app launcher icons.
+- `flutter-update-splash` - Update splash screen assets using flutter_native_splash.
+- `flutter-update-fontawesome` - Update FontAwesome icons (local CLI utility).
+
+### 🔌 Development Utilities
+
+- `flutter-adb-connect <IP> <PORT>` - Connect device via ADB and update VSCode launch config.
+- `flutter-build-runner` - Rebuild code generators (JSON serialization, etc.).
+- `flutter-open-xcode` - Open iOS project in Xcode.
+- `flutter-build-ios-warm-up` - iOS build with SKSL shaders.
+- `flutter-build-android-warm-up` - Android build with SKSL shaders.
+- `flutter-build-android` - Android production build + upload Crashlytics symbols.
+- `flutter-dart-fix` - Apply Dart code fixes.
+
+### 🧹 Clean-Up & Maintenance
+
+- `flutter-clean` - Clean, upgrade dependencies, and apply Dart fixes.
+- `flutter-maintain` - Full maintenance: Firebase, icons, pods, build runner, clean, etc.
+- `flutter-delete-unused-strings` - Delete unused translation keys from .arb files.
+- `flutter-cache-reset` - Clear Pod, Flutter, and Ccache caches.
+- `flutter-ios-reinstall-podfile` - Reinstall iOS Podfile dependencies.
