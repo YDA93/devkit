@@ -78,6 +78,7 @@ DevKit automates everything from CLI tools and SDKs to macOS system utilities, p
     - [🚀 Cloud Run Deployment Utilities](#-cloud-run-deployment-utilities)
     - [📆 Google Cloud Scheduler Utilities](#-google-cloud-scheduler-utilities)
     - [🐘 Google Cloud SQL for PostgreSQL](#-google-cloud-sql-for-postgresql)
+    - [🔐 Google Secret Manager](#-google-secret-manager)
     - [💾 Google Cloud Storage Management](#-google-cloud-storage-management)
       - [📂 Bucket Management](#-bucket-management)
     - [📤 Static Files & Access Control](#-static-files--access-control)
@@ -90,7 +91,6 @@ DevKit automates everything from CLI tools and SDKs to macOS system utilities, p
       - [🔧 URL Map Management](#-url-map-management)
       - [🔐 Target Proxies (HTTP / HTTPS)](#-target-proxies-http--https)
       - [🚦 Global Forwarding Rules](#-global-forwarding-rules)
-    - [🔐 Google Secret Manager](#-google-secret-manager)
 
 ## 🚀 Features
 
