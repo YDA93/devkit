@@ -231,5 +231,3 @@ Automate the complete lifecycle of your Google Cloud Load Balancer setup, includ
 
 - `gcloud-compute-engine-global-forwarding-rule-create` — 🚦 Create global forwarding rules for HTTP/HTTPS
 - `gcloud-compute-engine-global-forwarding-rule-delete` — 🗑️ Delete forwarding rules
-
-> DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building.

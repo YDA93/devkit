@@ -99,3 +99,5 @@ Detailed setup and configuration guides:
 - [💻 PostgreSQL](./docs/postgresql.md)
 - [🍎 Mac App Store (mas)](./docs/mas.md)
 - [🐚 Zsh Shell](./docs/zsh.md)
+
+> DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building.
