@@ -78,6 +78,9 @@ DevKit automates everything from CLI tools and SDKs to macOS system utilities, p
     - [🚀 Cloud Run Deployment Utilities](#-cloud-run-deployment-utilities)
     - [📆 Google Cloud Scheduler Utilities](#-google-cloud-scheduler-utilities)
     - [🐘 Google Cloud SQL for PostgreSQL](#-google-cloud-sql-for-postgresql)
+    - [💾 Google Cloud Storage Management](#-google-cloud-storage-management)
+      - [📂 Bucket Management](#-bucket-management)
+    - [📤 Static Files & Access Control](#-static-files--access-control)
     - [🌐 Google Compute Engine - Load Balancer Automation](#-google-compute-engine---load-balancer-automation)
       - [🚦 Load Balancer Setup & Teardown](#-load-balancer-setup--teardown)
       - [🌍 IP Management](#-ip-management)
@@ -88,9 +91,6 @@ DevKit automates everything from CLI tools and SDKs to macOS system utilities, p
       - [🔐 Target Proxies (HTTP / HTTPS)](#-target-proxies-http--https)
       - [🚦 Global Forwarding Rules](#-global-forwarding-rules)
     - [🔐 Google Secret Manager](#-google-secret-manager)
-    - [💾 Google Cloud Storage Management](#-google-cloud-storage-management)
-      - [📂 Bucket Management](#-bucket-management)
-    - [📤 Static Files & Access Control](#-static-files--access-control)
 
 ## 🚀 Features
 
@@ -661,6 +661,30 @@ Automate Cloud SQL instance creation, proxy connections, user management, and Dj
 - `gcloud-sql-db-and-user-delete` — Delete PostgreSQL database and user from Cloud SQL
 - `gcloud-sql-proxy-and-django-setup` — Start SQL Proxy, run Django migrations, and populate the database
 
+#### 🔐 Google Secret Manager
+
+Automate the management of environment secrets for your projects using Google Secret Manager.
+
+- `gcloud-secret-manager-env-create` — 🔐 Create new secret from .env file
+- `gcloud-secret-manager-env-update` — 🔄 Update secret with new version and disable old versions
+- `gcloud-secret-manager-env-delete` — 🗑️ Delete secret from Secret Manager
+- `gcloud-secret-manager-env-download` — 📥 Download secret to local .env file
+
+#### 💾 Google Cloud Storage Management
+
+Full control over your static, media, and artifact storage buckets — create, configure access, sync, and clean up effortlessly.
+
+##### 📂 Bucket Management
+
+- `gcloud-storage-buckets-create` — 🗃️ Create static, media, and artifacts buckets with access control and CORS
+- `gcloud-storage-buckets-delete` — 🗑️ Delete all storage buckets and their contents
+
+#### 📤 Static Files & Access Control
+
+- `gcloud-storage-buckets-sync-static` — 📤 Upload and sync local static files to the bucket
+- `gcloud-storage-buckets-set-public-read` — 🌐 Set public read access on static and media buckets
+- `gcloud-storage-buckets-set-cross-origin` — 🔄 Apply CORS policy to buckets
+
 #### 🌐 Google Compute Engine - Load Balancer Automation
 
 Automate the complete lifecycle of your Google Cloud Load Balancer setup, including IP allocation, SSL certs, network groups, backend services, proxies, forwarding rules, and teardown.
@@ -704,29 +728,5 @@ Automate the complete lifecycle of your Google Cloud Load Balancer setup, includ
 
 - `gcloud-compute-engine-global-forwarding-rule-create` — 🚦 Create global forwarding rules for HTTP/HTTPS
 - `gcloud-compute-engine-global-forwarding-rule-delete` — 🗑️ Delete forwarding rules
-
-#### 🔐 Google Secret Manager
-
-Automate the management of environment secrets for your projects using Google Secret Manager.
-
-- `gcloud-secret-manager-env-create` — 🔐 Create new secret from .env file
-- `gcloud-secret-manager-env-update` — 🔄 Update secret with new version and disable old versions
-- `gcloud-secret-manager-env-delete` — 🗑️ Delete secret from Secret Manager
-- `gcloud-secret-manager-env-download` — 📥 Download secret to local .env file
-
-#### 💾 Google Cloud Storage Management
-
-Full control over your static, media, and artifact storage buckets — create, configure access, sync, and clean up effortlessly.
-
-##### 📂 Bucket Management
-
-- `gcloud-storage-buckets-create` — 🗃️ Create static, media, and artifacts buckets with access control and CORS
-- `gcloud-storage-buckets-delete` — 🗑️ Delete all storage buckets and their contents
-
-#### 📤 Static Files & Access Control
-
-- `gcloud-storage-buckets-sync-static` — 📤 Upload and sync local static files to the bucket
-- `gcloud-storage-buckets-set-public-read` — 🌐 Set public read access on static and media buckets
-- `gcloud-storage-buckets-set-cross-origin` — 🔄 Apply CORS policy to buckets
 
 > DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building.
