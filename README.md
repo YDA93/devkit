@@ -1,6 +1,7 @@
 # 🧰 DevKit CLI
 
-**DevKit** is a comprehensive automation toolkit specifically designed for macOS developers working primarily with Django and Flutter applications, particularly those deploying to Google Cloud Platform. It streamlines the setup, configuration, and deployment processes, allowing developers to focus entirely on coding rather than managing their development environment.
+**DevKit** is a powerful automation toolkit for macOS developers — especially teams building Django and Flutter apps and deploying to Google Cloud Platform.  
+It streamlines setup, configuration, and deployment so you can spend less time fixing environments and more time shipping code.
 
 > ⚙️ Built for Mac pros, automation fans, and dev teams who want to skip the setup pain and jump straight to building.
 
@@ -8,15 +9,15 @@
 
 ## Who is it for?
 
-- **macOS developers** using Django and Flutter
-- Teams deploying apps to **Google Cloud Platform**
-- Anyone who wants fast, reproducible environments and one-command deployments
+- **macOS developers** using Django, Flutter, and GCP
+- Teams needing fast, reproducible environments
+- Anyone who wants one-command setup and deployment automation
 
 ## Why DevKit?
 
-- ✅ **One-command setup:** Get your full dev environment running instantly.
-- ✅ **Easy updates:** Keep tools and packages fresh with a single command.
-- ✅ **Cloud made simple:** Seamlessly deploy Django apps to GCP, with full teardown and update flows.
+- ✅ **One-command setup:** Instantly bootstrap your entire dev environment.
+- ✅ **Effortless updates:** Keep everything fresh with a single command.
+- ✅ **Cloud made simple:** Automate Django deployment to Google Cloud Platform — build, push, migrate, and manage cloud services.
 
 ---
 
@@ -39,37 +40,30 @@ DevKit CLI is packed with powerful commands, organized into core workflows and o
 
 ### 🚀 Core Automation Commands (Primary)
 
-Your everyday essentials — the main commands that do the heavy lifting:
+Your everyday essentials — the primary commands that do the heavy lifting:
 
 - **⚙️ devkit-pc-setup**  
-  Complete macOS development environment setup: installs tools like Homebrew, Python, Node.js, Flutter, Docker, GCP SDK, and more.
+  Complete macOS development environment setup: Homebrew, Python, Node.js, Flutter, Docker, GCP SDK, and more.
 - **🔄 devkit-pc-update**  
-  One command to update system apps and dev tools: brew, Python packages, Node.js, Flutter, Docker, GCP SDK, and App Store apps.
+  One command to update system apps and dev tools: Homebrew, Python, Node.js, Flutter, Docker, GCP SDK, and App Store apps.
 - **☁️ gcloud-project-django-setup**  
-  Deploy your Django project to Google Cloud Platform using environment variables. Builds, provisions, and deploys your cloud services in one step.
+  Deploy your Django project to Google Cloud Platform — builds, provisions, and deploys services in one step.
 - **🚢 gcloud-project-django-update**  
-  Push updates to your Django app on GCP. Rebuilds containers, syncs cloud resources, and applies migrations seamlessly.
+  Push updates to your Django app on GCP, rebuild containers, sync resources, and apply migrations.
 - **🗑️ gcloud-project-django-teardown**  
-  Cleanly tears down your Django cloud environment. Deletes Cloud Run services, databases, buckets, and all associated GCP resources.
+  Cleanly tear down your Django cloud environment — Cloud Run, databases, buckets, and more.
 
-### 🧩 Helper Utilities (Optional, On-Demand)
+### 🧩 Optional Helper Utilities
 
-Extra tools to make your development flow smoother. Use them when you need them!
+Handy tools to make your development flow smoother — use them as needed!
 
-- **🖥️ System Utilities**
-  Network diagnostics, flush DNS, restart Mac, clean up cache, and more quick system commands.
-- **🍺 Homebrew & Package Management**
-  Install, update, and clean up brew packages. Back up and restore your development package list.
-- **🧩 Git & GitHub Shortcuts**
-  Configure Git, manage SSH keys, sync branches, push tags, and automate repository tasks.
-- **🐳 Docker Controls**
-  Start/stop Docker, clean containers and images, inspect logs, and run interactive container sessions.
-- **🐍 Python & Django Helpers**
-  Manage virtual environments, install Python dependencies, and open Django shells with environment variables preloaded.
-- **📱 Flutter & Firebase Tools**
-  Automate Flutter tasks: asset generation, build runners, Firebase setup, cache clearing, and mobile platform maintenance.
-- **🌐 Google Cloud Operations**
-  Advanced GCP commands: manage Cloud SQL, handle secrets, sync Cloud Scheduler jobs, deploy App Engine services, and more.
+- **🖥️ System Utilities:** Network diagnostics, flush DNS, restart Mac, clean cache, and more.
+- **🍺 Homebrew Management:** Install, update, prune, and backup Homebrew packages.
+- **🐙 Git & GitHub Shortcuts:** Configure Git, manage SSH keys, sync branches, push tags, and automate workflows.
+- **🐳 Docker Controls:** Start/stop Docker, clean containers and images, inspect logs, and shell into containers.
+- **🐍 Python & Django Helpers:** Manage virtual environments, install dependencies, and open Django shells.
+- **📱 Flutter & Firebase Tools:** Automate Flutter assets, builds, Firebase setup, and cache clearing.
+- **🌐 Google Cloud Operations:** Manage Cloud SQL, secrets, Cloud Scheduler, App Engine, and more.
 
 ---
 
@@ -105,7 +99,7 @@ Once the installer finishes, DevKit’s commands will be available in your shell
 
 Explore detailed guides for each tool:
 
-- [⚙️ DevKit](./docs/devkit.md)
+- [⚙️ DevKit (Main)](./docs/devkit.md)
 - [🐍 Python](./docs/python.md)
 - [📱 Flutter](./docs/flutter.md)
 - [🐳 Docker](./docs/docker.md)
