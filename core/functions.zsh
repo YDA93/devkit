@@ -290,6 +290,7 @@ function devkit-check-tools() {
     }
 
     _print_section_title "💻 Shell & System Tools"
+    print_version "🧩" "Devkit" "git" "git -C \$HOME/devkit describe --tags --abbrev=0 2>/dev/null"
     print_version "🧮" "Zsh" "zsh" "zsh --version | awk '{print \$2}'"
     print_version "🛠 " "Git" "git" "git --version | awk '{print \$3}'"
     print_version "🛍 " "MAS" "mas" "mas version"
@@ -333,6 +334,7 @@ function devkit-check-tools() {
     echo
 
     _print_section_title "🧩 Miscellaneous Tools"
+    printf "  🚀  %-24s %s\n" "Devkit CLI:" "$devkit_version"
     print_version "🖨 " "WeasyPrint" "weasyprint" "weasyprint --version | awk '{print \$3}'"
     echo
 
@@ -473,4 +475,25 @@ function devkit-update() {
         source "$target_dir/bin/devkit.zsh"
         echo "✅ devkit updated and reloaded to version $remote_version."
     fi
+}
+
+# 📦 Prints the current installed devkit version
+# 💡 Usage: devkit-version
+function devkit-version() {
+    local target_dir="$HOME/devkit"
+
+    if [[ ! -d "$target_dir" ]]; then
+        echo "❌ devkit is not installed."
+        return 1
+    fi
+
+    local current_version
+    current_version=$(git -C "$target_dir" describe --tags --abbrev=0 2>/dev/null)
+
+    if [[ -z "$current_version" ]]; then
+        echo "❌ No version tag found in devkit."
+        return 1
+    fi
+
+    echo "📦 Current devkit version: $current_version"
 }
