@@ -290,7 +290,7 @@ function devkit-check-tools() {
     }
 
     _print_section_title "💻 Shell & System Tools"
-    print_version "🧩" "Devkit" "git" "git -C \$HOME/devkit describe --tags --abbrev=0 2>/dev/null"
+    print_version "🧩" "Devkit" "git" "git -C \$DEVKIT_ROOT describe --tags --abbrev=0 2>/dev/null"
     print_version "🧮" "Zsh" "zsh" "zsh --version | awk '{print \$2}'"
     print_version "🛠 " "Git" "git" "git --version | awk '{print \$3}'"
     print_version "🛍 " "MAS" "mas" "mas version"
@@ -405,18 +405,17 @@ function devkit-doctor() {
 # 💡 Usage: devkit-update
 function devkit-update() {
     local repo_url="https://github.com/YDA93/devkit"
-    local target_dir="$HOME/devkit"
 
     echo "🔄 Checking for devkit updates..."
 
-    if [[ ! -d "$target_dir" ]]; then
-        echo "📦 devkit not found. Cloning into $target_dir..."
-        git clone "$repo_url" "$target_dir" || {
+    if [[ ! -d "$DEVKIT_ROOT" ]]; then
+        echo "📦 devkit not found. Cloning into $DEVKIT_ROOT..."
+        git clone "$repo_url" "$DEVKIT_ROOT" || {
             echo "❌ Failed to clone devkit."
             return 1
         }
         echo "✅ devkit installed for the first time."
-        source "$target_dir/bin/devkit.zsh"
+        source "$DEVKIT_ROOT/bin/devkit.zsh"
         return 0
     fi
 
@@ -480,15 +479,14 @@ function devkit-update() {
 # 📦 Prints the current installed devkit version
 # 💡 Usage: devkit-version
 function devkit-version() {
-    local target_dir="$HOME/devkit"
 
-    if [[ ! -d "$target_dir" ]]; then
+    if [[ ! -d "$DEVKIT_ROOT" ]]; then
         echo "❌ devkit is not installed."
         return 1
     fi
 
     local current_version
-    current_version=$(git -C "$target_dir" describe --tags --abbrev=0 2>/dev/null)
+    current_version=$(git -C "$DEVKIT_ROOT" describe --tags --abbrev=0 2>/dev/null)
 
     if [[ -z "$current_version" ]]; then
         echo "❌ No version tag found in devkit."

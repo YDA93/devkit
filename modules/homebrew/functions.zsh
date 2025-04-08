@@ -84,7 +84,7 @@ function homebrew-install-packages() {
         }
     fi
 
-    source "$HOME/devkit/bin/devkit.zsh"
+    source "$DEVKIT_ROOT/bin/devkit.zsh"
 
     postgres-setup || {
         echo "❌ Failed to set up PostgreSQL. Please check the setup."

@@ -50,7 +50,7 @@ function npm-install-packages() {
 
     echo "✅ Installed global npm packages"
 
-    source "$HOME/devkit/bin/devkit.zsh"
+    source "$DEVKIT_ROOT/bin/devkit.zsh"
 }
 
 # 🧹 Uninstalls global npm packages listed in packages.txt
