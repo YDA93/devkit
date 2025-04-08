@@ -421,8 +421,20 @@ function devkit-update() {
     # Fetch latest commit info
     local current_commit remote_commit
     current_commit=$(git -C "$target_dir" rev-parse HEAD 2>/dev/null)
-    git -C "$target_dir" fetch origin main --quiet
+
+    if ! git -C "$target_dir" fetch origin main --quiet; then
+        echo "⚠️  Failed to fetch updates from remote repository."
+        echo "💡 Please check your internet connection or try again later."
+        return 1
+    fi
+
     remote_commit=$(git -C "$target_dir" rev-parse origin/main 2>/dev/null)
+
+    if [[ -z "$remote_commit" ]]; then
+        echo "⚠️  Could not determine the latest commit from remote."
+        echo "💡 The remote branch may not exist or fetch failed."
+        return 1
+    fi
 
     if [[ "$current_commit" == "$remote_commit" ]]; then
         echo "✅ devkit is already up to date (commit: ${current_commit:0:7})"
@@ -442,10 +454,10 @@ function devkit-update() {
     fi
 
     echo "🚀 Updating devkit..."
-    git -C "$target_dir" pull --rebase --autostash || {
+    if ! git -C "$target_dir" pull --rebase --autostash; then
         echo "❌ Failed to update devkit."
         return 1
-    }
+    fi
 
     if [[ -f "$target_dir/bin/devkit.zsh" ]]; then
         echo "🔁 Reloading devkit..."

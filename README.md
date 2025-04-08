@@ -2,18 +2,36 @@
 
 **DevKit** is a comprehensive automation toolkit specifically designed for macOS developers working primarily with Django and Flutter applications, particularly those deploying to Google Cloud Platform. It streamlines the setup, configuration, and deployment processes, allowing developers to focus entirely on coding rather than managing their development environment.
 
-- Who is it for? macOS-based Django and Flutter developers, especially those deploying apps on GCP.
-- Why use DevKit? It simplifies initial environment setup, maintains up-to-date tools, and enables one-command deployments of Django applications to Google Cloud. DevKit manages all the setup complexities, empowering you to dive directly into development.
-
 > ⚙️ Built for Mac pros, automation fans, and dev teams who want to skip the setup pain and jump straight to building.
+
+---
+
+## Who is it for?
+
+- **macOS developers** using Django and Flutter
+- Teams deploying apps to **Google Cloud Platform**
+- Anyone who wants fast, reproducible environments and one-command deployments
+
+## Why DevKit?
+
+- ✅ **One-command setup:** Get your full dev environment running instantly.
+- ✅ **Easy updates:** Keep tools and packages fresh with a single command.
+- ✅ **Cloud made simple:** Seamlessly deploy Django apps to GCP, with full teardown and update flows.
 
 ---
 
 ## 📑 Table of Contents
 
 - [🧰 DevKit CLI](#-devkit-cli)
+- [Who is it for?](#who-is-it-for)
+- [Why DevKit?](#why-devkit)
 - [✨ Features](#-features)
 - [🚀 Installation Steps](#-installation-steps)
+- [📚 Documentation](#-documentation)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+
+---
 
 ## ✨ Features
 
@@ -81,9 +99,11 @@ Install DevKit by cloning the repository and running the installer:
 This will set up DevKit on your system. The installer may prompt you for some info (like your name, email, and preferences) and then install all necessary tools.  
 Once the installer finishes, DevKit’s commands will be available in your shell (you might need to open a new terminal session or source your shell config if instructed). Now you’re ready to use the DevKit CLI.
 
+---
+
 ## 📚 Documentation
 
-Detailed setup and configuration guides:
+Explore detailed guides for each tool:
 
 - [⚙️ DevKit CLI](./docs/devkit.md)
 - [🐍 Python](./docs/python.md)
@@ -101,3 +121,12 @@ Detailed setup and configuration guides:
 - [🐚 Zsh Shell](./docs/zsh.md)
 
 > DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building.
+
+## 🤝 Contributing
+
+Contributions are welcome!
+Open an issue or submit a pull request if you have improvements, bug fixes, or ideas.
+
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE).
