@@ -44,12 +44,26 @@ Quick commands to manage Firebase functions, Android SDK, iOS Pods, app visuals,
 ## 🔌 Development Utilities
 
 - **`flutter-adb-connect <IP> <PORT>`** — Connect Android device via ADB and update VSCode config.
+- **`flutter-xcode-open`** — Open iOS project in Xcode.
+- **`flutter-ios-simulator-open`** — Launch iOS Simulator (alias).
+- **`flutter-ios-devices`** — List available iOS devices (alias).
+- **`flutter-android-devices`** — List available Android devices (alias).
+
+---
+
+## 🚀 Flutter Build Commands
+
 - **`flutter-build-runner`** — Rebuild code generators (e.g., JSON serialization).
-- **`flutter-open-xcode`** — Open iOS project in Xcode.
 - **`flutter-build-ios-warm-up`** — iOS build with SKSL shaders.
 - **`flutter-build-android-warm-up`** — Android build with SKSL shaders.
 - **`flutter-build-android`** — Production Android build with symbol upload.
-- **`flutter-dart-fix`** — Auto-apply Dart code fixes.
+
+---
+
+## 🧪 Testing Utilities
+
+- **`flutter-test`** — Run all Flutter unit tests (alias).
+- **`flutter-test-coverage`** — Run tests with coverage report (alias).
 
 ---
 
@@ -60,6 +74,11 @@ Quick commands to manage Firebase functions, Android SDK, iOS Pods, app visuals,
 - **`flutter-delete-unused-strings`** — Remove unused translation keys from `.arb` files.
 - **`flutter-cache-reset`** — Clear Pod, Flutter, and Ccache caches.
 - **`flutter-ios-reinstall-podfile`** — Reinstall iOS Pod dependencies.
+- **`flutter-outdated`** — Check for outdated Dart/Flutter packages (alias).
+- **`flutter-upgrade`** — Upgrade all Dart/Flutter dependencies (alias).
+- **`flutter-dart-fix`** — Auto-apply Dart code fixes.
+- **`flutter-devtools`** — Launch Flutter DevTools (alias).
+- **`flutter-analyze`** — Analyze Dart code for errors and lints (alias).
 
 ---
 
