@@ -120,13 +120,21 @@ Explore detailed guides for each tool:
 - [🍎 Mac App Store (mas)](./docs/mas.md)
 - [🐚 Zsh Shell](./docs/zsh.md)
 
-> DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building.
+---
 
 ## 🤝 Contributing
 
 Contributions are welcome!
 Open an issue or submit a pull request if you have improvements, bug fixes, or ideas.
 
+---
+
 ## 📄 License
 
 This project is licensed under the [MIT License](./LICENSE).
+
+---
+
+> DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building.
+
+---
