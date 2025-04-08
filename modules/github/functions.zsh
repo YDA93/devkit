@@ -330,7 +330,7 @@ function github-version-bump() {
         return 1
     fi
 
-    Create and push the new tag
+    # Create and push the new tag
     git tag -a "$new_version" -m "Release version $new_version"
     git push origin "$new_version"
 
