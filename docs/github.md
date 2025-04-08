@@ -26,6 +26,7 @@ DevKit includes GitHub utilities to manage SSH keys, automate Git workflows, and
 - **`github-commit-and-push ["message"]`** — Commit all changes and push.
 - **`github-clear-cache-and-recommit-all-files`** — Reset Git cache and recommit.
 - **`github-undo-last-commit`** — Revert last commit from remote only.
+- **`github-version-bump`** — Create and push a new version tag (major, minor, patch, or custom). Shows the latest version and ensures a clean working state before tagging.
 
 ---
 

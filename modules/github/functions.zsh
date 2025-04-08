@@ -237,6 +237,106 @@ function github-undo-last-commit() {
     echo "The last commit has been reverted on GitHub only. Your local repository remains unchanged."
 }
 
+# 🚀 Creates a new version tag based on user input (major, minor, patch, or custom)
+# 💡 Usage: github-version-bump
+function github-version-bump() {
+
+    # Check for uncommitted changes
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+        echo "⚠️  You have uncommitted changes."
+        echo "Do you want to commit all changes before tagging? (yes/no)"
+        read -r commit_before_tag
+        if [[ "$commit_before_tag" == "yes" ]]; then
+            echo "📝 Enter commit message:"
+            read -r commit_message
+            git add -A
+            git commit -m "${commit_message:-"Auto commit before tagging $new_version"}"
+            git push
+        else
+            echo "❌ Operation cancelled to avoid inconsistent tag."
+            return 1
+        fi
+    fi
+
+    # Check for unpushed commits
+    if [[ $(git log --branches --not --remotes) ]]; then
+        echo "⚠️  You have unpushed commits."
+        echo "Do you want to push them before tagging? (yes/no)"
+        read -r push_before_tag
+        if [[ "$push_before_tag" == "yes" ]]; then
+            git push
+        else
+            echo "❌ Operation cancelled to avoid inconsistent tag."
+            return 1
+        fi
+    fi
+
+    echo "🔍 Fetching the latest tags from origin..."
+    git fetch --tags
+
+    # Get the latest version tag
+    latest_tag=$(git tag --sort=-v:refname | head -n 1)
+
+    if [[ -z "$latest_tag" ]]; then
+        latest_tag="0.0.0"
+        echo "ℹ️  No tags found. Starting from version: $latest_tag"
+    else
+        echo "🔖 Latest version: $latest_tag"
+    fi
+
+    IFS='.' read -r major minor patch <<<"$latest_tag"
+
+    # Prompt for the type of version bump
+    echo ""
+    echo "🚀 What type of version bump?"
+    echo "1. Major ($major.$minor.$patch → $((major + 1)).0.0)"
+    echo "2. Minor ($major.$minor.$patch → $major.$((minor + 1)).0)"
+    echo "3. Patch ($major.$minor.$patch → $major.$minor.$((patch + 1)))"
+    echo "4. Custom version (you will enter manually)"
+    echo "Enter your choice (1/2/3/4):"
+    read -r bump_choice
+
+    case "$bump_choice" in
+    1)
+        new_version="$((major + 1)).0.0"
+        ;;
+    2)
+        new_version="$major.$((minor + 1)).0"
+        ;;
+    3)
+        new_version="$major.$minor.$((patch + 1))"
+        ;;
+    4)
+        echo "✍️  Enter the custom version (e.g., 2.5.0):"
+        read -r new_version
+        if ! [[ "$new_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Invalid version format."
+            return 1
+        fi
+        ;;
+    *)
+        echo "❌ Invalid choice."
+        return 1
+        ;;
+    esac
+
+    echo ""
+    echo "🚀 New version to be created: $new_version"
+    echo "❓ Do you want to proceed with creating and pushing this tag? (yes/no)"
+    read -r confirm
+
+    if [[ "$confirm" != "yes" ]]; then
+        echo "❌ Operation cancelled."
+        return 1
+    fi
+
+    Create and push the new tag
+    git tag -a "$new_version" -m "Release version $new_version"
+    git push origin "$new_version"
+
+    echo "✅ Version $new_version has been tagged and pushed to origin."
+}
+
 # ------------------------------------------------------------------------------
 # 🌿 Branch Management Shortcuts
 # ------------------------------------------------------------------------------

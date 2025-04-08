@@ -397,8 +397,8 @@ function devkit-doctor() {
     } 2>&1 | tee -a "$log_file"
 }
 
-# 🚀 Checks and updates the devkit CLI from GitHub if a new version is available
-# - Compares latest remote commit vs local
+# 🚀 Checks and updates the devkit CLI from GitHub if a new version is available (based on tags)
+# - Compares latest remote version tag vs local
 # - Only pulls if out of date
 # 💡 Usage: devkit-update
 function devkit-update() {
@@ -418,50 +418,59 @@ function devkit-update() {
         return 0
     fi
 
-    # Fetch latest commit info
-    local current_commit remote_commit
-    current_commit=$(git -C "$target_dir" rev-parse HEAD 2>/dev/null)
-
-    if ! git -C "$target_dir" fetch origin main --quiet; then
-        echo "⚠️  Failed to fetch updates from remote repository."
+    # Fetch latest tags
+    git -C "$target_dir" fetch --tags --quiet || {
+        echo "⚠️  Failed to fetch tags from remote repository."
         echo "💡 Please check your internet connection or try again later."
         return 1
-    fi
+    }
 
-    remote_commit=$(git -C "$target_dir" rev-parse origin/main 2>/dev/null)
+    # Get latest local and remote version tags
+    local local_version remote_version
 
-    if [[ -z "$remote_commit" ]]; then
-        echo "⚠️  Could not determine the latest commit from remote."
-        echo "💡 The remote branch may not exist or fetch failed."
+    local_version=$(git -C "$target_dir" tag --sort=-v:refname | head -n 1)
+    remote_version=$(git -C "$target_dir" ls-remote --tags --sort='v:refname' "$repo_url" | grep -o 'refs/tags/[^\^{}]*' | awk -F/ '{print $3}' | tail -n 1)
+
+    # Handle case where no tags exist
+    if [[ -z "$remote_version" ]]; then
+        echo "⚠️  No remote version tags found."
         return 1
     fi
 
-    if [[ "$current_commit" == "$remote_commit" ]]; then
-        echo "✅ devkit is already up to date (commit: ${current_commit:0:7})"
+    if [[ -z "$local_version" ]]; then
+        echo "ℹ️  No local version found. You might be on initial clone."
+        local_version="none"
+    fi
+
+    echo "🔖 Local version: $local_version"
+    echo "🌐 Remote version: $remote_version"
+
+    if [[ "$local_version" == "$remote_version" ]]; then
+        echo "✅ devkit is already up to date (version: $local_version)"
         return 0
     fi
 
-    # Show update summary
-    echo "📥 New update available!"
-    echo "🔸 Current: ${current_commit:0:7}"
-    echo "🔹 Latest : ${remote_commit:0:7}"
+    echo "📥 New version available!"
+    echo "🔸 Current: $local_version"
+    echo "🔹 Latest : $remote_version"
 
-    echo -n "👉 Do you want to update devkit now? (y/n): "
+    echo -n "👉 Do you want to update devkit to version $remote_version now? (y/n): "
     read -r confirm
     if [[ "$confirm" != [Yy] ]]; then
         echo "❌ Update canceled."
         return 0
     fi
 
-    echo "🚀 Updating devkit..."
-    if ! git -C "$target_dir" pull --rebase --autostash; then
-        echo "❌ Failed to update devkit."
+    echo "🚀 Updating devkit to version $remote_version..."
+
+    if ! git -C "$target_dir" checkout "tags/$remote_version" -f; then
+        echo "❌ Failed to checkout version $remote_version."
         return 1
     fi
 
     if [[ -f "$target_dir/bin/devkit.zsh" ]]; then
         echo "🔁 Reloading devkit..."
         source "$target_dir/bin/devkit.zsh"
-        echo "✅ devkit reloaded with latest changes."
+        echo "✅ devkit updated and reloaded to version $remote_version."
     fi
 }
