@@ -28,6 +28,8 @@ Google Cloud support in DevKit gives you powerful CLI shortcuts, automation work
       - [🔐 Target Proxies (HTTP / HTTPS)](#-target-proxies-http--https)
       - [🚦 Global Forwarding Rules](#-global-forwarding-rules)
 
+---
+
 ## 🧩 Essentials
 
 - `gcloud-init` — Initialize Google Cloud SDK and set up configurations.
@@ -42,11 +44,15 @@ Google Cloud support in DevKit gives you powerful CLI shortcuts, automation work
 
 - `gcloud-update` — Update installed components of the SDK.
 
+---
+
 ## 🔐 Account Management
 
 - `gcloud-account-list` — List all authenticated accounts.
 
 - `gcloud-config-account-set <account>` — Set the active account for gcloud CLI.
+
+---
 
 ## 📂 Project Management
 
@@ -55,6 +61,8 @@ Google Cloud support in DevKit gives you powerful CLI shortcuts, automation work
 - `gcloud-project-describe <project>` — Show details of a specific project.
 
 - `gcloud-config-project-set <project>` — Set active project for gcloud CLI.
+
+---
 
 ## 🔧 Django Deployment Shortcuts
 
@@ -81,7 +89,7 @@ Before using these functions, ensure you:
 1. Prepare and fill the .env file properly.  
    Your .env must include all required variables, such as:
 
-   - ```# Example .env file
+   - ```bash
      GCP_PROJECT_ID=your-gcp-project-id                       # e.g., project-id
      GCP_PROJECT_NUMBER=your-gcp-project-number               # e.g., 1052922103635
      GCP_PROJECT_NAME=your-gcp-project-name                   # e.g., Hello World

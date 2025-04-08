@@ -1,8 +1,39 @@
 # 🐚 Zsh
 
-DevKit includes useful aliases to manage your Zsh shell quickly:
+DevKit includes handy utilities to manage your Zsh shell configuration and environment efficiently.
 
-- `zsh-reload` — Reload your `.zshrc` configuration
-- `zsh-reset` — Restart your Zsh shell session
-- `zsh-edit` — Open `.zshrc` in VS Code
-- `zsh-which` — Show the current shell path
+## 📑 Table of Contents
+
+- [⚙️ Configuration Reload](#️-configuration-reload)
+- [🚀 Session Management](#-session-management)
+- [📝 Configuration Editing](#-configuration-editing)
+- [🔍 Shell Diagnostics](#-shell-diagnostics)
+
+---
+
+## ⚙️ Configuration Reload
+
+- **`zsh-reload`** — Reloads your `.zshrc` file to apply changes immediately.
+
+---
+
+## 🚀 Session Management
+
+- **`zsh-reset`** — Fully restarts the current Zsh session.
+
+---
+
+## 📝 Configuration Editing
+
+- **`zsh-edit`** — Opens your `.zshrc` configuration in VS Code.
+
+---
+
+## 🔍 Shell Diagnostics
+
+- **`zsh-which`** — Displays the current active shell path.
+
+---
+
+> 💡 Tip:  
+> Customize your prompt, aliases, and environment variables in `.zshrc` for a tailored workflow experience!

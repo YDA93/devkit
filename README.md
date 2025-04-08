@@ -105,7 +105,7 @@ Once the installer finishes, DevKit’s commands will be available in your shell
 
 Explore detailed guides for each tool:
 
-- [⚙️ DevKit CLI](./docs/devkit.md)
+- [⚙️ DevKit](./docs/devkit.md)
 - [🐍 Python](./docs/python.md)
 - [📱 Flutter](./docs/flutter.md)
 - [🐳 Docker](./docs/docker.md)

@@ -1,65 +1,86 @@
 # 🌐 Django
 
-DevKit includes a full suite of Django utilities to bootstrap, manage, and automate your Django projects.
+DevKit ships with full Django automation tools to bootstrap, manage, and streamline your projects.
 
 ## 📑 Table of Contents
 
-- [🌐 Django](#-django)
-  - [🎬 Project Bootstrap & Configuration](#-project-bootstrap--configuration)
-  - [🧱 Database Schema & Migrations](#-database-schema--migrations)
-  - [🔁 Database Initialization](#-database-initialization)
-  - [💾 Data Backup & Restore](#-data-backup--restore)
-  - [🌍 Translations & Localization](#-translations--localization)
-  - [🚀 Development & Deployment Tools](#-development--deployment-tools)
-  - [🧪 Testing & Quality Assurance](#-testing--quality-assurance)
-  - [🔍 Introspection & Automation](#-introspection--automation)
-  - [🧰 Utilities & Aliases](#-utilities--aliases)
+- [🎬 Project Bootstrap](#-project-bootstrap)
+- [🧱 Database Schema & Migrations](#-database-schema--migrations)
+- [🔁 Database Initialization](#-database-initialization)
+- [💾 Data Backup & Restore](#-data-backup--restore)
+- [🌍 Translations & Localization](#-translations--localization)
+- [🚀 Development & Deployment](#-development--deployment)
+- [🧪 Testing & Quality](#-testing--quality)
+- [🔍 Introspection & Automation](#-introspection--automation)
+- [🧰 Utilities & Aliases](#-utilities--aliases)
 
-## 🎬 Project Bootstrap & Configuration
+---
 
-- `django-project-start <project_name>` — Initializes a brand new Django project in the current directory using `django-admin`.
-- `django-app-start <app_name>` — Creates a new Django app inside the current project via `manage.py startapp`.
-- `django-settings [local|dev|prod|test]` — Activates your Python environment and sets the appropriate `DJANGO_SETTINGS_MODULE` based on the given environment.
-- `django-secret-key-generate` — Generates a secure random string and sets it as the `DJANGO_SECRET_KEY` environment variable.
+## 🎬 Project Bootstrap
+
+- **`django-project-start <project>`** — Create a new Django project in the current folder.
+- **`django-app-start <app>`** — Add a new app to your Django project.
+- **`django-settings [local|dev|prod|test]`** — Activate Python env and set `DJANGO_SETTINGS_MODULE`.
+- **`django-secret-key-generate`** — Generate and set a secure Django secret key.
+
+---
 
 ## 🧱 Database Schema & Migrations
 
-- `django-migrate-make [args]` — A wrapper for `makemigrations`, forwards any arguments to the Django command.
-- `django-migrate [args]` — Runs Django's `migrate` command with passed arguments.
-- `django-migrate-initial` — Wipes all existing migrations and `__pycache__` folders, temporarily disables project URLs to avoid import errors, and reinitializes the database from scratch.
-- `django-migrate-and-cache-delete` — Deletes all migration files (excluding `__init__.py`) and `__pycache__` directories, skipping the virtual environment.
+- **`django-migrate-make [args]`** — Shortcut to `makemigrations`.
+- **`django-migrate [args]`** — Run migrations.
+- **`django-migrate-initial`** — Clean slate: wipe migrations/cache, disable URLs, re-init DB.
+- **`django-migrate-and-cache-delete`** — Remove all migrations (except `__init__.py`) and caches.
+
+---
 
 ## 🔁 Database Initialization
 
-- `django-database-init` — Validates your environment, confirms user intent, resets the database, updates `.env`, runs initial migrations, and restores previously backed-up data (if available).
+- **`django-database-init`** — Full DB reset: validate env, confirm action, recreate DB, restore data.
+
+---
 
 ## 💾 Data Backup & Restore
 
-- `django-data-backup` — Dumps the entire database to `data.json` using Django’s `dumpdata` command after user confirmation.
-- `django-data-restore` — Restores data from a backup (by default `data.json`) and resets all auto-increment sequences using `sqlsequencereset`.
+- **`django-data-backup`** — Backup your database to `data.json`.
+- **`django-data-restore`** — Restore data from `data.json` and reset sequences.
+
+---
 
 ## 🌍 Translations & Localization
 
-- `django-translations-make` — Scans for apps with a `locale/` directory and runs `makemessages` to generate `.po` translation files for Arabic.
-- `django-translations-compile` — Compiles `.po` files into `.mo` binaries across all subdirectories with a `locale/` folder.
+- **`django-translations-make`** — Generate `.po` files for Arabic across apps with `locale/`.
+- **`django-translations-compile`** — Compile `.po` into `.mo` for deployment.
 
-## 🚀 Development & Deployment Tools
+---
 
-- `django-run-server [port]` — Starts Django’s dev server on `0.0.0.0`. Defaults to port 8000 if not specified.
-- `django-collect-static` — Clears and collects static files into the deployment-ready folder using Django’s `collectstatic`.
-- `django-upload-env-to-github-secrets` — Uploads `.env` content and `GCP_CREDENTIALS` as GitHub repository secrets using the GitHub CLI (`gh`).
+## 🚀 Development & Deployment
 
-## 🧪 Testing & Quality Assurance
+- **`django-run-server [port]`** — Start Django dev server on `0.0.0.0:8000` (default).
+- **`django-collect-static`** — Collect and clear static files.
+- **`django-upload-env-to-github-secrets`** — Push `.env` and `GCP_CREDENTIALS` to GitHub Secrets.
 
-- `django-run-pytest [test_path]` — Runs `pytest` with Django’s test settings and full coverage reporting. Accepts optional test paths like `app/tests/test_something.py::TestClass::test_case`.
-- `django-run-test [test_path]` — Uses Django’s `manage.py test` with test environment settings. Accepts the same test path format as `pytest`.
+---
+
+## 🧪 Testing & Quality
+
+- **`django-run-pytest [test_path]`** — Run tests with `pytest` and coverage report.
+- **`django-run-test [test_path]`** — Run Django tests via `manage.py`.
+
+---
 
 ## 🔍 Introspection & Automation
 
-- `django-find-cron-urls [project_root]` — Searches all internal apps defined in `INTERNAL_APPS` for URL patterns starting with `cron/`, and returns full URL paths using the `$ADMIN_DOMAIN`.
+- **`django-find-cron-urls [project_root]`** — Discover `cron/` URLs in internal apps and print full paths.
+
+---
 
 ## 🧰 Utilities & Aliases
 
-- `django-project-setup` — Sets up the environment, installs packages, and initializes the database in one command.
-- `django-find-templates` — Prints the location of Django’s internal template directories.
-- `django-format-documents` — Formats the codebase using `isort` and `black` (line length 80).
+- **`django-project-setup`** — Full setup: env, dependencies, DB init.
+- **`django-find-templates`** — Show Django’s internal template paths.
+- **`django-format-documents`** — Format codebase with `isort` and `black`.
+
+---
+
+> 🚀 All Django commands are environment-aware. Make sure your Python environment is active before running them.

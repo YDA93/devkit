@@ -1,33 +1,46 @@
 # 🍺 Homebrew
 
-DevKit automates Homebrew setup, cleanup, and package installation based on your preferences.
+DevKit automates Homebrew setup, package management, cleanup, and maintenance.
+
+Install, prune, back up, and restore your Homebrew environment with simple, streamlined commands.
 
 ## 📑 Table of Contents
 
-- [🍺 Homebrew](#-homebrew)
-  - [🔧 Setup & Initialization](#-setup--initialization)
-  - [📦 Package Management](#-package-management)
-  - [🧹 Maintenance & Cleanup](#-maintenance--cleanup)
-  - [🩺 Diagnostics & Health](#-diagnostics--health)
+- [🔧 Setup & Initialization](#-setup--initialization)
+- [📦 Package Management](#-package-management)
+- [🧹 Maintenance & Cleanup](#-maintenance--cleanup)
+- [🩺 Diagnostics & Health](#-diagnostics--health)
+
+---
 
 ## 🔧 Setup & Initialization
 
-- `homebrew-setup` — Full setup: Full setup routine: installs Homebrew, prunes unlisted packages, restores saved packages, and performs maintenance.
-- `homebrew-install` — Installs Homebrew if it’s not already installed. Verifies Homebrew is working afterward.
+- **`homebrew-setup`** — Full setup: install Homebrew, prune unlisted packages, restore saved packages, and maintain.
+- **`homebrew-install`** — Install Homebrew if missing and verify installation.
+
+---
 
 ## 📦 Package Management
 
-- `homebrew-save-packages` — Saves your currently installed formulae and casks to files. Useful for backups or sharing your setup.
-- `homebrew-install-packages` — Installs formulae and casks from your saved package lists.
-- `homebrew-install-from-settings` — Installs formulae and casks based on your .settings file preferences (y-marked entries).
-- `homebrew-prune-packages` — Uninstalls any Homebrew packages not listed in your saved package files or .settings. Prompts before removal.
-- `homebrew-list-packages` — Lists all currently installed Homebrew formulae and casks.
+- **`homebrew-save-packages`** — Save current formulae and casks to files for backup or sharing.
+- **`homebrew-install-packages`** — Install formulae and casks from saved lists.
+- **`homebrew-install-from-settings`** — Install packages based on your `.settings` file.
+- **`homebrew-prune-packages`** — Uninstall packages not in saved lists or settings (with confirmation).
+- **`homebrew-list-packages`** — List all currently installed formulae and casks.
+
+---
 
 ## 🧹 Maintenance & Cleanup
 
-- `homebrew-maintain` — Updates, upgrades, and cleans Homebrew. Also runs a health check and verifies packages.
-- `homebrew-clean` - Performs cleanup: removes unused dependencies, old versions, and verifies installed packages.
+- **`homebrew-maintain`** — Update, upgrade, and clean Homebrew. Runs health check and verifies packages.
+- **`homebrew-clean`** — Remove unused dependencies, old versions, and clean cache.
+
+---
 
 ## 🩺 Diagnostics & Health
 
-- `homebrew-doctor` — Runs Homebrew diagnostics, checks for issues, and reports outdated packages.
+- **`homebrew-doctor`** — Run Homebrew diagnostics and check for outdated packages.
+
+---
+
+> 🚀 Pro tip: Use `devkit-pc-update` regularly to keep your dev environment healthy and up to date.

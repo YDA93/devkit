@@ -1,45 +1,58 @@
 # 🔐 GitHub SSH & Automation Tools
 
-DevKit includes powerful GitHub utilities to manage SSH keys, simplify Git workflows, and automate branching, pushing, and tagging.
+DevKit includes GitHub utilities to manage SSH keys, automate Git workflows, and streamline branching, pushing, and tagging.
 
 ## 📑 Table of Contents
 
-- [🔐 GitHub SSH & Automation Tools](#-github-ssh--automation-tools)
-  - [🔑 SSH Key Utilities](#-ssh-key-utilities)
-  - [🚀 Workflow Helpers](#-workflow-helpers)
-  - [🌿 Branch Management](#-branch-management)
-  - [📥 Pulling, Tagging & Sync](#-pulling-tagging--sync)
-  - [📊 Git Info](#-git-info)
+- [🔑 SSH Key Utilities](#-ssh-key-utilities)
+- [🚀 Workflow Helpers](#-workflow-helpers)
+- [🌿 Branch Management](#-branch-management)
+- [📥 Pulling, Tagging & Sync](#-pulling-tagging--sync)
+- [📊 Git Info](#-git-info)
+
+---
 
 ## 🔑 SSH Key Utilities
 
-- `github-ssh-list` — List all SSH keys found in `~/.ssh/`
-- `github-ssh-setup` — Generate and configure SSH key for GitHub access (port 443 fallback)
-- `github-ssh-delete` — Interactively delete a selected SSH key
-- `github-ssh-connection-test` - Test SSH connection to GitHub
+- **`github-ssh-list`** — List SSH keys in `~/.ssh/`.
+- **`github-ssh-setup`** — Generate and configure SSH key for GitHub (port 443).
+- **`github-ssh-delete`** — Interactively delete SSH keys.
+- **`github-ssh-connection-test`** — Test SSH connection to GitHub.
+
+---
 
 ## 🚀 Workflow Helpers
 
-- `github-commit-and-push ["message"]` — Commit all changes and push (with confirmation)
-- `github-clear-cache-and-recommit-all-files` — Reset Git cache and recommit everything
-- `github-undo-last-commit` — Revert last commit from remote GitHub only
+- **`github-commit-and-push ["message"]`** — Commit all changes and push.
+- **`github-clear-cache-and-recommit-all-files`** — Reset Git cache and recommit.
+- **`github-undo-last-commit`** — Revert last commit from remote only.
+
+---
 
 ## 🌿 Branch Management
 
-- `github-branch-rename <new>` — Rename current branch locally and on GitHub
-- `github-branch-create <name>` — Create and switch to a new branch
-- `github-branch-delete <name>` — Delete local and/or remote branch (with confirmation)
-- `github-branch-list` — List all local and remote branches
-- `github-branches-clean` — Delete all local branches merged into main
-- `github-reset-to-remote` — Reset local branch to match remote HEAD (destructive)
+- **`github-branch-rename <new>`** — Rename current branch locally and remotely.
+- **`github-branch-create <name>`** — Create and switch to a new branch.
+- **`github-branch-delete <name>`** — Delete local and/or remote branch.
+- **`github-branch-list`** — List local and remote branches.
+- **`github-branches-clean`** — Delete local branches merged into `main`.
+- **`github-reset-to-remote`** — Reset local branch to match remote (destructive).
+
+---
 
 ## 📥 Pulling, Tagging & Sync
 
-- `github-stash-and-pull` — Safely stash, pull, and reapply changes
-- `github-push-tag <tag> [message]` — Create and push annotated Git tag
-- `github-rebase-current [target]` — Rebase current branch onto another (default: main)
-- `github-sync-fork` — Sync your fork’s main with upstream/main
+- **`github-stash-and-pull`** — Stash, pull, and reapply changes.
+- **`github-push-tag <tag> [message]`** — Create and push annotated tag.
+- **`github-rebase-current [target]`** — Rebase current branch (default: main).
+- **`github-sync-fork`** — Sync fork with upstream main branch.
+
+---
 
 ## 📊 Git Info
 
-- `github-status-short` — Show current branch and short status
+- **`github-status-short`** — Show current branch and short status.
+
+---
+
+> 🚀 Pro tip: Automate common workflows like branch cleanup and sync for faster daily GitOps.
