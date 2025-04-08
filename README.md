@@ -136,5 +136,3 @@ This project is licensed under the [MIT License](./LICENSE).
 ---
 
 > DevKit is your all-in-one, scriptable Swiss Army knife for macOS development environments. Automate everything — and focus on building.
-
----
