@@ -1,5 +1,11 @@
 # 🧰 DevKit
 
+DevKit is your all-in-one toolkit for setting up, maintaining, and troubleshooting your macOS development environment.
+
+It automates the boring stuff — from Homebrew, Git, and Node.js to Flutter, Docker, PostgreSQL, and more — so you can focus on building, not fixing.
+
+Run a full setup, update your stack anytime, and keep your dev machine running smooth with built-in diagnostics and helpers.
+
 ## 📑 Table of Contents
 
 - [🚀 Core Workflow](#-core-workflow)
