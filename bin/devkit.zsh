@@ -24,9 +24,3 @@ else
         source "$file"
     done
 fi
-
-# Check if DevKit is fully set up
-if ! devkit-is-setup --quiet; then
-    echo "⛔ DevKit is not fully set up."
-    echo "👉 Please run: devkit-pc-setup"
-fi

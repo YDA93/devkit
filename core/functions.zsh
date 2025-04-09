@@ -118,15 +118,17 @@ function devkit-settings-setup() {
 function devkit-is-setup() {
     local settings_file="$DEVKIT_ROOT/.settings"
 
-    if [[ ! -f "$settings_file" ]]; then
-        echo "❌ Settings file not found at $settings_file"
-        echo "💡 Run: devkit-settings-setup"
-        return 1
-    fi
-
     local quiet=false
     if [[ "$1" == "--quiet" || "$1" == "-q" ]]; then
         quiet=true
+    fi
+
+    if [[ ! -f "$settings_file" ]]; then
+        if [[ "$quiet" == false ]]; then
+            echo "❌ Settings file not found at $settings_file"
+            echo "💡 Run: devkit-settings-setup"
+        fi
+        return 1
     fi
 
     local required_tools=(
