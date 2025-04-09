@@ -4,12 +4,17 @@ set -e
 DEVKIT_REPO="https://github.com/YDA93/devkit.git"
 DEVKIT_DIR="${DEVKIT_DIR:-$HOME/devkit}"
 FORCE_INSTALL=false
+INTERNAL_FROM_CLONE=false
 
 # ✅ Parse arguments
 for arg in "$@"; do
     case $arg in
     --force)
         FORCE_INSTALL=true
+        shift
+        ;;
+    --internal-from-clone)
+        INTERNAL_FROM_CLONE=true
         shift
         ;;
     esac
@@ -21,10 +26,8 @@ if ! command -v git >/dev/null 2>&1; then
     exit 1
 fi
 
-# ✅ Detect if we are running from curl (remote script)
-if [[ ! -f "$(pwd)/config.zsh" ]]; then
-    # 🧩 Running remotely, let's clone and hand off
-
+# ✅ If running from clone, skip clone step
+if [[ "$INTERNAL_FROM_CLONE" == false ]]; then
     if [[ -d "$DEVKIT_DIR" && "$(ls -A "$DEVKIT_DIR")" ]]; then
         if [[ "$FORCE_INSTALL" == true ]]; then
             echo "⚠️  Removing existing DevKit directory at $DEVKIT_DIR..."
@@ -40,7 +43,7 @@ if [[ ! -f "$(pwd)/config.zsh" ]]; then
     git clone "$DEVKIT_REPO" "$DEVKIT_DIR"
 
     echo "🚀 Running DevKit installer from cloned directory..."
-    exec zsh "$DEVKIT_DIR/install.zsh" "$@"
+    exec zsh "$DEVKIT_DIR/install.zsh" --internal-from-clone "$@"
 fi
 
 # ✅ From this point, we're inside the cloned DevKit repo
@@ -73,6 +76,11 @@ else
 fi
 
 echo "✅ DevKit loaded and ready!"
+
+# ✅ Final success message
+echo ""
+echo "🎉 Installation complete!"
+echo ""
 
 # ✅ Launch a new shell
 exec zsh -l
