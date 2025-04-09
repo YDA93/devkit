@@ -1,7 +1,7 @@
 # 🔗 Entrypoint CLI script for DevKit
 
 # Load config
-source "$PWD/devkit/config.zsh"
+source "$PWD/config.zsh"
 
 # Load core files dynamically
 core_files=(${DEVKIT_ROOT}/core/*.zsh)
