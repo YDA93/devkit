@@ -334,7 +334,6 @@ function devkit-check-tools() {
     echo
 
     _print_section_title "🧩 Miscellaneous Tools"
-    printf "  🚀  %-24s %s\n" "Devkit CLI:" "$devkit_version"
     print_version "🖨 " "WeasyPrint" "weasyprint" "weasyprint --version | awk '{print \$3}'"
     echo
 
