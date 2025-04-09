@@ -249,9 +249,18 @@ function github-version-bump() {
         if [[ "$commit_before_tag" == "yes" ]]; then
             echo "📝 Enter commit message:"
             read -r commit_message
-            git add -A
-            git commit -m "${commit_message:-"Auto commit before tagging $new_version"}"
-            git push
+            git add -A || {
+                echo "❌ Failed to add files to staging area."
+                return 1
+            }
+            git commit -m "${commit_message:-"Auto commit before tagging $new_version"}" || {
+                echo "❌ Failed to commit changes."
+                return 1
+            }
+            git push || {
+                echo "❌ Failed to push changes."
+                return 1
+            }
         else
             echo "❌ Operation cancelled to avoid inconsistent tag."
             return 1
@@ -264,7 +273,10 @@ function github-version-bump() {
         echo "Do you want to push them before tagging? (yes/no)"
         read -r push_before_tag
         if [[ "$push_before_tag" == "yes" ]]; then
-            git push
+            git push || {
+                echo "❌ Failed to push changes."
+                return 1
+            }
         else
             echo "❌ Operation cancelled to avoid inconsistent tag."
             return 1
@@ -272,7 +284,10 @@ function github-version-bump() {
     fi
 
     echo "🔍 Fetching the latest tags from origin..."
-    git fetch --tags
+    git fetch --tags || {
+        echo "❌ Failed to fetch tags."
+        return 1
+    }
 
     # Get the latest version tag
     latest_tag=$(git tag --sort=-v:refname | head -n 1)
@@ -322,17 +337,23 @@ function github-version-bump() {
 
     echo ""
     echo "🚀 New version to be created: $new_version"
-    echo "❓ Do you want to proceed with creating and pushing this tag? (yes/no)"
+    echo "❓ Do you want to proceed with creating and pushing this tag? (y/N)"
     read -r confirm
 
-    if [[ "$confirm" != "yes" ]]; then
+    if [[ "$confirm" != "y" ]]; then
         echo "❌ Operation cancelled."
         return 1
     fi
 
     # Create and push the new tag
-    git tag -a "$new_version" -m "Release version $new_version"
-    git push origin "$new_version"
+    git tag -a "$new_version" -m "Release version $new_version" || {
+        echo "❌ Failed to create tag."
+        return 1
+    }
+    git push origin "$new_version" || {
+        echo "❌ Failed to push tag."
+        return 1
+    }
 
     echo "✅ Version $new_version has been tagged and pushed to origin."
 }

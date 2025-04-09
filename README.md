@@ -70,24 +70,33 @@ Handy tools to make your development flow smoother — use them as needed!
 ## 🚀 Installation Steps
 
 - **🔧 Requirements**
+
+  Before you begin, make sure you have the following:
+
   - macOS
   - Zsh shell
   - Git
-  - Internet access (for installs and updates)
+  - Internet connection (for downloading and installing tools)
 
-Just run this one-liner in your terminal:
+- **🛠️ Quick Install**
+
+  Just run this one-liner in your terminal:
 
 - ```bash
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/YDA93/devkit/main/install.zsh)"
   ```
 
-The installer will:
+- **⚙️ What Happens Next**
+
+The installer will automatically:
 
 - Clone the DevKit repository to ~/devkit
-- Check and install Oh My Zsh (if not already installed)
-- Configure your .zshrc to include DevKit
-- Prompt you for any setup info (like your name, email, and preferences)
-- Install all necessary tools
+- Check for Oh My Zsh and install it if needed
+- Update your .zshrc to include DevKit configurations
+- Prompt you to enter setup details (name, email, preferences)
+- Install all required development tools
+
+> 💡 No manual steps required — just run and go!
 
 ---
 
