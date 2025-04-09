@@ -19,7 +19,8 @@ if [[ "$SCRIPT_DIR" != "$DEVKIT_DIR" ]]; then
     if [[ -d "$DEVKIT_DIR" && "$(ls -A "$DEVKIT_DIR")" ]]; then
         echo "⚠️  DevKit directory '$DEVKIT_DIR' already exists and is not empty."
         echo ""
-        read "user_choice?❓ Do you want to overwrite it? [y/N]: "
+        echo -n "❓ Do you want to overwrite it? [y/N]: "
+        read user_choice
         case "$user_choice" in
         [Yy]*)
             echo "🧹 Removing existing DevKit directory..."
