@@ -83,7 +83,7 @@ Handy tools to make your development flow smoother — use them as needed!
   Just run this one-liner in your terminal:
 
   - ```bash
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/YDA93/devkit/main/install.zsh)"
+    zsh -c "$(curl -fsSL https://raw.githubusercontent.com/YDA93/devkit/main/install.zsh)"
     ```
 
 - **⚙️ What Happens Next**
