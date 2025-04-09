@@ -244,9 +244,9 @@ function github-version-bump() {
     # Check for uncommitted changes
     if ! git diff --quiet || ! git diff --cached --quiet; then
         echo "⚠️  You have uncommitted changes."
-        echo "Do you want to commit all changes before tagging? (yes/no)"
+        echo "Do you want to commit all changes before tagging? (y/N)"
         read -r commit_before_tag
-        if [[ "$commit_before_tag" == "yes" ]]; then
+        if [[ "$commit_before_tag" == "y" ]]; then
             echo "📝 Enter commit message:"
             read -r commit_message
             git add -A || {
