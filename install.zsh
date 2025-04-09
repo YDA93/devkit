@@ -20,8 +20,12 @@ if ! command -v git >/dev/null 2>&1; then
     exit 1
 fi
 
-# ✅ If this script is being run remotely (not from local file), clone the repo
-if [[ ! -f "$(dirname "$0")/config.zsh" ]]; then
+# ✅ Determine if we are inside an existing devkit directory
+if [[ -f "./config.zsh" && -d "./.git" ]]; then
+    # We're already in the cloned DevKit repo, continue installation
+    DEVKIT_SOURCE_DIR="$(pwd)"
+else
+    # Not inside a repo, need to clone
     if [[ -d "$DEVKIT_DIR" && "$(ls -A "$DEVKIT_DIR")" ]]; then
         if [[ "$FORCE_INSTALL" == true ]]; then
             echo "⚠️  Removing existing DevKit directory at $DEVKIT_DIR..."
@@ -35,12 +39,12 @@ if [[ ! -f "$(dirname "$0")/config.zsh" ]]; then
 
     echo "📦 Cloning DevKit into $DEVKIT_DIR..."
     git clone https://github.com/YDA93/devkit.git "$DEVKIT_DIR"
+
     echo "🚀 Running DevKit installer from cloned directory..."
     exec zsh "$DEVKIT_DIR/install.zsh" "$@"
 fi
 
-# ✅ From this point onwards, we're inside the cloned repo and can continue as normal
-
+# ✅ From this point, we're inside the actual DevKit directory
 echo "🚀 Checking for Oh My Zsh..."
 
 if [ -d "$HOME/.oh-my-zsh" ]; then
@@ -52,7 +56,7 @@ else
 fi
 
 # ✅ Load config
-source "$(cd "$(dirname "$0")" && pwd)/config.zsh"
+source "$DEVKIT_SOURCE_DIR/config.zsh"
 
 # ✅ Define what we want to append to .zshrc
 DEVKIT_LINE="source \"$DEVKIT_ENTRYPOINT\""
