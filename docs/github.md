@@ -53,6 +53,7 @@ DevKit includes GitHub utilities to manage SSH keys, automate Git workflows, and
 ## 📊 Git Info
 
 - **`github-status-short`** — Show current branch and short status.
+- **`github-open`** — Open GitHub repository in browser.
 
 ---
 

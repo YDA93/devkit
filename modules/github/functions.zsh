@@ -515,3 +515,48 @@ function github-status-short() {
     echo "🔎 Current branch: $(git branch --show-current)"
     git status -s
 }
+
+# 📊 Shows detailed Git status with branch info
+# 💡 Usage: github-status-detailed
+function github-open() {
+    # Check if inside a Git repository
+    if ! git rev-parse --is-inside-work-tree &>/dev/null; then
+        echo "❌ Not inside a Git repository."
+        return 1
+    fi
+
+    local remote_url branch url
+
+    # Get remote URL
+    remote_url=$(git config --get remote.origin.url)
+    if [[ -z "$remote_url" ]]; then
+        echo "❌ No remote origin URL found."
+        return 1
+    fi
+
+    # Get current branch
+    branch=$(git rev-parse --abbrev-ref HEAD)
+    if [[ -z "$branch" ]]; then
+        echo "❌ Could not determine current branch."
+        return 1
+    fi
+
+    # Normalize remote URL (handle both git@ and https:// URLs)
+    if [[ "$remote_url" == git@github.com:* ]]; then
+        url="https://github.com/${remote_url#git@github.com:}"
+    elif [[ "$remote_url" == https://github.com/* ]]; then
+        url="$remote_url"
+    else
+        echo "❌ Unsupported remote URL format: $remote_url"
+        return 1
+    fi
+
+    # Remove .git suffix if present
+    url="${url%.git}"
+
+    # Append branch path
+    url="$url/tree/$branch"
+
+    echo "🌐 Opening $url"
+    open "$url"
+}

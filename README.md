@@ -107,6 +107,7 @@ Explore detailed guides for each tool:
 - [⚙️ DevKit (Main)](./docs/devkit.md)
 - [🐍 Python](./docs/python.md)
 - [📱 Flutter](./docs/flutter.md)
+- [🔥 Firebase](./docs/firebase.md)
 - [🐳 Docker](./docs/docker.md)
 - [☁️ Google Cloud Platform (GCP)](./docs/gcloud.md)
 - [🚀 Django Project](./docs/django.md)
