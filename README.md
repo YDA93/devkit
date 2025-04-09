@@ -82,21 +82,21 @@ Handy tools to make your development flow smoother — use them as needed!
 
   Just run this one-liner in your terminal:
 
-- ```bash
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/YDA93/devkit/main/install.zsh)"
-  ```
+  - ```bash
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/YDA93/devkit/main/install.zsh)"
+    ```
 
 - **⚙️ What Happens Next**
 
-The installer will automatically:
+  The installer will automatically:
 
-- Clone the DevKit repository to ~/devkit
-- Check for Oh My Zsh and install it if needed
-- Update your .zshrc to include DevKit configurations
-- Prompt you to enter setup details (name, email, preferences)
-- Install all required development tools
+  - Clone the DevKit repository to ~/devkit
+  - Check for Oh My Zsh and install it if needed
+  - Update your .zshrc to include DevKit configurations
+  - Prompt you to enter setup details (name, email, preferences)
+  - Install all required development tools
 
-> 💡 No manual steps required — just run and go!
+  > 💡 No manual steps required — just run and go!
 
 ---
 
