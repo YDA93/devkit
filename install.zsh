@@ -43,13 +43,21 @@ if [[ "$INTERNAL_FROM_CLONE" == false ]]; then
     git clone "$DEVKIT_REPO" "$DEVKIT_DIR"
 
     echo "🚀 Running DevKit installer from cloned directory..."
-    cd "$DEVKIT_DIR"
-    exec zsh install.zsh --internal-from-clone "$@"
+    exec zsh "$DEVKIT_DIR/install.zsh" --internal-from-clone "$@"
 fi
 
-# ✅ From this point, we're inside the cloned DevKit repo
-echo "🚀 Checking for Oh My Zsh..."
+# ✅ Determine the actual directory of this script reliably
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export DEVKIT_ROOT="$SCRIPT_DIR"
 
+# ✅ Source config
+source "$DEVKIT_ROOT/config.zsh"
+
+# ✅ Confirm DEVKIT_ROOT for debugging
+echo "ℹ️  DEVKIT_ROOT is set to: $DEVKIT_ROOT"
+
+# ✅ Check for Oh My Zsh
+echo "🚀 Checking for Oh My Zsh..."
 if [ -d "$HOME/.oh-my-zsh" ]; then
     echo "✅ Oh My Zsh already installed. Skipping installation."
 else
@@ -57,13 +65,6 @@ else
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
     echo "✅ Oh My Zsh installed."
 fi
-
-# ✅ Set DEVKIT_ROOT explicitly before sourcing config
-export DEVKIT_ROOT="$(pwd)"
-source "$DEVKIT_ROOT/config.zsh"
-
-# ✅ Confirm DEVKIT_ROOT for debugging (optional)
-echo "ℹ️  DEVKIT_ROOT is set to: $DEVKIT_ROOT"
 
 # ✅ Define what we want to append to .zshrc
 DEVKIT_LINE="source \"$DEVKIT_ENTRYPOINT\""
