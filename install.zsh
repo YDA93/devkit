@@ -80,5 +80,4 @@ echo ""
 echo "🎉 Installation complete!"
 echo ""
 
-# ✅ Launch a new shell
-exec zsh -l
+source ~/.zshrc && devkit-pc-setup
