@@ -34,7 +34,7 @@ if [[ "$INTERNAL_FROM_CLONE" == false ]]; then
             rm -rf "$DEVKIT_DIR"
         else
             echo "⛔ DevKit directory '$DEVKIT_DIR' already exists and is not empty."
-            echo "👉 Use --force to overwrite: sh -c \"\$(curl -fsSL https://raw.githubusercontent.com/YDA93/devkit/main/install.zsh)\" -- --force"
+            echo "👉 Use --force to overwrite: zsh -c \"\$(curl -fsSL https://raw.githubusercontent.com/YDA93/devkit/main/install.zsh)\" -- --force"
             exit 1
         fi
     fi
@@ -57,8 +57,12 @@ else
     echo "✅ Oh My Zsh installed."
 fi
 
-# ✅ Load config
-source "$(pwd)/config.zsh"
+# ✅ Set DEVKIT_ROOT explicitly before sourcing config
+export DEVKIT_ROOT="$(pwd)"
+source "$DEVKIT_ROOT/config.zsh"
+
+# ✅ Confirm DEVKIT_ROOT for debugging (optional)
+echo "ℹ️  DEVKIT_ROOT is set to: $DEVKIT_ROOT"
 
 # ✅ Define what we want to append to .zshrc
 DEVKIT_LINE="source \"$DEVKIT_ENTRYPOINT\""
@@ -80,6 +84,8 @@ echo "✅ DevKit loaded and ready!"
 # ✅ Final success message
 echo ""
 echo "🎉 Installation complete!"
+echo "👉 Please restart your terminal or run: source ~/.zshrc"
+echo "You can start using DevKit by typing: devkit"
 echo ""
 
 # ✅ Launch a new shell
