@@ -3,22 +3,6 @@ set -e
 # ✅ Config
 DEVKIT_REPO="https://github.com/YDA93/devkit.git"
 DEVKIT_DIR="${DEVKIT_DIR:-$HOME/devkit}"
-FORCE_INSTALL=false
-INTERNAL_FROM_CLONE=false
-
-# ✅ Parse arguments
-for arg in "$@"; do
-    case $arg in
-    --force)
-        FORCE_INSTALL=true
-        shift
-        ;;
-    --internal-from-clone)
-        INTERNAL_FROM_CLONE=true
-        shift
-        ;;
-    esac
-done
 
 # ✅ Check if git is installed
 if ! command -v git >/dev/null 2>&1; then
@@ -26,28 +10,36 @@ if ! command -v git >/dev/null 2>&1; then
     exit 1
 fi
 
-# ✅ If running from clone, skip clone step
-if [[ "$INTERNAL_FROM_CLONE" == false ]]; then
+# ✅ Check if we are inside cloned directory
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# ✅ Detect if running from inside the cloned repository
+if [[ "$SCRIPT_DIR" != "$DEVKIT_DIR" ]]; then
+    # ✅ First time: check if directory exists
     if [[ -d "$DEVKIT_DIR" && "$(ls -A "$DEVKIT_DIR")" ]]; then
-        if [[ "$FORCE_INSTALL" == true ]]; then
-            echo "⚠️  Removing existing DevKit directory at $DEVKIT_DIR..."
+        echo "⚠️  DevKit directory '$DEVKIT_DIR' already exists and is not empty."
+        echo ""
+        read "user_choice?❓ Do you want to overwrite it? [y/N]: "
+        case "$user_choice" in
+        [Yy]*)
+            echo "🧹 Removing existing DevKit directory..."
             rm -rf "$DEVKIT_DIR"
-        else
-            echo "⛔ DevKit directory '$DEVKIT_DIR' already exists and is not empty."
-            echo "👉 Use --force to overwrite: zsh -c \"\$(curl -fsSL https://raw.githubusercontent.com/YDA93/devkit/main/install.zsh)\" -- --force"
+            ;;
+        *)
+            echo "🚫 Installation cancelled by user."
             exit 1
-        fi
+            ;;
+        esac
     fi
 
     echo "📦 Cloning DevKit into $DEVKIT_DIR..."
     git clone "$DEVKIT_REPO" "$DEVKIT_DIR"
 
     echo "🚀 Running DevKit installer from cloned directory..."
-    exec zsh "$DEVKIT_DIR/install.zsh" --internal-from-clone "$@"
+    exec zsh "$DEVKIT_DIR/install.zsh"
 fi
 
-# ✅ Determine the actual directory of this script reliably
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# ✅ Set DEVKIT_ROOT
 export DEVKIT_ROOT="$SCRIPT_DIR"
 
 # ✅ Source config
@@ -86,8 +78,6 @@ echo "✅ DevKit loaded and ready!"
 # ✅ Final success message
 echo ""
 echo "🎉 Installation complete!"
-echo "👉 Please restart your terminal or run: source ~/.zshrc"
-echo "You can start using DevKit by typing: devkit"
 echo ""
 
 # ✅ Launch a new shell
