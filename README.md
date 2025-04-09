@@ -75,23 +75,19 @@ Handy tools to make your development flow smoother — use them as needed!
   - Git
   - Internet access (for installs and updates)
 
-Install DevKit by cloning the repository and running the installer:
+Just run this one-liner in your terminal:
 
-- **1. Clone the repository to your Mac (e.g., into ~/devkit)**
+- ```bash
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/YDA93/devkit/main/install.zsh)"
+  ```
 
-  - ```bash
-    git clone https://github.com/YDA93/devkit.git ~/devkit
-    ```
+The installer will:
 
-- **2. Run the installer script**
-
-  - ```bash
-    cd ~/devkit
-    zsh install.zsh
-    ```
-
-This will set up DevKit on your system. The installer may prompt you for some info (like your name, email, and preferences) and then install all necessary tools.  
-Once the installer finishes, DevKit’s commands will be available in your shell (you might need to open a new terminal session or source your shell config if instructed). Now you’re ready to use the DevKit CLI.
+- Clone the DevKit repository to ~/devkit
+- Check and install Oh My Zsh (if not already installed)
+- Configure your .zshrc to include DevKit
+- Prompt you for any setup info (like your name, email, and preferences)
+- Install all necessary tools
 
 ---
 
