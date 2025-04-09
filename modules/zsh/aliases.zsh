@@ -1,5 +1,5 @@
 # Reload Zsh config
-alias zsh-reload="source ~/.zshrc && echo '🔁 Zsh reloaded.'"
+alias zsh-reload="source ~/.zshrc"
 
 # Restart shell session
 alias zsh-reset="exec zsh"
