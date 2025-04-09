@@ -2,6 +2,17 @@ set -e
 
 # ✅ Define install directory (default to ~/devkit)
 DEVKIT_DIR="${DEVKIT_DIR:-$HOME/devkit}"
+FORCE_INSTALL=false
+
+# ✅ Parse arguments
+for arg in "$@"; do
+    case $arg in
+    --force)
+        FORCE_INSTALL=true
+        shift
+        ;;
+    esac
+done
 
 # ✅ Check if git is installed
 if ! command -v git >/dev/null 2>&1; then
@@ -10,12 +21,22 @@ if ! command -v git >/dev/null 2>&1; then
 fi
 
 # ✅ If this script is being run remotely (not from local file), clone the repo
-# Check if we are already in the cloned directory by checking if config.zsh exists
 if [[ ! -f "$(dirname "$0")/config.zsh" ]]; then
+    if [[ -d "$DEVKIT_DIR" && "$(ls -A "$DEVKIT_DIR")" ]]; then
+        if [[ "$FORCE_INSTALL" == true ]]; then
+            echo "⚠️  Removing existing DevKit directory at $DEVKIT_DIR..."
+            rm -rf "$DEVKIT_DIR"
+        else
+            echo "⛔ DevKit directory '$DEVKIT_DIR' already exists and is not empty."
+            echo "👉 Use --force to overwrite: sh -c \"\$(curl -fsSL https://raw.githubusercontent.com/YDA93/devkit/main/install.zsh)\" -- --force"
+            exit 1
+        fi
+    fi
+
     echo "📦 Cloning DevKit into $DEVKIT_DIR..."
     git clone https://github.com/YDA93/devkit.git "$DEVKIT_DIR"
     echo "🚀 Running DevKit installer from cloned directory..."
-    exec zsh "$DEVKIT_DIR/install.zsh"
+    exec zsh "$DEVKIT_DIR/install.zsh" "$@"
 fi
 
 # ✅ From this point onwards, we're inside the cloned repo and can continue as normal
