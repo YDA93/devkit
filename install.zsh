@@ -43,7 +43,8 @@ if [[ "$INTERNAL_FROM_CLONE" == false ]]; then
     git clone "$DEVKIT_REPO" "$DEVKIT_DIR"
 
     echo "🚀 Running DevKit installer from cloned directory..."
-    exec zsh "$DEVKIT_DIR/install.zsh" --internal-from-clone "$@"
+    cd "$DEVKIT_DIR"
+    exec zsh install.zsh --internal-from-clone "$@"
 fi
 
 # ✅ From this point, we're inside the cloned DevKit repo
