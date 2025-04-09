@@ -5,8 +5,11 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 echo "✅ Oh My Zsh installed."
 
+# Load config
+source "$(cd "$(dirname "$0")" && pwd)/config.zsh"
+
 # Define what we want to append to .zshrc
-DEVKIT_LINE='source "$PWD/devkit/bin/devkit.zsh"'
+DEVKIT_LINE='source "$DEVKIT_ENTRYPOINT"'
 
 # Only add if it's not already there
 if ! grep -Fxq "$DEVKIT_LINE" "$HOME/.zshrc"; then

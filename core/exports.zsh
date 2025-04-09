@@ -12,8 +12,8 @@ if command -v brew &>/dev/null; then
 fi
 
 # 🧾 Extract top-level Homebrew formula from formulas.txt
-if [[ -f "$DEVKIT_MODULES_PATH/homebrew/formulas.txt" ]]; then
-    DEVKIT_REQUIRED_FORMULA=$(awk '!/^#/ && NF' "$DEVKIT_MODULES_PATH/homebrew/formulas.txt")
+if [[ -f "$DEVKIT_MODULES_DIR/homebrew/formulas.txt" ]]; then
+    DEVKIT_REQUIRED_FORMULA=$(awk '!/^#/ && NF' "$DEVKIT_MODULES_DIR/homebrew/formulas.txt")
     export DEVKIT_REQUIRED_FORMULA
 fi
 

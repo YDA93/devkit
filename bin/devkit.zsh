@@ -1,7 +1,7 @@
 # 🔗 Entrypoint CLI script for DevKit
 
 # Load config
-source "$PWD/config.zsh"
+source "$(cd "$(dirname "$0")" && pwd)/../config.zsh"
 
 # Load core files dynamically
 core_files=(${DEVKIT_ROOT}/core/*.zsh)
@@ -15,7 +15,7 @@ else
 fi
 
 # Load module files recursively
-module_files=(${DEVKIT_MODULES_PATH}/**/*.zsh)
+module_files=(${DEVKIT_MODULES_DIR}/**/*.zsh)
 
 if ((${#module_files[@]} == 0)); then
     echo "⚠️  No modules found to load."

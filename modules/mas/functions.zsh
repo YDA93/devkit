@@ -3,10 +3,10 @@
 # ------------------------------------------------------------------------------
 
 # 💾 Saves a filtered list of App Store apps (excludes cask-preferred ones)
-# 📄 Output: $DEVKIT_MODULES_PATH/mas/apps.txt
+# 📄 Output: $DEVKIT_MODULES_DIR/mas/apps.txt
 # 💡 Usage: mas-save-apps
 function mas-save-apps() {
-    local output="$DEVKIT_MODULES_PATH/mas/apps.txt"
+    local output="$DEVKIT_MODULES_DIR/mas/apps.txt"
     mkdir -p "$(dirname "$output")"
 
     # Cask-preferred keywords (lowercase, no spaces)
@@ -40,7 +40,7 @@ function mas-save-apps() {
 # - Format: <app_id> <app_name> (separated by spaces or tabs)
 # 💡 Usage: mas-install-apps
 function mas-install-apps() {
-    local input="$DEVKIT_MODULES_PATH/mas/apps.txt"
+    local input="$DEVKIT_MODULES_DIR/mas/apps.txt"
 
     if [[ ! -f "$input" ]]; then
         echo "❌ App list not found at $input"

@@ -44,10 +44,10 @@ function homebrew-setup() {
 # ------------------------------------------------------------------------------
 
 # 💾 Saves lists of top-level Homebrew formula and casks
-# 📄 Output: $DEVKIT_MODULES_PATH/homebrew/formulas.txt and casks.txt
+# 📄 Output: $DEVKIT_MODULES_DIR/homebrew/formulas.txt and casks.txt
 # 💡 Usage: homebrew-save-packages
 function homebrew-save-packages() {
-    local base_dir="$DEVKIT_MODULES_PATH/homebrew"
+    local base_dir="$DEVKIT_MODULES_DIR/homebrew"
     local formula_output="$base_dir/formulas.txt"
     local casks_output="$base_dir/casks.txt"
 
@@ -64,10 +64,10 @@ function homebrew-save-packages() {
 }
 
 # 📦 Installs Homebrew formula and casks from saved package lists
-# 📄 Input: $DEVKIT_MODULES_PATH/homebrew/formulas.txt and casks.txt
+# 📄 Input: $DEVKIT_MODULES_DIR/homebrew/formulas.txt and casks.txt
 # 💡 Usage: homebrew-install-packages
 function homebrew-install-packages() {
-    local base_dir="$DEVKIT_MODULES_PATH/homebrew"
+    local base_dir="$DEVKIT_MODULES_DIR/homebrew"
     local formula_input="$base_dir/formulas.txt"
     local casks_input="$base_dir/casks.txt"
 
@@ -109,7 +109,7 @@ function homebrew-install-packages() {
 # - Prompts before each uninstall
 # 💡 Usage: homebrew-prune-packages
 function homebrew-prune-packages() {
-    local base_dir="$DEVKIT_MODULES_PATH/homebrew"
+    local base_dir="$DEVKIT_MODULES_DIR/homebrew"
     local formula_file="$base_dir/formulas.txt"
     local casks_file="$base_dir/casks.txt"
     local settings_file="$DEVKIT_ROOT/.settings"

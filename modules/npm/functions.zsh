@@ -3,10 +3,10 @@
 # ------------------------------------------------------------------------------
 
 # 💾 Saves a list of globally installed npm packages (top-level only)
-# 📄 Output: $DEVKIT_MODULES_PATH/npm/packages.txt
+# 📄 Output: $DEVKIT_MODULES_DIR/npm/packages.txt
 # 💡 Usage: npm-save-packages
 function npm-save-packages() {
-    local output="$DEVKIT_MODULES_PATH/npm/packages.txt"
+    local output="$DEVKIT_MODULES_DIR/npm/packages.txt"
     echo "📦 Saving global npm packages to $output"
     mkdir -p "$(dirname "$output")"
 
@@ -21,10 +21,10 @@ function npm-save-packages() {
 }
 
 # 📥 Installs global npm packages from saved list
-# 📄 Input: $DEVKIT_MODULES_PATH/npm/packages.txt
+# 📄 Input: $DEVKIT_MODULES_DIR/npm/packages.txt
 # 💡 Usage: npm-install-packages
 function npm-install-packages() {
-    local input="$DEVKIT_MODULES_PATH/npm/packages.txt"
+    local input="$DEVKIT_MODULES_DIR/npm/packages.txt"
 
     if [[ ! -f "$input" ]]; then
         echo "❌ Package list not found at $input"
@@ -54,10 +54,10 @@ function npm-install-packages() {
 }
 
 # 🧹 Uninstalls global npm packages listed in packages.txt
-# 📄 Input: $DEVKIT_MODULES_PATH/npm/packages.txt
+# 📄 Input: $DEVKIT_MODULES_DIR/npm/packages.txt
 # 💡 Usage: npm-uninstall-packages
 function npm-uninstall-packages() {
-    local input="$DEVKIT_MODULES_PATH/npm/packages.txt"
+    local input="$DEVKIT_MODULES_DIR/npm/packages.txt"
 
     if [[ ! -f "$input" ]]; then
         echo "❌ Package list not found at $input"
@@ -102,10 +102,10 @@ function npm-repair() {
 }
 
 # 🔥 Uninstalls global npm packages not listed in packages.txt (with confirmation)
-# 📄 Input: $DEVKIT_MODULES_PATH/npm/packages.txt
+# 📄 Input: $DEVKIT_MODULES_DIR/npm/packages.txt
 # 💡 Usage: npm-prune-packages
 function npm-prune-packages() {
-    local file="$DEVKIT_MODULES_PATH/npm/packages.txt"
+    local file="$DEVKIT_MODULES_DIR/npm/packages.txt"
 
     if [[ ! -f "$file" ]]; then
         echo "❌ Package list not found at $file"
