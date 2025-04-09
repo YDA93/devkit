@@ -7,13 +7,13 @@ It streamlines setup, configuration, and deployment so you can spend less time f
 
 ---
 
-## Who is it for?
+## 🧑‍💻 Who is it for?
 
 - **macOS developers** using Django, Flutter, and GCP
 - Teams needing fast, reproducible environments
 - Anyone who wants one-command setup and deployment automation
 
-## Why DevKit?
+## 🤔 Why DevKit?
 
 - ✅ **One-command setup:** Instantly bootstrap your entire dev environment.
 - ✅ **Effortless updates:** Keep everything fresh with a single command.
@@ -24,8 +24,8 @@ It streamlines setup, configuration, and deployment so you can spend less time f
 ## 📑 Table of Contents
 
 - [🧰 DevKit CLI](#-devkit-cli)
-- [Who is it for?](#who-is-it-for)
-- [Why DevKit?](#why-devkit)
+- [🧑‍💻 Who is it for?](#-who-is-it-for)
+- [🤔 Why DevKit?](#-why-devkit)
 - [✨ Features](#-features)
 - [🚀 Installation Steps](#-installation-steps)
 - [📚 Documentation](#-documentation)
