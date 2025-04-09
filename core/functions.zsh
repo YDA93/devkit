@@ -419,7 +419,7 @@ function devkit-update() {
     fi
 
     # Fetch latest tags
-    git -C "$target_dir" fetch --tags --quiet || {
+    git -C "$DEVKIT_ROOT" fetch --tags --quiet || {
         echo "⚠️  Failed to fetch tags from remote repository."
         echo "💡 Please check your internet connection or try again later."
         return 1
@@ -428,8 +428,8 @@ function devkit-update() {
     # Get latest local and remote version tags
     local local_version remote_version
 
-    local_version=$(git -C "$target_dir" tag --sort=-v:refname | head -n 1)
-    remote_version=$(git -C "$target_dir" ls-remote --tags --sort='v:refname' "$repo_url" | grep -o 'refs/tags/[^\^{}]*' | awk -F/ '{print $3}' | tail -n 1)
+    local_version=$(git -C "$DEVKIT_ROOT" tag --sort=-v:refname | head -n 1)
+    remote_version=$(git -C "$DEVKIT_ROOT" ls-remote --tags --sort='v:refname' "$repo_url" | grep -o 'refs/tags/[^\^{}]*' | awk -F/ '{print $3}' | tail -n 1)
 
     # Handle case where no tags exist
     if [[ -z "$remote_version" ]]; then
@@ -463,14 +463,14 @@ function devkit-update() {
 
     echo "🚀 Updating devkit to version $remote_version..."
 
-    if ! git -C "$target_dir" checkout "tags/$remote_version" -f; then
+    if ! git -C "$DEVKIT_ROOT" checkout "tags/$remote_version" -f; then
         echo "❌ Failed to checkout version $remote_version."
         return 1
     fi
 
-    if [[ -f "$target_dir/bin/devkit.zsh" ]]; then
+    if [[ -f "$DEVKIT_ROOT/bin/devkit.zsh" ]]; then
         echo "🔁 Reloading devkit..."
-        source "$target_dir/bin/devkit.zsh"
+        source "$DEVKIT_ROOT/bin/devkit.zsh"
         echo "✅ devkit updated and reloaded to version $remote_version."
     fi
 }
