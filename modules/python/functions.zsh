@@ -144,6 +144,12 @@ function pip-install() {
 # - With no flags: updates both
 # 💡 Usage: pip-update [--main|--test]
 function pip-update() {
+    # Ensure pip-upgrade is installed
+    if ! command -v pip-upgrade >/dev/null 2>&1; then
+        echo "❌ 'pip-upgrader' is not installed. Please install it with: pip install pip-upgrader"
+        return 1
+    fi
+
     local update_main=false
     local update_test=false
 
