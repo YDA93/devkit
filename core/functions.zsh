@@ -50,6 +50,7 @@ function devkit-settings-setup() {
     )
 
     local cask_apps=(
+        discord
         cloudflare-warp firefox onedrive whatsapp zoom
         microsoft-auto-update microsoft-edge microsoft-excel
         microsoft-outlook microsoft-powerpoint microsoft-teams
