@@ -252,6 +252,9 @@ function devkit-pc-update() {
         # --- Rosetta ---
         _log-update-step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license || return 1
 
+        # --- Vscode Extensions ---
+        _log-update-step "VS Code Extensions" code-extensions-update || return 1
+
         # --- App Store Apps ---
         _log-update-step "App Store Apps (via mas-cli)" mas-maintain || return 1
 

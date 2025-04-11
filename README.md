@@ -106,6 +106,7 @@ Explore detailed guides for each tool:
 
 - [⚙️ DevKit (Main)](./docs/devkit.md)
 - [🐍 Python](./docs/python.md)
+- [💻 Vscode](./docs/vscode.md)
 - [📱 Flutter](./docs/flutter.md)
 - [🔥 Firebase](./docs/firebase.md)
 - [🐳 Docker](./docs/docker.md)
