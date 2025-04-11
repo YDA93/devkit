@@ -2,12 +2,18 @@
 # 🧰 DevKit Support Utilities
 # ------------------------------------------------------------------------------
 
-# 🧰 Initializes your CLI by asking user for name, email, and per-app install choices
+# 🧰 Initializes your CLI by asking user for name, email, and app selections (multi-select)
 # - Stores results in ~/devkit/.settings
 # 💡 Usage: devkit-settings-setup
 function devkit-settings-setup() {
     local settings_file="$DEVKIT_ROOT/.settings"
     mkdir -p "$(dirname "$settings_file")"
+
+    # Check if gum is installed
+    if ! command -v gum &>/dev/null; then
+        echo "❌ Gum is required for this setup. Please install it first: brew install gum"
+        return 1
+    fi
 
     # Check if settings file exists
     if [[ -f "$settings_file" ]]; then
@@ -28,18 +34,19 @@ function devkit-settings-setup() {
         done
     fi
 
-    echo "👋 Welcome! Let's set up devkit CLI environment."
+    echo "👋 Welcome! Let's set up DevKit CLI environment."
 
-    # Zsh-compatible prompts
+    # Basic user info
     echo -n "👤 Full name: "
     read full_name
 
     echo -n "📧 Email address: "
     read email
 
-    echo ""
-    echo "🛠️  We'll now ask which apps you'd like to install (one by one). Please type y or n."
+    echo "full_name=\"$full_name\"" >"$settings_file"
+    echo "email=\"$email\"" >>"$settings_file"
 
+    # Define app lists
     local mas_apps=(
         "1450874784|Transporter"
         "899247664|TestFlight"
@@ -50,8 +57,7 @@ function devkit-settings-setup() {
     )
 
     local cask_apps=(
-        discord
-        cloudflare-warp firefox onedrive whatsapp zoom
+        discord cloudflare-warp firefox onedrive whatsapp zoom
         microsoft-auto-update microsoft-edge microsoft-excel
         microsoft-outlook microsoft-powerpoint microsoft-teams
         microsoft-word
@@ -61,53 +67,57 @@ function devkit-settings-setup() {
         weasyprint
     )
 
-    echo "full_name=\"$full_name\"" >"$settings_file"
-    echo "email=\"$email\"" >>"$settings_file"
-
     echo "" >>"$settings_file"
+
+    # MAS Apps (App Store)
+    echo "🛍️ Select App Store apps to install (use spacebar to select, enter to confirm):"
+    local mas_choices=()
+    for app in "${mas_apps[@]}"; do
+        IFS='|' read -r app_id app_name <<<"$app"
+        mas_choices+=("$app_id|$app_name")
+    done
+
+    local selected_mas_apps=$(gum choose --no-limit "${mas_choices[@]}")
+
     echo "# mas apps" >>"$settings_file"
     for app in "${mas_apps[@]}"; do
         IFS='|' read -r app_id app_name <<<"$app"
-
-        while true; do
-            echo -n "🛍️  Install $app_name (App Store)? [y/n]: "
-            read choice
-            choice="${choice:l}"
-            [[ "$choice" == "y" || "$choice" == "n" ]] && break
-            echo "⚠️  Please type y or n"
-        done
-
-        echo "mas_install_$app_id=\"$choice\"" >>"$settings_file"
+        if echo "$selected_mas_apps" | grep -q "^$app_id|$app_name$"; then
+            echo "mas_install_$app_id=\"y\"" >>"$settings_file"
+        else
+            echo "mas_install_$app_id=\"n\"" >>"$settings_file"
+        fi
     done
 
     echo "" >>"$settings_file"
+
+    # Cask Apps
+    echo "📦 Select Homebrew Cask apps to install (use spacebar to select, enter to confirm):"
+    local selected_cask_apps=$(gum choose --no-limit "${cask_apps[@]}")
+
     echo "# cask apps" >>"$settings_file"
     for app in "${cask_apps[@]}"; do
         safe_app_var=${app//-/_}
-
-        while true; do
-            echo -n "📦 Install $app (Homebrew Cask)? [y/n]: "
-            read choice
-            choice="${choice:l}"
-            [[ "$choice" == "y" || "$choice" == "n" ]] && break
-            echo "⚠️  Please type y or n"
-        done
-
-        echo "cask_install_${safe_app_var}=\"$choice\"" >>"$settings_file"
+        if echo "$selected_cask_apps" | grep -q "^$app$"; then
+            echo "cask_install_${safe_app_var}=\"y\"" >>"$settings_file"
+        else
+            echo "cask_install_${safe_app_var}=\"n\"" >>"$settings_file"
+        fi
     done
 
     echo "" >>"$settings_file"
+
+    # Formula Apps
+    echo "🔧 Select Homebrew Formula apps to install (use spacebar to select, enter to confirm):"
+    local selected_formula_apps=$(gum choose --no-limit "${formula_apps[@]}")
+
     echo "# formula apps" >>"$settings_file"
     for app in "${formula_apps[@]}"; do
-        while true; do
-            echo -n "🔧 Install $app (Homebrew Formula)? [y/n]: "
-            read choice
-            choice="${choice:l}"
-            [[ "$choice" == "y" || "$choice" == "n" ]] && break
-            echo "⚠️  Please type y or n"
-        done
-
-        echo "formula_install_$app=\"$choice\"" >>"$settings_file"
+        if echo "$selected_formula_apps" | grep -q "^$app$"; then
+            echo "formula_install_${app}=\"y\"" >>"$settings_file"
+        else
+            echo "formula_install_${app}=\"n\"" >>"$settings_file"
+        fi
     done
 
     echo ""
