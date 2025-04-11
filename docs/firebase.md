@@ -18,6 +18,7 @@ Manage projects, deploy hosting & functions, control emulators, check logs, and 
 - **`firebase-doctor`** — Verify Firebase CLI, Node.js, and login status.
 - **`firebase-project-list`** — List all Firebase projects linked to your account.
 - **`firebase-use-project <project-id>`** — Switch active Firebase project.
+- **`firebase-login-check`** - 🔐 Check Firebase CLI full authentication (account + valid token)
 
 ---
 

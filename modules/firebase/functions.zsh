@@ -52,6 +52,31 @@ function firebase-use-project() {
     echo "✅ Switched to Firebase project: $1"
 }
 
+# 🔐 Check Firebase CLI full authentication (account + valid token)
+# 💡 Usage: firebase-login-check
+function firebase-login-check() {
+    echo "🔍 Checking Firebase CLI authentication..."
+
+    # First, check if an account is configured
+    local ACCOUNT=$(firebase login:list 2>/dev/null | grep -Eo "[[:alnum:]_.+-]+@[[:alnum:]_.+-]+")
+
+    if [[ -z "$ACCOUNT" ]]; then
+        echo "❌ No Firebase account configured. Run: firebase login"
+        return 1
+    fi
+
+    echo "✅ Firebase account detected: $ACCOUNT"
+
+    # Second, test token validity with a safe command
+    if firebase projects:list >/dev/null 2>&1; then
+        echo "✅ Firebase token is valid."
+    else
+        echo "⚠️ Firebase token expired or invalid."
+        echo "➡️ Run: firebase login --reauth"
+        return 1
+    fi
+}
+
 # ------------------------------------------------------------------------------
 # 🚀 Firebase Deployments
 # ------------------------------------------------------------------------------

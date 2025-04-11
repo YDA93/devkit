@@ -6,7 +6,7 @@
 alias flutter-flutterfire-activate='dart pub global activate flutterfire_cli'
 
 # Launch the interactive Firebase project configuration tool
-alias flutter-flutterfire-configure='flutterfire configure'
+alias flutter-flutterfire-configure='firebase-login-check && flutterfire configure'
 
 # ------------------------------------------------------------------------------
 # 🚀 Flutter Project Build Commands

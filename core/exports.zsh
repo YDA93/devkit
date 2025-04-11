@@ -46,7 +46,7 @@ fi
 [[ -d "$HOMEBREW_OPT_PREFIX/flutter/bin" ]] && export PATH="$HOMEBREW_OPT_PREFIX/flutter/bin:$PATH"
 
 # 📦 Dart Pub
-[[ -d "$HOMEBREW_OPT_PREFIX/.pub-cache/bin" ]] && export PATH="$HOMEBREW_OPT_PREFIX/.pub-cache/bin:$PATH"
+[[ -d "$HOME/.pub-cache/bin" ]] && export PATH="$HOME/.pub-cache/bin:$PATH"
 
 # 🐘 PostgreSQL (latest postgresql@)
 if LATEST_PG=$(echo "$DEVKIT_REQUIRED_FORMULA" | grep '^postgresql@' | sort -V | tail -n 1); then
