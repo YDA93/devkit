@@ -39,7 +39,7 @@ function xcode-setup() {
     # 🔍 Check for Xcode installation
     if ! command -v xcodebuild &>/dev/null; then
         _log_error "❌ Xcode not found. Please install it from the App Store manually or using mas:"
-        echo "   mas install 497799835  # Xcode"
+        _log_error "   mas install 497799835  # Xcode"
         return 1
     else
         _log_success "✅ Xcode is installed."

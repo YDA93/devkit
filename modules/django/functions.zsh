@@ -7,7 +7,7 @@
 # 💡 Usage: django-app-start <app_name>
 function django-project-start() {
     if [ -z "$1" ]; then
-        echo "Usage: django-project-start <projectname>"
+        _log_hint "Usage: django-project-start <projectname>"
         return 1
     fi
 
@@ -35,7 +35,7 @@ function django-project-start() {
 # 💡 Usage: django-app-start <app_name>
 function django-app-start() {
     if [ -z "$1" ]; then
-        echo "Usage: django-app-start <app_name>"
+        _log_hint "Usage: django-app-start <app_name>"
         return 1
     fi
 
@@ -70,7 +70,7 @@ function django-settings() {
         ;;
     *)
         _log_warning "⚠️ Unknown environment: '$env'"
-        echo "Usage: django-settings [local|dev|prod|test]"
+        _log_hint "Usage: django-settings [local|dev|prod|test]"
         return 1
         ;;
     esac
@@ -149,10 +149,10 @@ function django-migrate-and-cache-delete() {
     cd "$project_directory"
 
     # Delete migration files in Django apps (excluding venv)
-    find . -path "*/migrations/*.py" -not -name "__init__.py" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); echo "Deleted $app_name -> $(basename "{}")"; rm "{}"' \; 2>/dev/null || true
+    find . -path "*/migrations/*.py" -not -name "__init__.py" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); _log_success "Deleted $app_name -> $(basename "{}")"; rm "{}"' \; 2>/dev/null || true
 
     # Delete migration cache in Django apps (excluding venv)
-    find . -type d -name "__pycache__" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); [ "$app_name" != "." ] && echo "Deleted $app_name -> $(basename "$(dirname "{}")")/__pycache__" || echo "Deleted $(basename "$(dirname "{}")")/__pycache__"; rm -r "{}"' \; 2>/dev/null || true
+    find . -type d -name "__pycache__" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); [ "$app_name" != "." ] && _log_success "Deleted $app_name -> $(basename "$(dirname "{}")")/__pycache__" || _log_success "Deleted $(basename "$(dirname "{}")")/__pycache__"; rm -r "{}"' \; 2>/dev/null || true
 
     _log_success "Deleted all Django migration files and __pycache__ folders (excluding venv)."
 
@@ -463,7 +463,7 @@ function django-find-cron-urls() {
     if [[ ${#matches[@]} -gt 0 ]]; then
         _log_success "✅ Found ${#matches[@]} cron path(s):"
         for match in "${matches[@]}"; do
-            echo "  ➤ $match"
+            _log_success "  ➤ $match"
         done
     else
         _log_warning "⚠️  No cron paths found."

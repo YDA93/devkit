@@ -38,7 +38,7 @@ function environment-variable-set() {
 
     if [ -z "$key" ] || [ -z "$value" ]; then
         _log_error "❌ Error: Key or value is missing!"
-        echo "Usage: environment-variable-set [key] [value]"
+        _log_hint "Usage: environment-variable-set [key] [value]"
         return 1
     fi
 

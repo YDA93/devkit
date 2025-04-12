@@ -13,7 +13,7 @@ function code-settings() {
 # 🧩 List installed VS Code extensions
 # 💡 Usage: code-extensions
 function code-extensions() {
-    echo "🧩 Installed VS Code extensions:"
+    _log_info "🧩 Installed VS Code extensions:"
     code --list-extensions
 }
 
@@ -27,44 +27,53 @@ function code-extensions-update() {
 # 💾 Fully interactive backup of VS Code extensions with default filename (Zsh-compatible)
 # 💡 Usage: code-extensions-backup
 function code-extensions-backup() {
-    echo "💾 Let's backup your VS Code extensions!"
+    gum style --border normal --margin "1 2" --padding "1 2" --foreground 212 --bold "💾 Let's backup your VS Code extensions!"
 
     # Suggest default filename with timestamp
     local DEFAULT_FILE="vscode-extensions-$(date +%Y-%m-%d).txt"
 
-    echo "📂 Enter the directory to save the backup (default: current directory):"
-    read BACKUP_DIR
+    # Prompt for backup directory
+    BACKUP_DIR=$(gum input --placeholder "$(pwd)" --prompt "📂 Enter the directory to save the backup:")
     BACKUP_DIR="${BACKUP_DIR:-$(pwd)}"
 
-    echo "📄 Enter the backup file name (default: $DEFAULT_FILE):"
-    read BACKUP_FILE
+    # Prompt for backup file name
+    BACKUP_FILE=$(gum input --placeholder "$DEFAULT_FILE" --prompt "📄 Enter the backup file name:")
     BACKUP_FILE="${BACKUP_FILE:-$DEFAULT_FILE}"
 
     local BACKUP_PATH="$BACKUP_DIR/$BACKUP_FILE"
 
-    _log_info "💾 Backing up extensions to: $BACKUP_PATH ..."
-    code --list-extensions >"$BACKUP_PATH"
+    # Confirm before proceeding
+    if ! gum confirm "💾 Confirm backup to: $BACKUP_PATH ?"; then
+        _log_error "❌ Backup cancelled."
+        return 1
+    fi
 
+    # Perform backup with spinner
+    gum spin --spinner dot --title "Backing up extensions..." -- \
+        code --list-extensions >"$BACKUP_PATH"
+
+    # Success message
     _log_success "✅ Backup complete at: $BACKUP_PATH"
 }
 
 # ♻️ Fully interactive restore of VS Code extensions with default filename (Zsh-compatible)
 # 💡 Usage: code-extensions-restore
 function code-extensions-restore() {
-    echo "♻️ Let's restore your VS Code extensions!"
+    gum style --border normal --margin "1 2" --padding "1 2" --foreground 212 --bold "♻️ Let's restore your VS Code extensions!"
 
     local DEFAULT_FILE="vscode-extensions-$(date +%Y-%m-%d).txt"
 
-    echo "📂 Enter the directory of your backup file (default: current directory):"
-    read BACKUP_DIR
+    # Prompt for backup directory
+    BACKUP_DIR=$(gum input --placeholder "$(pwd)" --prompt "📂 Enter the directory of your backup file:")
     BACKUP_DIR="${BACKUP_DIR:-$(pwd)}"
 
-    echo "📄 Enter the backup file name (default: $DEFAULT_FILE):"
-    read BACKUP_FILE
+    # Prompt for backup file name
+    BACKUP_FILE=$(gum input --placeholder "$DEFAULT_FILE" --prompt "📄 Enter the backup file name:")
     BACKUP_FILE="${BACKUP_FILE:-$DEFAULT_FILE}"
 
     local BACKUP_PATH="$BACKUP_DIR/$BACKUP_FILE"
 
+    # Validate backup file exists
     if [[ ! -f "$BACKUP_PATH" ]]; then
         _log_error "❌ Backup file not found at: $BACKUP_PATH"
         return 1

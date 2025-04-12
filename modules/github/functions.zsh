@@ -6,7 +6,7 @@
 # - Shows private and public key pairs with optional comments
 # 💡 Usage: github-ssh-list
 function github-ssh-list() {
-    echo "📂 SSH keys in ~/.ssh/:"
+    _log_info "📂 SSH keys in ~/.ssh/:"
 
     setopt local_options null_glob # Allow empty glob without error
 
@@ -17,12 +17,12 @@ function github-ssh-list() {
         [[ "$priv" == *.pub ]] && continue
         [[ -e "$priv" ]] || continue
 
-        echo "🗝️  Private Key: $priv"
+        _log_info "🗝️  Private Key: $priv"
         pub="${priv}.pub"
         if [[ -f "$pub" ]]; then
-            echo "🔑 Public Key: $pub"
+            _log_info "🔑 Public Key: $pub"
             comment=$(awk '{print $3}' "$pub")
-            [[ -n "$comment" ]] && echo "   └─ Comment: $comment"
+            [[ -n "$comment" ]] && _log_info "   └─ Comment: $comment"
         fi
         found_any=true
     done
@@ -54,7 +54,7 @@ function github-ssh-setup() {
         ssh-keygen -t ed25519 -C "$github_email" -f "$key_path"
     fi
 
-    echo "📋 Your public SSH key:"
+    _log_info "📋 Your public SSH key:"
     cat "${key_path}.pub"
 
     _log_info "🛠️  Updating SSH config to use port 443 for GitHub..."
@@ -84,34 +84,39 @@ function github-ssh-setup() {
         _log_info "ℹ️  SSH key already added to agent. Skipping."
     fi
 
-    echo ""
-    echo "📎 Your SSH public key is now copied below. Add it to GitHub:"
-    echo "👉 https://github.com/settings/keys"
-    echo "----- COPY BELOW -----"
-    cat "${key_path}.pub"
-    echo "------ END KEY -------"
+    echo
+    gum style --border normal --padding "1 2" --margin "1 0" --foreground 212 --bold "📎 Your SSH public key is now copied below. Add it to GitHub:"
 
-    pbcopy <~/.ssh/id_ed25519.pub
+    gum style --foreground 33 "👉 https://github.com/settings/keys"
+
+    gum style --border normal --padding "1 2" --margin "1 0" --bold "----- COPY BELOW -----"
+    cat "${key_path}.pub"
+    gum style --border normal --padding "1 2" --margin "1 0" --bold "------ END KEY -------"
+
+    # Copy to clipboard and open GitHub keys page
+    pbcopy <"${key_path}.pub"
     open "https://github.com/settings/keys"
 
-    echo ""
-    echo "📎 Your SSH key has been copied to the clipboard."
-    _log_hint "💡 To add it to GitHub:"
-    echo "1. Go to https://github.com/settings/keys"
-    echo "2. Click the green button: 'New SSH key'"
-    echo "3. Give it a title like 'My MacBook' or 'Dev Machine'"
-    echo "4. Paste the key into the 'Key' field (Cmd+V)"
-    echo "5. Click 'Add SSH key'"
+    gum style --foreground 35 "📎 Your SSH key has been copied to the clipboard."
 
-    echo ""
-    echo "📌 Press enter after you've added the key to GitHub..."
-    read
+    _log_hint "💡 To add it to GitHub:"
+    _log_hint "1. Go to https://github.com/settings/keys"
+    _log_hint "2. Click the green button: 'New SSH key'"
+    _log_hint "3. Give it a title like 'My MacBook' or 'Dev Machine'"
+    _log_hint "4. Paste the key into the 'Key' field (Cmd+V)"
+    _log_hint "5. Click 'Add SSH key'"
+
+    echo
+    gum confirm "📌 Press Enter after you've added the key to GitHub to continue." || {
+        _log_error "❌ Operation cancelled by user."
+        return 1
+    }
 
     _log_info "🚀 Testing SSH connection to GitHub..."
     ssh -T git@github.com
 
-    echo ""
-    echo "📂 SSH keys currently loaded into your agent:"
+    echo
+    _log_info "📂 SSH keys currently loaded into your agent:"
     ssh-add -l
 }
 
@@ -119,7 +124,7 @@ function github-ssh-setup() {
 # - Lists key pairs and allows you to select which to delete
 # 💡 Usage: github-ssh-delete
 function github-ssh-delete() {
-    echo "📂 SSH key pairs found in ~/.ssh/:"
+    _log_info "📂 SSH key pairs found in ~/.ssh/:"
 
     setopt local_options null_glob # 👈 This prevents errors if no matches
 
@@ -234,7 +239,7 @@ function github-undo-last-commit() {
     git push --force origin HEAD~1:main
 
     # Step 2: Confirm the action with a message to the user.
-    echo "The last commit has been reverted on GitHub only. Your local repository remains unchanged."
+    _log_success "The last commit has been reverted on GitHub only. Your local repository remains unchanged."
 }
 
 # 🚀 Creates a new version tag based on user input (major, minor, patch, or custom)
@@ -300,7 +305,7 @@ function github-version-bump() {
         latest_tag="0.0.0"
         _log_info "ℹ️  No tags found. Starting from version: $latest_tag"
     else
-        echo "🔖 Latest version: $latest_tag"
+        _log_info "🔖 Latest version: $latest_tag"
     fi
 
     IFS='.' read -r major minor patch <<<"$latest_tag"
@@ -417,11 +422,11 @@ function github-branch-delete() {
 # 🌲 Lists all local and remote branches
 # 💡 Usage: github-branch-list
 function github-branch-list() {
-    echo "📄 Local branches:"
+    _log_info "📄 Local branches:"
     git branch
 
     echo
-    echo "🌐 Remote branches:"
+    _log_info "🌐 Remote branches:"
     git branch -r
 }
 
@@ -496,7 +501,7 @@ function github-rebase-current() {
 function github-sync-fork() {
     if ! git remote get-url upstream &>/dev/null; then
         _log_error "❌ No upstream remote found. Add one like:"
-        echo "   git remote add upstream https://github.com/ORIGINAL_OWNER/REPO.git"
+        _log_error "   git remote add upstream https://github.com/ORIGINAL_OWNER/REPO.git"
         return 1
     fi
 
@@ -516,7 +521,7 @@ function github-sync-fork() {
 # 📊 Shows current Git branch and a short status summary
 # 💡 Usage: github-status-short
 function github-status-short() {
-    echo "🔎 Current branch: $(git branch --show-current)"
+    _log_info "🔎 Current branch: $(git branch --show-current)"
     git status -s
 }
 

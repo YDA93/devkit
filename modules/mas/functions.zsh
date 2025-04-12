@@ -103,7 +103,7 @@ function mas-install-from-settings() {
 
             [[ -z "$app_name" ]] && app_name="App ID $app_id"
 
-            echo "🛍️  $app_name ($app_id)"
+            _log_info "🛍️  $app_name ($app_id)"
             install-if-missing "$app_name" "$app_id"
             sleep 2
         fi

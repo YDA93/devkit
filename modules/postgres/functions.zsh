@@ -76,8 +76,7 @@ function postgres-connect() {
     fi
 
     # 🔐 3. Prompt user if everything else fails
-    echo -n "🔐 Enter the PostgreSQL password: "
-    read -s pg_password
+    pg_password=$(gum input --password --prompt "🔐 Enter the PostgreSQL password: ")
     echo
 
     export PGPASSWORD="$pg_password"
@@ -115,15 +114,15 @@ function postgres-doctor() {
     else
         _log_warning "⚠️  Cannot connect as 'postgres'"
         _log_hint "💡 Try creating the user with:"
-        echo "   createuser -s postgres"
-        echo ""
-        echo "🔐 To create a password for the user (optional but recommended):"
-        echo "   psql -U postgres"
-        echo "   Then inside psql, run:"
-        echo "     \\password postgres"
-        echo ""
-        _log_info "⚙️  Also ensure the PostgreSQL service is running:"
-        echo "   brew services start $LATEST_PG     "
+        _log_hint "   createuser -s postgres"
+        _log_hint ""
+        _log_hint "🔐 To create a password for the user (optional but recommended):"
+        _log_hint "   psql -U postgres"
+        _log_hint "   Then inside psql, run:"
+        _log_hint "     \\password postgres"
+        _log_hint ""
+        _log_hint "⚙️  Also ensure the PostgreSQL service is running:"
+        _log_hint "   brew services start $LATEST_PG     "
     fi
 
     return 0
@@ -165,17 +164,22 @@ function postgres-database-list() {
     done <<<"$all_dbs"
 
     echo
-    echo "📋 PostgreSQL Databases:"
-    echo
-    _log_info "🔧 System Databases:"
-    echo "────────────────────"
+    gum style --border normal --padding "1 2" --margin "1 0" --bold --foreground 212 "📋 PostgreSQL Databases"
+
+    # System Databases
+    gum style --bold --foreground 33 "🔧 System Databases:"
+    gum style --foreground 240 "────────────────────"
+
     for db in "${system_dbs[@]}"; do
         echo " • $db"
     done
 
     echo
-    echo "📦 User Databases:"
-    echo "────────────────────"
+
+    # User Databases
+    gum style --bold --foreground 36 "📦 User Databases:"
+    gum style --foreground 240 "────────────────────"
+
     if [[ ${#user_dbs[@]} -eq 0 ]]; then
         echo " (none found)"
     else
@@ -185,8 +189,12 @@ function postgres-database-list() {
     fi
 
     echo
+
+    # Summary
     total_count=$((${#system_dbs[@]} + ${#user_dbs[@]}))
-    printf "📊 Total databases: %2d (%d system, %d user)\n" "$total_count" "${#system_dbs[@]}" "${#user_dbs[@]}"
+    summary=$(printf "📊 Total databases: %2d (%d system, %d user)" "$total_count" "${#system_dbs[@]}" "${#user_dbs[@]}")
+
+    gum style --bold --foreground 35 "$summary"
 }
 
 # 🏗️ Creates a PostgreSQL database (interactive)

@@ -10,7 +10,7 @@ function devkit-settings-setup() {
     local cloned_settings_file="$DEVKIT_ROOT/.settings_clone"
     mkdir -p "$(dirname "$settings_file")"
 
-    echo "👋 Welcome! Let's set up DevKit CLI environment."
+    gum style --border normal --margin "1 2" --padding "1 2" --bold "👋 Welcome! Let's set up DevKit CLI environment."
 
     # Clone settings for safe handling
     if [[ -f "$settings_file" ]]; then
@@ -98,7 +98,7 @@ function devkit-is-setup() {
         if [[ "$quiet" == false ]]; then
             _log_warning "⚠️  DevKit is not fully set up."
             _log_error "🚫 Missing tools: ${missing[*]}"
-            echo "👉 Run: devkit-pc-setup"
+            _log_info "👉 Run: devkit-pc-setup"
         fi
         return 1
     fi
@@ -146,9 +146,7 @@ function devkit-pc-setup() {
         # Flutter Android Setup
         flutter-android-sdk-setup || return 1
 
-        echo "--------------------------------------------------"
-        _log_success "✅ devkit environment setup complete!"
-        echo "--------------------------------------------------"
+        gum style --border normal --padding "1 2" --margin "1 0" --foreground 35 --bold "✅ devkit environment setup complete!"
 
     } 2>&1 | tee -a "$log_file"
 
@@ -207,7 +205,7 @@ function devkit-pc-update() {
 # 💡 Usage: devkit-check-tools
 function devkit-check-tools() {
     _log_info "🔧 Development Environment Status:"
-    echo "────────────────────────────────────"
+    _log_separator
 
     # Track missing tools
     local missing_tools=()
@@ -225,7 +223,7 @@ function devkit-check-tools() {
             local version=$(eval "$version_cmd")
             echo "  $emoji  $padded_label $version"
         else
-            echo "  $emoji  $padded_label Not installed"
+            _log_error "  $emoji  $padded_label Not installed"
             missing_tools+=("$name")
         fi
     }
@@ -278,11 +276,11 @@ function devkit-check-tools() {
     print_version "🖨 " "WeasyPrint" "weasyprint" "weasyprint --version | awk '{print \$3}'"
     echo
 
-    echo "────────────────────────────────────"
+    _log_separator
 
     if ((${#missing_tools[@]} > 0)); then
         _log_warning "⚠️  Missing tools: ${missing_tools[*]}"
-        echo "👉 Run: devkit-pc-setup to install and configure required packages."
+        _log_info "👉 Run: devkit-pc-setup to install and configure required packages."
         return 1
     else
         _log_success "✅ All essential tools are installed!"
@@ -298,7 +296,7 @@ function devkit-doctor() {
 
     {
         _log_info "🔍 Running devkit doctor..."
-        echo "────────────────────────────────────"
+        _log_separator
 
         # Check for missing tools
         devkit-check-tools || return 1
@@ -334,7 +332,7 @@ function devkit-doctor() {
 
         _log_success "✅ All checks completed!"
         _log_info "🔧 Your devkit environment is ready!"
-        echo "────────────────────────────────────"
+        _log_separator
 
     } 2>&1 | tee -a "$log_file"
 }
@@ -383,16 +381,16 @@ function devkit-update() {
         local_version="none"
     fi
 
-    echo "🔖 Local version: $local_version"
-    echo "🌐 Remote version: $remote_version"
+    _log_info "🔖 Local version: $local_version"
+    _log_info "🌐 Remote version: $remote_version"
 
     if [[ "$local_version" == "$remote_version" ]]; then
         _log_success "✅ devkit is already up to date (version: $local_version)"
         return 0
     fi
 
-    echo "📥 New version available!"
-    echo "🔸 Current: $local_version"
+    _log_info "📥 New version available!"
+    _log_info "🔸 Current: $local_version"
     _log_info "🔹 Latest : $remote_version"
 
     if gum confirm "👉 Do you want to update devkit to version $remote_version now?"; then
@@ -433,5 +431,5 @@ function devkit-version() {
         return 1
     fi
 
-    echo "📦 Current devkit version: $current_version"
+    _log_info "📦 Current devkit version: $current_version"
 }

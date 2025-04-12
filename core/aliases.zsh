@@ -17,7 +17,7 @@ alias devkit-terminal-restart="osascript -e 'tell application \"Terminal\" to cl
 alias devkit-pc-public-ip="curl -s https://ipinfo.io/ip"
 
 # 🧹 Flush the DNS cache (macOS)
-alias devkit-pc-dns-flush="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder && echo '✅ DNS cache flushed.'"
+alias devkit-pc-dns-flush="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder && _log_success '✅ DNS cache flushed.'"
 
 # 📡 Ping Google DNS (check internet connection)
 alias devkit-pc-ping="ping -c 4 8.8.8.8"
@@ -35,10 +35,10 @@ alias devkit-pc-disk="df -h"
 alias devkit-pc-stats="top -l 1 | head -n 10"
 
 # 🧼 Clear system and user cache folders
-alias devkit-pc-clear-cache="rm -rf ~/Library/Caches/* /Library/Caches/* && echo '🧹 Caches cleared.'"
+alias devkit-pc-clear-cache="rm -rf ~/Library/Caches/* /Library/Caches/* && _log_success '🧹 Caches cleared.'"
 
 # 🗑️ Empty the trash folder
-alias devkit-pc-empty-trash="sudo rm -rf ~/.Trash/* && echo '🗑️ Trash emptied.'"
+alias devkit-pc-empty-trash="sudo rm -rf ~/.Trash/* && _log_success '🗑️ Trash emptied.'"
 
 # 🐚 Show shell, interpreter, and version info
 alias devkit-shell-info="echo \$SHELL && echo \$0 && echo \$ZSH_VERSION"

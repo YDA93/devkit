@@ -30,7 +30,7 @@ function flutter-firebase-environment-create() {
         _log_error "❌ Failed to activate virtual environment."
         return 1
     }
-    echo 'environment created. & activated.' || {
+    _log_success 'environment created. & activated.' || {
         _log_error "❌ Failed to activate virtual environment."
         return 1
     }
@@ -84,13 +84,12 @@ function flutter-firebase-upload-crashlytics-symbols() {
     local SYMBOLS_PATH="./symbols"
 
     # Prompt user for Firebase App ID
-    echo "🆔 Please enter your Firebase App ID:"
+    _log_hint "🆔 Please enter your Firebase App ID:"
     _log_hint "💡 Hint: Check 'firebase_options.dart' under:"
-    echo "     static const FirebaseOptions android = FirebaseOptions(..."
-    echo "     appId: 'YOUR_APP_ID_HERE',"
+    _log_hint "     static const FirebaseOptions android = FirebaseOptions(..."
+    _log_hint "     appId: 'YOUR_APP_ID_HERE',"
     echo ""
-    printf "App ID: "
-    read APP_ID
+    APP_ID=$(gum input --placeholder "your-app-id" --prompt "🆔 App ID: ")
 
     # Validate input
     if [[ -z "$APP_ID" ]]; then
@@ -101,14 +100,14 @@ function flutter-firebase-upload-crashlytics-symbols() {
     # Check if symbols directory exists
     if [[ ! -d "$SYMBOLS_PATH" ]]; then
         _log_error "❌ Symbols directory not found at: $SYMBOLS_PATH"
-        echo "📁 Please make sure obfuscated symbols are built and placed there."
+        _log_error "📁 Please make sure obfuscated symbols are built and placed there."
         return 1
     fi
 
     # Run upload
     _log_info "🚀 Uploading symbols to Firebase Crashlytics..."
-    echo "🆔 App ID: $APP_ID"
-    echo "📁 Symbols Path: $SYMBOLS_PATH"
+    _log_info "🆔 App ID: $APP_ID"
+    _log_info "📁 Symbols Path: $SYMBOLS_PATH"
     echo ""
 
     firebase crashlytics:symbols:upload --app="$APP_ID" "$SYMBOLS_PATH"
@@ -324,7 +323,7 @@ function flutter-delete-unused-strings() {
 
     # Verify if unused keys were found
     if [ ! -s "$temp_file" ]; then
-        echo "No unused translations found."
+        _log_info "No unused translations found."
         rm "$temp_file"
         return
     fi
@@ -341,14 +340,14 @@ function flutter-delete-unused-strings() {
                 # Use sed to delete the lines containing the keys
                 # This command now modifies the file in-place without creating a backup
                 sed -i '' "/\"$key\":/d" "$full_path"
-                echo "Removed $key from $file"
+                _log_success "Removed $key from $file"
             else
-                echo "File $full_path not found."
+                _log_error "File $full_path not found."
             fi
         done
     done <"$temp_file"
 
-    echo "Cleanup completed."
+    _log_success "Cleanup completed."
 }
 
 # 🧹 Clears Pod, Flutter, and Ccache caches

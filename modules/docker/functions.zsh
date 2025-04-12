@@ -67,8 +67,8 @@ function docker-clean-all() {
 # 📋 Displays Docker and Docker Compose versions
 # 💡 Usage: docker-show-versions
 function docker-show-versions() {
-    echo "🐳 Docker CLI: $(docker --version | cut -d ' ' -f 3 | tr -d ',')"
-    _log_info "🔧 Compose:    $(docker compose version --short 2>/dev/null || echo 'not installed')"
+    _log_info "🐳 Docker CLI: $(docker --version | cut -d ' ' -f 3 | tr -d ',')"
+    _log_info "🔧 Compose:    $(docker compose version --short 2>/dev/null || _log_error 'not installed')"
 }
 
 # ------------------------------------------------------------------------------
@@ -78,35 +78,35 @@ function docker-show-versions() {
 # 📦 Lists all Docker containers (running and stopped)
 # 💡 Usage: docker-list-containers
 function docker-list-containers() {
-    echo "📦 All Docker containers:"
+    _log_info "📦 All Docker containers:"
     docker ps -a --format "table {{.ID}}\t{{.Status}}\t{{.Names}}\t{{.Image}}"
 }
 
 # 🟢 Lists only running Docker containers
 # 💡 Usage: docker-list-running
 function docker-list-running() {
-    echo "🟢 Running Docker containers:"
+    _log_info "🟢 Running Docker containers:"
     docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"
 }
 
 # 🖼️ Lists all Docker images
 # 💡 Usage: docker-list-images
 function docker-list-images() {
-    echo "🖼️ Docker images:"
+    _log_info "🖼️ Docker images:"
     docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}"
 }
 
 # 📁 Lists all Docker volumes
 # 💡 Usage: docker-list-volumes
 function docker-list-volumes() {
-    echo "📁 Docker volumes:"
+    _log_info "📁 Docker volumes:"
     docker volume ls
 }
 
 # 🌐 Lists all Docker networks
 # 💡 Usage: docker-list-networks
 function docker-list-networks() {
-    echo "🌐 Docker networks:"
+    _log_info "🌐 Docker networks:"
     docker network ls
 }
 

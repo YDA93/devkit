@@ -10,7 +10,7 @@ function homebrew-install() {
     if ! command -v brew &>/dev/null; then
         _log_info "Homebrew not found. Installing..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-            echo "Homebrew installation failed."
+            _log_error "Homebrew installation failed."
             return 1
         }
     else
@@ -19,7 +19,7 @@ function homebrew-install() {
 
     # Verify Homebrew is working
     if ! brew --version &>/dev/null; then
-        echo "Homebrew seems to be installed but not working properly."
+        _log_error "Homebrew seems to be installed but not working properly."
         return 1
     fi
 
@@ -59,8 +59,8 @@ function homebrew-save-packages() {
     brew list --cask >"$casks_output"
 
     _log_success "✅ Saved installed packages:"
-    echo "   📄 Formulas: $formula_output"
-    echo "   📄 Casks:    $casks_output"
+    _log_info "   📄 Formulas: $formula_output"
+    _log_info "   📄 Casks:    $casks_output"
 }
 
 # 📦 Installs Homebrew formula and casks from saved package lists
@@ -219,7 +219,7 @@ function homebrew-install-from-settings() {
     fi
 
     _log_info "🔧 Installing Homebrew packages based on your saved settings..."
-    echo "📄 Source: $settings_file"
+    _log_info "📄 Source: $settings_file"
     echo ""
 
     source "$settings_file"
@@ -311,7 +311,7 @@ function homebrew-doctor() {
 
     if ! command -v brew &>/dev/null; then
         _log_warning "⚠️  Homebrew is not installed."
-        echo "👉 You can install it with: homebrew-install"
+        _log_hint "👉 You can install it with: homebrew-install"
         return 1
     fi
 
@@ -327,8 +327,8 @@ function homebrew-doctor() {
     _log_info "📦 Checking for outdated packages..."
     if [[ -n "$(brew outdated)" ]]; then
         _log_warning "⚠️  You have outdated packages."
-        echo "👉 Consider running 'brew outdated' to see which ones."
-        echo "👉 To upgrade, use: 'homebrew-maintain'"
+        _log_hint "👉 Consider running 'brew outdated' to see which ones."
+        _log_hint "👉 To upgrade, use: 'homebrew-maintain'"
     else
         _log_success "✅ All packages are up to date."
     fi

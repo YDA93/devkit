@@ -179,8 +179,8 @@ function npm-doctor() {
     current_registry=$(npm config get registry)
     if [[ "$current_registry" != "https://registry.npmjs.org/" ]]; then
         _log_warning "⚠️  npm registry is: $current_registry"
-        echo "    👉 Consider resetting it:"
-        echo "       npm config set registry https://registry.npmjs.org/"
+        _log_hint "    👉 Consider resetting it:"
+        _log_hint "       npm config set registry https://registry.npmjs.org/"
     else
         _log_success "✅ npm registry is set to default"
     fi
@@ -190,7 +190,7 @@ function npm-doctor() {
         _log_success "✅ Global npm packages are writable"
     else
         _log_warning "⚠️  No write access to global npm packages"
-        echo "    👉 Consider using nvm or fnm to manage Node versions and avoid permission issues"
+        _log_hint "    👉 Consider using nvm or fnm to manage Node versions and avoid permission issues"
     fi
 
     _log_info "🧪 Running basic 'npm doctor' check..."

@@ -97,11 +97,11 @@ function gcloud-scheduler-jobs-sync() {
     if [[ ${#local_urls[@]} -eq 0 ]]; then
         _log_warning "⚠️  No local cron URLs found. Will only check for deletions..."
     else
-        echo "🔍 Found ${#local_urls[@]} local cron job(s):"
+        _log_info "🔍 Found ${#local_urls[@]} local cron job(s):"
         for url in "${local_urls[@]}"; do
             local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
             local_jobs[$job_name]="$url"
-            echo "  • $(_gcloud-scheduler-jobs-generate-description "$url")"
+            _log_info "  • $(_gcloud-scheduler-jobs-generate-description "$url")"
         done
     fi
     echo ""
@@ -115,10 +115,10 @@ function gcloud-scheduler-jobs-sync() {
     if [[ ${#remote_jobs[@]} -eq 0 ]]; then
         _log_warning "⚠️  No Cloud Scheduler jobs found. Will only check for creations..."
     else
-        echo "📡 Found ${#remote_jobs[@]} Cloud Scheduler job(s):"
+        _log_info "📡 Found ${#remote_jobs[@]} Cloud Scheduler job(s):"
         for url in "${remote_jobs[@]}"; do
             local description=$(_gcloud-scheduler-jobs-generate-description "$url")
-            echo "  • $description"
+            _log_info "  • $description"
         done
     fi
     echo ""

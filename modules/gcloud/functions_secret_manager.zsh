@@ -79,7 +79,6 @@ function gcloud-secret-manager-env-download() {
     local temp_file=$(mktemp)
     gcloud secrets list --format="value(name)" 2>/dev/null >"$temp_file"
 
-    echo "🧪 Debug: Raw secret list from gcloud:"
     cat "$temp_file"
 
     local secrets_array=()
@@ -93,23 +92,19 @@ function gcloud-secret-manager-env-download() {
     done <"$temp_file"
     rm -f "$temp_file"
 
-    echo "🧪 Debug: Total secrets in array: ${#secrets_array[@]}"
-
     if [[ ${#secrets_array[@]} -eq 0 ]]; then
         _log_error "❌ No secrets found or failed to list secrets"
         return 1
     fi
 
-    echo "🔐 Available secrets:"
+    _log_info "🔐 Available secrets:"
     i=0
     for secret in "${secrets_array[@]}"; do
-        echo "$((i + 1)). $secret"
+        _log_info "$((i + 1)). $secret"
         ((i++))
     done
 
-    echo ""
-    echo -n "🔢 Select a secret number to download: "
-    read selection
+    selection=$(gum input --placeholder "e.g., 1" --prompt "🔢 Select a secret number to download: ")
 
     if ! [[ "$selection" =~ ^[0-9]+$ ]]; then
         _log_error "❌ Invalid input: Not a number"

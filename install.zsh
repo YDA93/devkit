@@ -17,21 +17,21 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 if [[ "$SCRIPT_DIR" != "$DEVKIT_DIR" ]]; then
     # If DevKit directory exists and is not empty, prompt user before overwriting
     if [[ -d "$DEVKIT_DIR" && "$(ls -A "$DEVKIT_DIR")" ]]; then
-        _log_warning "⚠️  DevKit directory '$DEVKIT_DIR' already exists and is not empty."
+        echo "⚠️  DevKit directory '$DEVKIT_DIR' already exists and is not empty."
         echo ""
-        _confirm-or-abort "❓ Do you want to overwrite it?" || {
-            _log_error "🚫 Installation cancelled by user."
+        if ! gum confirm "❓ Do you want to overwrite it?"; then
+            echo "🚫 Installation cancelled by user."
             exit 1
-        }
+        fi
 
-        _log_info "🧹 Removing existing DevKit directory..."
+        echo "🧹 Removing existing DevKit directory..."
         rm -rf "$DEVKIT_DIR"
     fi
 
-    _log_info "📦 Cloning DevKit into $DEVKIT_DIR..."
+    echo "📦 Cloning DevKit into $DEVKIT_DIR..."
     git clone "$DEVKIT_REPO" "$DEVKIT_DIR"
 
-    _log_info "🚀 Relaunching installer from cloned directory..."
+    echo "🚀 Relaunching installer from cloned directory..."
     exec zsh "$DEVKIT_DIR/install.zsh"
 fi
 
@@ -42,13 +42,13 @@ export DEVKIT_ROOT="$SCRIPT_DIR"
 source "$DEVKIT_ROOT/config.zsh"
 
 # Ensure Oh My Zsh is installed (required dependency)
-_log_info "🚀 Checking for Oh My Zsh..."
+echo "🚀 Checking for Oh My Zsh..."
 if [ -d "$HOME/.oh-my-zsh" ]; then
-    _log_success "Oh My Zsh already installed. Skipping installation."
+    echo "Oh My Zsh already installed. Skipping installation."
 else
-    _log_info "🧩 Installing Oh My Zsh..."
+    echo "🧩 Installing Oh My Zsh..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    _log_success "Oh My Zsh installed."
+    echo "Oh My Zsh installed."
 fi
 
 # Prepare the line to source DevKit in .zshrc
@@ -56,20 +56,18 @@ DEVKIT_LINE="source \"$DEVKIT_ENTRYPOINT\""
 
 # Add DevKit to .zshrc if not already present
 if ! grep -Fxq "$DEVKIT_LINE" "$HOME/.zshrc"; then
-    _log_info "➕ Adding DevKit source to ~/.zshrc..."
+    echo "➕ Adding DevKit source to ~/.zshrc..."
     {
         echo ""
         echo "# 🔧 DevKit setup (added by installer)"
         echo "$DEVKIT_LINE"
     } >>"$HOME/.zshrc"
 else
-    _log_info "ℹ️  DevKit already sourced in ~/.zshrc. Skipping."
+    echo "ℹ️  DevKit already sourced in ~/.zshrc. Skipping."
 fi
 
 # Final success message
-echo ""
-_log_success "🎉 Installation complete!"
-echo ""
+echo "🎉 Installation complete!"
 
 # Apply the changes immediately and run initial setup
 source ~/.zshrc && devkit-pc-setup
