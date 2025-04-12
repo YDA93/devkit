@@ -297,7 +297,7 @@ function devkit-doctor() {
     local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
     {
-        echo "🔍 Running devkit doctor..."
+        _log_info "🔍 Running devkit doctor..."
         echo "────────────────────────────────────"
 
         # Check for missing tools
@@ -349,7 +349,7 @@ function devkit-update() {
     _log_info "🔄 Checking for devkit updates..."
 
     if [[ ! -d "$DEVKIT_ROOT" ]]; then
-        echo "📦 devkit not found. Cloning into $DEVKIT_ROOT..."
+        _log_info "📦 devkit not found. Cloning into $DEVKIT_ROOT..."
         git clone "$repo_url" "$DEVKIT_ROOT" || {
             _log_error "❌ Failed to clone devkit."
             return 1
@@ -402,7 +402,7 @@ function devkit-update() {
         return 0
     fi
 
-    echo "🚀 Updating devkit to version $remote_version..."
+    _log_info "🚀 Updating devkit to version $remote_version..."
 
     if ! git -C "$DEVKIT_ROOT" checkout "tags/$remote_version" -f; then
         _log_error "❌ Failed to checkout version $remote_version."

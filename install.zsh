@@ -23,7 +23,7 @@ if [[ "$SCRIPT_DIR" != "$DEVKIT_DIR" ]]; then
         read user_choice
         case "$user_choice" in
         [Yy]*)
-            echo "🧹 Removing existing DevKit directory..."
+            _log_info "🧹 Removing existing DevKit directory..."
             rm -rf "$DEVKIT_DIR"
             ;;
         *)

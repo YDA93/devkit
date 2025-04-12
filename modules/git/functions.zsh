@@ -69,7 +69,7 @@ function git-doctor() {
         _log_success "✅ Git user.name and user.email are set"
     fi
 
-    echo "📝 Checking for global .gitignore..."
+    _log_info "📝 Checking for global .gitignore..."
     if git config --get core.excludesfile &>/dev/null; then
         _log_success "✅ Global .gitignore is configured"
     else
@@ -85,7 +85,7 @@ function git-doctor() {
         _log_hint "💡 Generate one with: ssh-keygen -t ed25519 -C \"your_email@example.com\""
     fi
 
-    echo "🔐 Testing SSH connection to GitHub..."
+    _log_info "🔐 Testing SSH connection to GitHub..."
     if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
         _log_success "✅ SSH connection to GitHub works"
     else

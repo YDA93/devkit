@@ -16,7 +16,7 @@ function mas-save-apps() {
         chatgpt flutter
     )
 
-    echo "💾 Saving App Store apps to $output"
+    _log_info "💾 Saving App Store apps to $output"
 
     mas list | while read -r id name version; do
         local clean_name=$(echo "$name" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]')

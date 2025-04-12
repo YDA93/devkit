@@ -18,7 +18,7 @@ function postgres-setup() {
 
         # Create postgres superuser if missing
         if ! psql postgres -c '\du' | cut -d \| -f 1 | grep -qw postgres; then
-            echo "➕ Creating default 'postgres' superuser..."
+            _log_info "➕ Creating default 'postgres' superuser..."
             createuser -s postgres
         else
             _log_success "✅ 'postgres' user already exists."
@@ -93,7 +93,7 @@ function postgres-connect() {
 # - Provides guidance if any checks fail
 # 💡 Usage: postgres-doctor
 function postgres-doctor() {
-    echo "🐘 Checking PostgreSQL..."
+    _log_info "🐘 Checking PostgreSQL..."
 
     if ! command -v psql &>/dev/null; then
         _log_warning "⚠️  psql command not found. PostgreSQL might not be installed."
@@ -101,7 +101,7 @@ function postgres-doctor() {
         return 1
     fi
 
-    echo "🛠 Checking if PostgreSQL service is running..."
+    _log_info "🛠 Checking if PostgreSQL service is running..."
     if pg_ctl status &>/dev/null || brew services list | grep -E 'postgresql(@[0-9]+)?' &>/dev/null; then
         _log_success "✅ PostgreSQL service appears to be installed"
     else
@@ -109,7 +109,7 @@ function postgres-doctor() {
         _log_hint "💡 Start with: brew services start $LATEST_PG"
     fi
 
-    echo "🔑 Checking connection as 'postgres' user..."
+    _log_info "🔑 Checking connection as 'postgres' user..."
     if psql -U postgres -c '\q' &>/dev/null; then
         _log_success "✅ Able to connect as 'postgres'"
     else
@@ -224,7 +224,7 @@ function postgres-database-create() {
                     return 1
                 fi
 
-                echo "💣 Dropping database '$db_name'..."
+                _log_info "💣 Dropping database '$db_name'..."
                 if ! dropdb -U postgres -h 127.0.0.1 "$db_name"; then
                     _log_error "❌ Error: Failed to drop database."
                     unset PGPASSWORD
@@ -246,7 +246,7 @@ function postgres-database-create() {
         done
     fi
 
-    echo "🚧 Creating new database '$db_name'..."
+    _log_info "🚧 Creating new database '$db_name'..."
     if ! createdb -U postgres -h 127.0.0.1 "$db_name"; then
         _log_error "❌ Error: Failed to create database."
         unset PGPASSWORD
@@ -287,7 +287,7 @@ function postgres-database-delete() {
                 psql -U postgres -h localhost -c \
                     "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" >/dev/null
 
-                echo "💣 Dropping database '$db_name'..."
+                _log_info "💣 Dropping database '$db_name'..."
                 if dropdb -U postgres -h localhost "$db_name"; then
                     _log_success "✅ Database '$db_name' has been dropped."
                 else

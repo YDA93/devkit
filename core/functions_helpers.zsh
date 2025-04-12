@@ -51,7 +51,7 @@ function _confirm-or-abort() {
     if gum confirm "$message"; then
         return 0
     else
-        echo "Aborting action."
+        _log_info "Aborting action."
         return 1
     fi
 }

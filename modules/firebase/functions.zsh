@@ -167,7 +167,7 @@ function firebase-open-console() {
 # 📜 Tails Firebase Functions logs
 # 💡 Usage: firebase-logs
 function firebase-logs() {
-    echo "📜 Tailing Firebase Functions logs..."
+    _log_info "📜 Tailing Firebase Functions logs..."
     firebase functions:log
 }
 

@@ -137,7 +137,7 @@ function gcloud-project-django-setup() {
             return 1
         fi
 
-        echo "🎉 Django project in Google Cloud has been successfully set up!"
+        _log_success "🎉 Django project in Google Cloud has been successfully set up!"
     } 2>&1 | tee -a "$log_file"
 }
 

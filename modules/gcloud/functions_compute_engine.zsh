@@ -299,7 +299,7 @@ function gcloud-compute-engine-cloud-load-balancer-setup() {
         return 1
     fi
 
-    echo "🎉 Cloud Load Balancer setup completed successfully!"
+    _log_success "🎉 Cloud Load Balancer setup completed successfully!"
 }
 
 # 🔄 Teardown of all Cloud Load Balancer components
@@ -334,5 +334,5 @@ function gcloud-compute-engine-cloud-load-balancer-teardown() {
     # Step 7: Delete Static IPv4 Address
     gcloud-compute-engine-ipv4-delete --quiet || _log_error "❌ Failed to delete static IP."
 
-    echo "🎉 Cloud Load Balancer teardown completed successfully!"
+    _log_success "🎉 Cloud Load Balancer teardown completed successfully!"
 }

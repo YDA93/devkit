@@ -54,19 +54,19 @@ function django-settings() {
     case "$env" in
     local)
         export DJANGO_SETTINGS_MODULE=project.settings.local
-        echo "🌱 Local settings activated"
+        _log_success "🌱 Local settings activated"
         ;;
     dev)
         export DJANGO_SETTINGS_MODULE=project.settings.dev
-        echo "🛠️ Development settings activated"
+        _log_success "🛠️ Development settings activated"
         ;;
     prod)
         export DJANGO_SETTINGS_MODULE=project.settings.prod
-        echo "🚀 Production settings activated"
+        _log_success "🚀 Production settings activated"
         ;;
     test)
         export DJANGO_SETTINGS_MODULE=project.settings.test
-        echo "🧪 Test settings activated"
+        _log_success "🧪 Test settings activated"
         ;;
     *)
         _log_warning "⚠️ Unknown environment: '$env'"
@@ -118,7 +118,7 @@ function django-migrate-initial() {
 
     # 2. Handle URLs
     # Store the original content of the urls.py
-    echo "Updating project URLs..."
+    _log_info "Updating project URLs..."
     local original_content=$(cat ./project/urls.py)
     # Comment out the entire content of the file
     sed -i '' 's/^/# /' ./project/urls.py
@@ -133,7 +133,7 @@ function django-migrate-initial() {
     python "$PWD"/manage.py migrate || return 1
 
     # 6. Restore original URLs
-    echo "Restoring original project URLs..."
+    _log_info "Restoring original project URLs..."
     echo "$original_content" >./project/urls.py
 }
 
@@ -154,7 +154,7 @@ function django-migrate-and-cache-delete() {
     # Delete migration cache in Django apps (excluding venv)
     find . -type d -name "__pycache__" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); [ "$app_name" != "." ] && echo "Deleted $app_name -> $(basename "$(dirname "{}")")/__pycache__" || echo "Deleted $(basename "$(dirname "{}")")/__pycache__"; rm -r "{}"' \; 2>/dev/null || true
 
-    echo "Deleted all Django migration files and __pycache__ folders (excluding venv)."
+    _log_success "Deleted all Django migration files and __pycache__ folders (excluding venv)."
 
     # Return to the original directory
     cd "$OLDPWD"
@@ -223,7 +223,7 @@ function django-data-backup() {
         return 0
     fi
 
-    echo "📤 Performing Django data backup using 'dumpdata'..."
+    _log_info "📤 Performing Django data backup using 'dumpdata'..."
     python "$PWD/manage.py" dumpdata \
         --natural-foreign --natural-primary --indent 2 >data.json || return 1
 
@@ -241,7 +241,7 @@ function django-data-restore() {
     local backup_file=""
 
     if [[ "$backup_performed" = true ]]; then
-        echo "♻️  Restoring from default backup (data.json)..."
+        _log_info "♻️  Restoring from default backup (data.json)..."
         backup_file="data.json"
     else
         if ! _confirm-or-abort "Do you want to restore data from a backup file?"; then
@@ -261,7 +261,7 @@ function django-data-restore() {
         fi
     fi
 
-    echo "📥 Restoring Django data from '$backup_file'..."
+    _log_info "📥 Restoring Django data from '$backup_file'..."
     python "$PWD/manage.py" loaddata "$backup_file" --traceback || return 1
     _log_success "✅ Data restoration complete."
 
@@ -345,7 +345,7 @@ function django-upload-env-to-github-secrets() {
         return 1
     }
 
-    echo "🔐 Uploading entire .env file to secret: ENVIRONMENT_VARIABLES"
+    _log_info "🔐 Uploading entire .env file to secret: ENVIRONMENT_VARIABLES"
 
     # Upload .env file content directly as multiline secret
     gh secret set ENVIRONMENT_VARIABLES --repo "$REPO" <.env || {
@@ -355,7 +355,7 @@ function django-upload-env-to-github-secrets() {
 
     _log_success "✅ Uploaded ENVIRONMENT_VARIABLES to $REPO"
 
-    echo "🔐 Uploading GCP_CREDENTIALS to GitHub secrets..."
+    _log_info "🔐 Uploading GCP_CREDENTIALS to GitHub secrets..."
 
     # Get GCP_CREDENTIALS using your custom command
     local GCP_CREDS
@@ -389,9 +389,9 @@ function django-run-pytest() {
     # Replace '/' with '.', remove '.py::', and replace '::' with '.'
     modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
     if [[ -n "$modified_arg" ]]; then
-        echo "Testing: $modified_arg"
+        _log_info "Testing: $modified_arg"
     else
-        echo "Testing: All"
+        _log_info "Testing: All"
     fi
 
     coverage run -m pytest -v -n auto $modified_arg
@@ -407,9 +407,9 @@ function django-run-test() {
     # Replace '/' with '.', remove '.py::', and replace '::' with '.'
     modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
     if [[ -n "$modified_arg" ]]; then
-        echo "Testing: $modified_arg"
+        _log_info "Testing: $modified_arg"
     else
-        echo "Testing: All"
+        _log_info "Testing: All"
     fi
 
     python manage.py test $modified_arg
@@ -427,7 +427,7 @@ function django-find-cron-urls() {
     local project_root=${1:-.}
     local settings_file="$project_root/project/settings/base.py"
 
-    echo "🚀 Searching for cron jobs in internal apps..."
+    _log_info "🚀 Searching for cron jobs in internal apps..."
 
     # 🔍 Extract INTERNAL_APPS values from base.py (e.g. "logs", "store", ...)
     local apps=($(sed -n '/INTERNAL_APPS *= *\[/,/]/p' "$settings_file" |

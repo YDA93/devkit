@@ -244,7 +244,7 @@ tell application "Terminal"
 end tell
 EOF
 
-    echo "⏳ Waiting for Cloud SQL Proxy to start on port $GCP_SQL_PROXY_PORT..."
+    _log_info "⏳ Waiting for Cloud SQL Proxy to start on port $GCP_SQL_PROXY_PORT..."
 
     # Retry logic to check if the proxy is running
     local retries=15 # Max wait time (15 seconds)

@@ -16,7 +16,7 @@ function docker-daemon-start() {
         fi
     done
 
-    $quiet || echo "⏳ Starting Docker Daemon..."
+    $quiet || _log_info "⏳ Starting Docker Daemon..."
 
     # Start Docker silently
     nohup open -a Docker --args --unattended &>/dev/null &
@@ -24,7 +24,7 @@ function docker-daemon-start() {
 
     # Wait for Docker to become ready
     while ! docker info &>/dev/null; do
-        $quiet || echo "⏳ Waiting for Docker to start..."
+        $quiet || _log_info "⏳ Waiting for Docker to start..."
         sleep 5
     done
 
@@ -35,7 +35,7 @@ function docker-daemon-start() {
 # - Stops all Docker processes and starts Docker again
 # 💡 Usage: docker-daemon-restart
 function docker-daemon-restart() {
-    echo "♻️  Restarting Docker Desktop..."
+    _log_info "♻️  Restarting Docker Desktop..."
     pkill -f Docker
     sleep 2
     docker-daemon-start
@@ -48,14 +48,14 @@ function docker-daemon-restart() {
 # 🛑 Kills all running Docker containers
 # 💡 Usage: docker-kill-all
 function docker-kill-all() {
-    echo "🛑 Killing all running Docker containers..."
+    _log_info "🛑 Killing all running Docker containers..."
     docker ps -q | xargs -r docker kill
 }
 
 # 🧹 Removes stopped containers, unused images, volumes, and networks
 # 💡 Usage: docker-clean-all
 function docker-clean-all() {
-    echo "🧹 Cleaning up Docker..."
+    _log_info "🧹 Cleaning up Docker..."
     docker system prune -af --volumes
     _log_success "✅ Docker cleaned"
 }

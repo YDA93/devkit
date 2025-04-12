@@ -46,14 +46,14 @@ function github-ssh-setup() {
     if [[ -f "$key_path" ]]; then
         _log_success "✅ SSH key already exists at $key_path"
     else
-        echo "🔑 Generating new SSH key..."
+        _log_info "🔑 Generating new SSH key..."
         ssh-keygen -t ed25519 -C "$github_email" -f "$key_path"
     fi
 
     echo "📋 Your public SSH key:"
     cat "${key_path}.pub"
 
-    echo "🛠️  Updating SSH config to use port 443 for GitHub..."
+    _log_info "🛠️  Updating SSH config to use port 443 for GitHub..."
     mkdir -p ~/.ssh
     touch ~/.ssh/config
 
@@ -71,7 +71,7 @@ function github-ssh-setup() {
         _log_warning "⚠️  SSH config already contains a block for github.com. Skipping."
     fi
 
-    echo "🔐 Starting ssh-agent and adding your key..."
+    _log_info "🔐 Starting ssh-agent and adding your key..."
     eval "$(ssh-agent -s)"
     if ! ssh-add -l | grep -q "$key_path"; then
         ssh-add "$key_path"
@@ -103,7 +103,7 @@ function github-ssh-setup() {
     echo "📌 Press enter after you've added the key to GitHub..."
     read
 
-    echo "🚀 Testing SSH connection to GitHub..."
+    _log_info "🚀 Testing SSH connection to GitHub..."
     ssh -T git@github.com
 
     echo ""
@@ -169,7 +169,7 @@ function github-ssh-delete() {
 # - Verifies if SSH access to GitHub is working correctly
 # 💡 Usage: github-ssh-connection-test
 function github-ssh-connection-test() {
-    echo "🚀 Testing SSH connection to GitHub..."
+    _log_info "🚀 Testing SSH connection to GitHub..."
     ssh -T git@github.com
 }
 
@@ -283,7 +283,7 @@ function github-version-bump() {
         fi
     fi
 
-    echo "🔍 Fetching the latest tags from origin..."
+    _log_info "🔍 Fetching the latest tags from origin..."
     git fetch --tags || {
         _log_error "❌ Failed to fetch tags."
         return 1
@@ -449,11 +449,11 @@ function github-reset-to-remote() {
 function github-stash-and-pull() {
     _confirm-or-abort "This will stash your local changes, pull the latest changes from remote, and then reapply your stashed changes. Continue?" "$@" || return 1
 
-    echo "📦 Stashing local changes..."
+    _log_info "📦 Stashing local changes..."
     git stash push -m "Auto stash before pull"
-    echo "⬇️ Pulling latest changes..."
+    _log_info "⬇️ Pulling latest changes..."
     git pull
-    echo "📤 Reapplying stashed changes..."
+    _log_info "📤 Reapplying stashed changes..."
     git stash pop
 }
 
@@ -557,6 +557,6 @@ function github-open() {
     # Append branch path
     url="$url/tree/$branch"
 
-    echo "🌐 Opening $url"
+    _log_info "🌐 Opening $url"
     open "$url"
 }

@@ -57,12 +57,12 @@ function python-environment-create() {
 function python-environment-delete() {
     if python-environment-is-active --quiet; then
         deactivate
-        echo "📴 Deactivated virtual environment."
+        _log_success "📴 Deactivated virtual environment."
     fi
 
     if [[ -d venv ]]; then
         rm -rf venv
-        echo "🗑️ Environment deleted."
+        _log_success "🗑️ Environment deleted."
     else
         _log_info "ℹ️ No virtual environment found to delete."
     fi

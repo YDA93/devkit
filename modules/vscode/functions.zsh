@@ -20,7 +20,7 @@ function code-extensions() {
 # ♻️ Update all installed VS Code extensions
 # 💡 Usage: code-extensions-update
 function code-extensions-update() {
-    echo "♻️  Updating all VS Code extensions..."
+    _log_info "♻️  Updating all VS Code extensions..."
     code --update-extensions
 }
 

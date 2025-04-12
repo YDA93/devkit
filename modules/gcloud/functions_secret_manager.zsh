@@ -74,7 +74,7 @@ function gcloud-secret-manager-env-delete() {
 # - Prompts user to select from available secrets
 # 💡 Usage: gcloud-secret-manager-env-download
 function gcloud-secret-manager-env-download() {
-    echo "📃 Fetching available secrets..."
+    _log_info "📃 Fetching available secrets..."
 
     local temp_file=$(mktemp)
     gcloud secrets list --format="value(name)" 2>/dev/null >"$temp_file"
@@ -85,7 +85,6 @@ function gcloud-secret-manager-env-download() {
     local secrets_array=()
     local line_number=0
     while IFS= read -r secret; do
-        echo "🧪 Debug: Reading line $line_number -> '$secret'"
         if [[ -n "$secret" ]]; then
             secrets_array+=("$secret")
             _log_success "✅ Added to array: ${secret}"
@@ -112,8 +111,6 @@ function gcloud-secret-manager-env-download() {
     echo -n "🔢 Select a secret number to download: "
     read selection
 
-    echo "🧪 Debug: User selected: '$selection'"
-
     if ! [[ "$selection" =~ ^[0-9]+$ ]]; then
         _log_error "❌ Invalid input: Not a number"
         return 1
@@ -138,7 +135,7 @@ function gcloud-secret-manager-env-download() {
     GCP_SECRET_NAME="$selected_secret"
 
     local output_file=".env"
-    echo "📥 Downloading '$GCP_SECRET_NAME' from Secret Manager..."
+    _log_info "📥 Downloading '$GCP_SECRET_NAME' from Secret Manager..."
 
     if gcloud secrets versions access latest --secret="$GCP_SECRET_NAME" --quiet >"$output_file"; then
         _log_success "✅ .env downloaded and saved to: $output_file"

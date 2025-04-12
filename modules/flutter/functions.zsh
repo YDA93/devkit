@@ -106,7 +106,7 @@ function flutter-firebase-upload-crashlytics-symbols() {
     fi
 
     # Run upload
-    echo "🚀 Uploading symbols to Firebase Crashlytics..."
+    _log_info "🚀 Uploading symbols to Firebase Crashlytics..."
     echo "🆔 App ID: $APP_ID"
     echo "📁 Symbols Path: $SYMBOLS_PATH"
     echo ""
@@ -150,13 +150,13 @@ function java-symlink-latest() {
     local target="/Library/Java/JavaVirtualMachines/openjdk-${version}.jdk"
 
     if [[ ! -d "$target" ]]; then
-        echo "☕️ Symlinking OpenJDK $version to $target..."
+        _log_info "☕️ Symlinking OpenJDK $version to $target..."
         sudo ln -sfn "$brew_jdk_path" "$target" || {
             _log_error "❌ Failed to create symlink at $target"
             return 1
         }
     else
-        echo "☕️ OpenJDK $version already symlinked at $target"
+        _log_success "☕️ OpenJDK $version already symlinked at $target"
     fi
 }
 
@@ -292,7 +292,7 @@ function flutter-adb-connect() {
         return 1
     }
 
-    echo "Updated .vscode/launch.json with new port for IP $IP_ADDRESS."
+    _log_success "Updated .vscode/launch.json with new port for IP $IP_ADDRESS."
 }
 
 # ------------------------------------------------------------------------------
@@ -315,7 +315,7 @@ function flutter-delete-unused-strings() {
     declare -a arb_files=("app_ar.arb" "app_en.arb") # List your .arb files here
 
     # Run l10nization check-unused and capture the output of unused translations
-    echo "Checking for unused translations..."
+    _log_info "Checking for unused translations..."
     l10nization check-unused | awk '/The list of unused translations:/{flag=1; next} flag' >"$temp_file"
 
     # Trim leading and trailing blank lines from the temp_file
@@ -329,7 +329,7 @@ function flutter-delete-unused-strings() {
         return
     fi
 
-    echo "Unused translations found. Starting cleanup process..."
+    _log_info "Unused translations found. Starting cleanup process..."
 
     # Read the temp file line by line
     while IFS= read -r key; do
@@ -354,7 +354,7 @@ function flutter-delete-unused-strings() {
 # 🧹 Clears Pod, Flutter, and Ccache caches
 # 💡 Usage: flutter-cache-reset
 function flutter-cache-reset() {
-    echo "Clearing cache of Pod, Flutter, and Ccache..."
+    _log_info "Clearing cache of Pod, Flutter, and Ccache..."
     cd ios || {
         _log_error "❌ Failed to change directory to ios."
         return 1

@@ -55,7 +55,7 @@ function _gcloud-scheduler-jobs-prompt() {
 function gcloud-scheduler-jobs-delete() {
     gcloud-config-load-and-validate || return 1
 
-    echo "📡 Fetching all Cloud Scheduler jobs in project '$GCP_PROJECT_ID'..."
+    _log_info "📡 Fetching all Cloud Scheduler jobs in project '$GCP_PROJECT_ID'..."
     local urls=($(gcloud scheduler jobs list \
         --project="$GCP_PROJECT_ID" \
         --location="$GCP_REGION" \
@@ -90,7 +90,7 @@ function gcloud-scheduler-jobs-sync() {
 
     _log_info "🔹 Syncing Cloud Scheduler with Django cron URLs..."
 
-    echo "🔍 Fetching cron URLs from Django..."
+    _log_info "🔍 Fetching cron URLs from Django..."
     local local_urls=($(django-find-cron-urls | grep '^https://'))
     declare -A local_jobs
 
@@ -106,7 +106,7 @@ function gcloud-scheduler-jobs-sync() {
     fi
     echo ""
 
-    echo "📡 Fetching existing Cloud Scheduler jobs..."
+    _log_info "📡 Fetching existing Cloud Scheduler jobs..."
     local remote_jobs=($(gcloud scheduler jobs list \
         --project="$GCP_PROJECT_ID" \
         --location="$GCP_REGION" \
@@ -154,7 +154,7 @@ function gcloud-scheduler-jobs-sync() {
     # 🔧 Delete jobs
     for url in "${to_delete_urls[@]}"; do
         local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
-        echo "🗑️  Deleting job: $job_name"
+        _log_info "🗑️  Deleting job: $job_name"
         gcloud scheduler jobs delete "$job_name" \
             --project="$GCP_PROJECT_ID" \
             --location="$GCP_REGION" \
@@ -167,7 +167,7 @@ function gcloud-scheduler-jobs-sync() {
         local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
         local description=$(_gcloud-scheduler-jobs-generate-description "$url")
 
-        echo "➕ Creating job: $job_name"
+        _log_info "➕ Creating job: $job_name"
 
         gcloud scheduler jobs create http "$job_name" \
             --description="$description" \
@@ -182,14 +182,14 @@ function gcloud-scheduler-jobs-sync() {
     done
 
     if [[ ${#to_create_urls[@]} -eq 0 && ${#to_delete_urls[@]} -eq 0 ]]; then
-        echo "🟡 No changes needed. GCP Scheduler is already in sync with your local URLs."
+        _log_success "🟡 No changes needed. GCP Scheduler is already in sync with your local URLs."
     else
         _log_success "✅ Update complete:"
         if [[ ${#to_create_urls[@]} -gt 0 ]]; then
-            echo "  ➕ ${#to_create_urls[@]} job(s) created"
+            _log_success "  ➕ ${#to_create_urls[@]} job(s) created"
         fi
         if [[ ${#to_delete_urls[@]} -gt 0 ]]; then
-            echo "  🗑️  ${#to_delete_urls[@]} job(s) deleted"
+            _log_success "  🗑️  ${#to_delete_urls[@]} job(s) deleted"
         fi
     fi
 }
@@ -199,7 +199,7 @@ function gcloud-scheduler-jobs-sync() {
 function gcloud-scheduler-jobs-list() {
     gcloud-config-load-and-validate || return 1
 
-    echo "📡 Fetching all Cloud Scheduler jobs in project '$GCP_PROJECT_ID'..."
+    _log_info "📡 Fetching all Cloud Scheduler jobs in project '$GCP_PROJECT_ID'..."
     gcloud scheduler jobs list \
         --project="$GCP_PROJECT_ID" \
         --location="$GCP_REGION"

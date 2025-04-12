@@ -70,9 +70,9 @@ function npm-uninstall-packages() {
         return 1
     }
 
-    echo "🧹 Uninstalling global npm packages from $input"
-    echo "🧹 Using prefix: $npm_prefix"
-    echo "🧹 Packages:"
+    _log_info "🧹 Uninstalling global npm packages from $input"
+    _log_info "🧹 Using prefix: $npm_prefix"
+    _log_info "🧹 Packages:"
     cat "$input"
     echo ""
 
@@ -94,9 +94,9 @@ function npm-repair() {
 
     _log_info "🔧 Reinstalling npm via Homebrew ($LATEST_NODE)..."
     brew reinstall "$LATEST_NODE" || return 1
-    echo "🧼 Cleaning up existing global packages..."
+    _log_info "🧼 Cleaning up existing global packages..."
     npm-uninstall-packages || return 1
-    echo "♻️ Reinstalling global packages..."
+    _log_info "♻️ Reinstalling global packages..."
     npm-install-packages || return 1
     _log_success "✅ npm repair complete"
 }
@@ -112,7 +112,7 @@ function npm-prune-packages() {
         return 1
     fi
 
-    echo "🧹 Checking for npm packages to uninstall..."
+    _log_info "🧹 Checking for npm packages to uninstall..."
 
     local current_pkgs=($(npm list -g --depth=0 --parseable | tail -n +2 | awk -F/ '{print $NF}')) || {
         _log_error "❌ Failed to list npm packages. Please check your npm installation."
@@ -144,7 +144,7 @@ function npm-setup() {
 # 📋 Lists all globally installed npm packages
 # 💡 Usage: npm-list-packages
 function npm-list-packages() {
-    echo "📦 Installed global npm packages:"
+    _log_success "📦 Installed global npm packages:"
     npm list -g || {
         _log_error "❌ Failed to list npm packages. Please check your npm installation."
         return 1
@@ -193,7 +193,7 @@ function npm-doctor() {
         echo "    👉 Consider using nvm or fnm to manage Node versions and avoid permission issues"
     fi
 
-    echo "🧪 Running basic 'npm doctor' check..."
+    _log_info "🧪 Running basic 'npm doctor' check..."
     npm doctor || _log_warning "⚠️  npm doctor found some issues (see above)"
 
     return 0
