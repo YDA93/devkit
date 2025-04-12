@@ -249,9 +249,10 @@ function django-data-restore() {
             return 0
         fi
 
-        echo -n "📂 Enter the path to the backup file: "
-        if ! read -r backup_file || [[ -z "$backup_file" ]]; then
-            _log_warning "⚠️  No file path entered. Skipping restore."
+        backup_file=$(gum input --placeholder "/path/to/backup.sql" --prompt "📂 Enter the path to the backup file: ")
+
+        if [[ -z "$backup_file" ]]; then
+            _log_error "❌ No file path entered. Aborting restore."
             return 1
         fi
 

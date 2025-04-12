@@ -19,18 +19,13 @@ if [[ "$SCRIPT_DIR" != "$DEVKIT_DIR" ]]; then
     if [[ -d "$DEVKIT_DIR" && "$(ls -A "$DEVKIT_DIR")" ]]; then
         _log_warning "⚠️  DevKit directory '$DEVKIT_DIR' already exists and is not empty."
         echo ""
-        echo -n "❓ Do you want to overwrite it? [y/N]: "
-        read user_choice
-        case "$user_choice" in
-        [Yy]*)
-            _log_info "🧹 Removing existing DevKit directory..."
-            rm -rf "$DEVKIT_DIR"
-            ;;
-        *)
+        _confirm-or-abort "❓ Do you want to overwrite it?" || {
             _log_error "🚫 Installation cancelled by user."
             exit 1
-            ;;
-        esac
+        }
+
+        _log_info "🧹 Removing existing DevKit directory..."
+        rm -rf "$DEVKIT_DIR"
     fi
 
     _log_info "📦 Cloning DevKit into $DEVKIT_DIR..."

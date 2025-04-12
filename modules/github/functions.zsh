@@ -37,8 +37,12 @@ function github-ssh-list() {
 # - Opens GitHub SSH key page for easy paste
 # 💡 Usage: github-ssh-setup
 function github-ssh-setup() {
-    echo "📧 Enter your GitHub email:"
-    read -r github_email
+    github_email=$(gum input --placeholder "you@example.com" --prompt "📧 Enter your GitHub email: ")
+
+    if [[ ! "$github_email" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
+        _log_error "❌ Invalid email format."
+        return 1
+    fi
 
     key_path="$HOME/.ssh/id_ed25519"
 
@@ -135,9 +139,8 @@ function github-ssh-delete() {
         return
     fi
 
-    echo ""
-    echo "🗑️  Enter the number of the key you want to delete (or press Enter to cancel):"
-    read -r choice
+    echo
+    choice=$(gum input --placeholder "Enter number (or leave empty to cancel)" --prompt "🗑️  Enter the number of the key you want to delete:")
 
     if [[ -z "$choice" ]]; then
         _log_error "❌ Cancelled. No key deleted."
@@ -153,10 +156,7 @@ function github-ssh-delete() {
 
     echo ""
     _log_warning "⚠️  You selected: $key_path"
-    echo "Are you sure you want to delete this key from disk and unload from agent? (yes/no)"
-    read -r confirm
-
-    if [[ "$confirm" == "yes" ]]; then
+    if gum confirm "🗝️  Are you sure you want to delete this key from disk and unload from agent?"; then
         ssh-add -d "$key_path" 2>/dev/null && echo "🧼 Removed from ssh-agent."
         [[ -f "$key_path" ]] && rm "$key_path" && echo "🗑️  Deleted: $key_path"
         [[ -f "${key_path}.pub" ]] && rm "${key_path}.pub" && echo "🗑️  Deleted: ${key_path}.pub"
@@ -241,38 +241,42 @@ function github-undo-last-commit() {
 # 💡 Usage: github-version-bump
 function github-version-bump() {
 
-    # Check for uncommitted changes
+    # 🧩 Check for uncommitted changes
     if ! git diff --quiet || ! git diff --cached --quiet; then
         _log_warning "⚠️  You have uncommitted changes."
-        _log_question "Do you want to commit all changes before tagging? (y/N)"
-        read -r commit_before_tag
-        if [[ "$commit_before_tag" == "y" ]]; then
-            echo "📝 Enter commit message:"
-            read -r commit_message
+
+        if gum confirm "❓ Do you want to commit all changes before tagging?"; then
+            commit_message=$(gum input --placeholder "Commit message" --prompt "📝 Enter commit message: ")
+
+            # Fallback to default message if input is empty
+            commit_message=${commit_message:-"Auto commit before tagging $new_version"}
+
             git add -A || {
                 _log_error "❌ Failed to add files to staging area."
                 return 1
             }
-            git commit -m "${commit_message:-"Auto commit before tagging $new_version"}" || {
+
+            git commit -m "$commit_message" || {
                 _log_error "❌ Failed to commit changes."
                 return 1
             }
-            git push || {
+
+            gum spin --spinner dot --title "🚀 Pushing commit..." -- git push || {
                 _log_error "❌ Failed to push changes."
                 return 1
             }
+
         else
             _log_error "❌ Operation cancelled to avoid inconsistent tag."
             return 1
         fi
     fi
 
-    # Check for unpushed commits
+    # 🧩 Check for unpushed commits
     if [[ $(git log --branches --not --remotes) ]]; then
         _log_warning "⚠️  You have unpushed commits."
-        _log_question "Do you want to push them before tagging? (yes/no)"
-        read -r push_before_tag
-        if [[ "$push_before_tag" == "yes" ]]; then
+
+        if gum confirm "❓ Do you want to push them before tagging?"; then
             git push || {
                 _log_error "❌ Failed to push changes."
                 return 1
@@ -301,29 +305,28 @@ function github-version-bump() {
 
     IFS='.' read -r major minor patch <<<"$latest_tag"
 
-    # Prompt for the type of version bump
-    echo ""
-    echo "🚀 What type of version bump?"
-    echo "1. Major ($major.$minor.$patch → $((major + 1)).0.0)"
-    echo "2. Minor ($major.$minor.$patch → $major.$((minor + 1)).0)"
-    echo "3. Patch ($major.$minor.$patch → $major.$minor.$((patch + 1)))"
-    echo "4. Custom version (you will enter manually)"
-    echo "Enter your choice (1/2/3/4):"
-    read -r bump_choice
+    # 🧩 Prompt for the type of version bump
+    bump_choice=$(
+        gum choose --cursor "👉" --header "🚀 What type of version bump?" \
+            "Major ($major.$minor.$patch → $((major + 1)).0.0)" \
+            "Minor ($major.$minor.$patch → $major.$((minor + 1)).0)" \
+            "Patch ($major.$minor.$patch → $major.$minor.$((patch + 1)))" \
+            "Custom version (you will enter manually)"
+    )
 
+    # 🧩 Determine new version
     case "$bump_choice" in
-    1)
+    *"Major"*)
         new_version="$((major + 1)).0.0"
         ;;
-    2)
+    *"Minor"*)
         new_version="$major.$((minor + 1)).0"
         ;;
-    3)
+    *"Patch"*)
         new_version="$major.$minor.$((patch + 1))"
         ;;
-    4)
-        echo "✍️  Enter the custom version (e.g., 2.5.0):"
-        read -r new_version
+    *"Custom version"*)
+        new_version=$(gum input --placeholder "e.g., 2.5.0" --prompt "✍️  Enter the custom version: ")
         if ! [[ "$new_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             _log_error "❌ Invalid version format."
             return 1
@@ -335,12 +338,13 @@ function github-version-bump() {
         ;;
     esac
 
+    # 🧩 Confirm final version before proceeding
     echo ""
-    echo "🚀 New version to be created: $new_version"
-    echo "❓ Do you want to proceed with creating and pushing this tag? (y/N)"
-    read -r confirm
+    _log_info "🚀 New version to be created: $new_version"
 
-    if [[ "$confirm" != "y" ]]; then
+    if gum confirm "❓ Do you want to proceed with creating and pushing this tag?"; then
+        _log_info "✅ Proceeding with version $new_version..."
+    else
         _log_error "❌ Operation cancelled."
         return 1
     fi

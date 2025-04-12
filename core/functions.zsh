@@ -395,9 +395,9 @@ function devkit-update() {
     echo "🔸 Current: $local_version"
     _log_info "🔹 Latest : $remote_version"
 
-    echo -n "👉 Do you want to update devkit to version $remote_version now? (y/n): "
-    read -r confirm
-    if [[ "$confirm" != [Yy] ]]; then
+    if gum confirm "👉 Do you want to update devkit to version $remote_version now?"; then
+        _log_info "✅ Proceeding with update to version $remote_version..."
+    else
         _log_error "❌ Update canceled."
         return 0
     fi

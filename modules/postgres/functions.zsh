@@ -197,53 +197,42 @@ function postgres-database-create() {
     postgres-database-list || return 1
 
     echo
-    echo -n "📦 Enter name of the database you wish to create: "
-    read -r db_name
-    echo
+    db_name=$(gum input --placeholder "database_name" --prompt "📦 Enter name of the database you wish to create: ")
 
+    # Optional: Validate input
     if [[ -z "$db_name" ]]; then
-        _log_warning "⚠️  No database name entered. Aborting."
+        _log_error "❌ Database name cannot be empty."
         unset PGPASSWORD
         return 1
     fi
+    echo
 
     # Check if the DB already exists
     db_exists=$(echo "$db_output" | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $1); if ($1 == "'"$db_name"'") print $1}')
 
     if [[ -n "$db_exists" ]]; then
-        while true; do
-            echo -n "⚠️  Database '$db_name' already exists. Do you want to drop it? (yes/no): "
-            read -r drop_confirm
-            case "$drop_confirm" in
-            [Yy][Ee][Ss])
-                _log_info "🔄 Terminating active sessions for '$db_name'..."
-                if ! psql -U postgres -h 127.0.0.1 -c \
-                    "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" 2>/dev/null; then
-                    _log_error "❌ Error: Failed to terminate active sessions."
-                    unset PGPASSWORD
-                    return 1
-                fi
+        _confirm-or-abort "⚠️  Database '$db_name' already exists. Do you want to drop it?" || {
+            _log_error "🚫 Operation canceled. Exiting..."
+            unset PGPASSWORD
+            return 1
+        }
 
-                _log_info "💣 Dropping database '$db_name'..."
-                if ! dropdb -U postgres -h 127.0.0.1 "$db_name"; then
-                    _log_error "❌ Error: Failed to drop database."
-                    unset PGPASSWORD
-                    return 1
-                fi
+        _log_info "🔄 Terminating active sessions for '$db_name'..."
+        if ! psql -U postgres -h 127.0.0.1 -c \
+            "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" 2>/dev/null; then
+            _log_error "❌ Error: Failed to terminate active sessions."
+            unset PGPASSWORD
+            return 1
+        fi
 
-                _log_success "✅ Database '$db_name' dropped."
-                break
-                ;;
-            [Nn][Oo])
-                _log_error "🚫 Operation canceled. Exiting..."
-                unset PGPASSWORD
-                return 1
-                ;;
-            *)
-                echo "❓ Please answer yes or no."
-                ;;
-            esac
-        done
+        _log_info "💣 Dropping database '$db_name'..."
+        if ! dropdb -U postgres -h 127.0.0.1 "$db_name"; then
+            _log_error "❌ Error: Failed to drop database."
+            unset PGPASSWORD
+            return 1
+        fi
+
+        _log_success "✅ Database '$db_name' dropped."
     fi
 
     _log_info "🚧 Creating new database '$db_name'..."
@@ -267,43 +256,32 @@ function postgres-database-delete() {
     databases=$(echo "$db_output" | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $1); if ($1 != "") print $1}' | sort)
 
     echo
-    echo -n "🎯 Enter the name of the database to delete: "
-    read -r db_name
+    db_name=$(gum input --placeholder "database_name" --prompt "🎯 Enter the name of the database to delete: ")
 
     if [[ -z "$db_name" ]]; then
-        _log_warning "⚠️  No database name entered. Aborting."
+        _log_error "❌ Database name cannot be empty."
         unset PGPASSWORD
         return 1
     fi
 
     if echo "$databases" | grep -Fxq "$db_name"; then
         echo
-        while true; do
-            echo -n "⚠️  Are you sure you want to delete '$db_name'? This action is irreversible. (yes/no): "
-            read -r drop_confirm
-            case "$drop_confirm" in
-            [Yy][Ee][Ss])
-                _log_info "🔄 Terminating active sessions for '$db_name'..."
-                psql -U postgres -h localhost -c \
-                    "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" >/dev/null
 
-                _log_info "💣 Dropping database '$db_name'..."
-                if dropdb -U postgres -h localhost "$db_name"; then
-                    _log_success "✅ Database '$db_name' has been dropped."
-                else
-                    _log_error "❌ Failed to drop database '$db_name'."
-                fi
-                break
-                ;;
-            [Nn][Oo])
-                _log_error "🚫 Database '$db_name' was not dropped."
-                break
-                ;;
-            *)
-                echo "❓ Please answer 'yes' or 'no'."
-                ;;
-            esac
-        done
+        _confirm-or-abort "⚠️  Are you sure you want to delete '$db_name'? This action is irreversible." || {
+            _log_error "🚫 Database '$db_name' was not dropped."
+            exit 1
+        }
+
+        _log_info "🔄 Terminating active sessions for '$db_name'..."
+        psql -U postgres -h localhost -c \
+            "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" >/dev/null
+
+        _log_info "💣 Dropping database '$db_name'..."
+        if dropdb -U postgres -h localhost "$db_name"; then
+            _log_success "✅ Database '$db_name' has been dropped."
+        else
+            _log_error "❌ Failed to drop database '$db_name'."
+        fi
     else
         _log_error "❌ Database '$db_name' does not exist."
     fi
