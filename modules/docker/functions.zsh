@@ -68,7 +68,7 @@ function docker-clean-all() {
 # 💡 Usage: docker-show-versions
 function docker-show-versions() {
     echo "🐳 Docker CLI: $(docker --version | cut -d ' ' -f 3 | tr -d ',')"
-    echo "🔧 Compose:    $(docker compose version --short 2>/dev/null || echo 'not installed')"
+    _log_info "🔧 Compose:    $(docker compose version --short 2>/dev/null || echo 'not installed')"
 }
 
 # ------------------------------------------------------------------------------

@@ -12,7 +12,7 @@ function gcloud-storage-buckets-create() {
 
     _confirm-or-abort "Are you sure you want to create new storage buckets?" "$@" || return 1
 
-    echo "🔹 Creating Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GCP_PROJECT_ID-cloudbuild-artifacts"
+    _log_info "🔹 Creating Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GCP_PROJECT_ID-cloudbuild-artifacts"
 
     # Create a new static bucket with Fine-grained access control
     gsutil mb -b on -c standard -l $GCP_REGION gs://$GS_BUCKET_STATIC/ &&
@@ -35,7 +35,7 @@ function gcloud-storage-buckets-delete() {
 
     _confirm-or-abort "Are you sure you want to delete all storage buckets and their contents?" "$@" || return 1
 
-    echo "🔹 Deleting the Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GCP_PROJECT_ID-cloudbuild-artifacts..."
+    _log_info "🔹 Deleting the Storage Buckets $GS_BUCKET_STATIC, $GS_BUCKET_NAME, and $GCP_PROJECT_ID-cloudbuild-artifacts..."
 
     # Delete all objects from all buckets in parallel and remove the buckets
     # Will remove three buckets: static, media, and Cloud Build artifacts
@@ -51,7 +51,7 @@ function gcloud-storage-buckets-sync-static() {
 
     _confirm-or-abort "Are you sure you want to sync static files to the storage bucket?" "$@" || return 1
 
-    echo "🔹 Syncing static files to the storage bucket $GS_BUCKET_STATIC..."
+    _log_info "🔹 Syncing static files to the storage bucket $GS_BUCKET_STATIC..."
 
     # Sync static files to the static bucket
     gsutil -o "GSUtil:parallel_process_count=1" -m rsync -r -j html,txt,css,js ./static gs://$GS_BUCKET_STATIC/
@@ -65,7 +65,7 @@ function gcloud-storage-buckets-set-public-read() {
 
     _confirm-or-abort "Are you sure you want to set public read permissions to the storage buckets?" "$@" || return 1
 
-    echo "🔹 Setting public read permissions to the Storage Buckets $GS_BUCKET_STATIC and $GS_BUCKET_NAME..."
+    _log_info "🔹 Setting public read permissions to the Storage Buckets $GS_BUCKET_STATIC and $GS_BUCKET_NAME..."
 
     # Set public read permissions to the static bucket
     gcloud storage buckets add-iam-policy-binding gs://$GS_BUCKET_STATIC \
@@ -87,7 +87,7 @@ function gcloud-storage-buckets-set-cross-origin() {
 
     _confirm-or-abort "Are you sure you want to set cross-origin policy to the storage buckets?" "$@" || return 1
 
-    echo "🔹 Setting cross-origin policy to the Storage Buckets $GS_BUCKET_STATIC and $GS_BUCKET_NAME..."
+    _log_info "🔹 Setting cross-origin policy to the Storage Buckets $GS_BUCKET_STATIC and $GS_BUCKET_NAME..."
 
     # Set cross-origin policy to the static bucket and media bucket
     gsutil -m cors set cross-origin.json gs://$GS_BUCKET_STATIC gs://$GS_BUCKET_NAME

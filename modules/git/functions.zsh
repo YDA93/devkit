@@ -51,7 +51,7 @@ function git-setup() {
 # - Ensures an SSH key exists and GitHub connection works
 # 💡 Usage: git-doctor
 function git-doctor() {
-    echo "🔧 Checking Git..."
+    _log_info "🔧 Checking Git..."
 
     if ! command -v git &>/dev/null; then
         _log_warning "⚠️  Git is not installed."
@@ -59,7 +59,7 @@ function git-doctor() {
         return 1
     fi
 
-    echo "🔧 Checking Git configuration..."
+    _log_info "🔧 Checking Git configuration..."
     if [[ -z $(git config user.name) || -z $(git config user.email) ]]; then
         _log_warning "⚠️  Git user.name or user.email not configured"
         _log_hint "💡 Set them with:"
@@ -77,7 +77,7 @@ function git-doctor() {
         _log_hint "💡 Tip: git config --global core.excludesfile ~/.gitignore_global"
     fi
 
-    echo "🔧 Checking SSH key..."
+    _log_info "🔧 Checking SSH key..."
     if [[ -f ~/.ssh/id_rsa.pub || -f ~/.ssh/id_ed25519.pub ]]; then
         _log_success "✅ SSH key found"
     else

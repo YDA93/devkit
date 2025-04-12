@@ -69,11 +69,11 @@ function gcloud-scheduler-jobs-delete() {
     # Format job list for prompt
     _gcloud-scheduler-jobs-prompt delete "${urls[@]}" "$@" || return 1
 
-    echo "🔹 Deleting ${#urls[@]} job(s)..."
+    _log_info "🔹 Deleting ${#urls[@]} job(s)..."
 
     for url in "${urls[@]}"; do
         local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
-        echo "🔧 Deleting job: $job_name"
+        _log_info "🔧 Deleting job: $job_name"
         gcloud scheduler jobs delete "$job_name" \
             --project="$GCP_PROJECT_ID" \
             --location="$GCP_REGION" \
@@ -88,7 +88,7 @@ function gcloud-scheduler-jobs-delete() {
 function gcloud-scheduler-jobs-sync() {
     gcloud-config-load-and-validate || return 1
 
-    echo "🔹 Syncing Cloud Scheduler with Django cron URLs..."
+    _log_info "🔹 Syncing Cloud Scheduler with Django cron URLs..."
 
     echo "🔍 Fetching cron URLs from Django..."
     local local_urls=($(django-find-cron-urls | grep '^https://'))

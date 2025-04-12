@@ -219,7 +219,7 @@ function django-database-init() {
 # 💡 Usage: django-data-backup
 function django-data-backup() {
     if ! _confirm-or-abort "Do you want to back up Django data?"; then
-        echo "ℹ️ Skipping data backup..."
+        _log_info "ℹ️ Skipping data backup..."
         return 0
     fi
 
@@ -245,7 +245,7 @@ function django-data-restore() {
         backup_file="data.json"
     else
         if ! _confirm-or-abort "Do you want to restore data from a backup file?"; then
-            echo "ℹ️ Skipping data restore..."
+            _log_info "ℹ️ Skipping data restore..."
             return 0
         fi
 
@@ -265,12 +265,12 @@ function django-data-restore() {
     python "$PWD/manage.py" loaddata "$backup_file" --traceback || return 1
     _log_success "✅ Data restoration complete."
 
-    echo "🔁 Resetting database sequences..."
+    _log_info "🔁 Resetting database sequences..."
     apps=$(python "$PWD/manage.py" shell -c \
         "from django.apps import apps; print('\n'.join([app.label for app in apps.get_app_configs()]))")
 
     echo "$apps" | while IFS= read -r app; do
-        echo "🔧 Resetting sequences for $app..."
+        _log_info "🔧 Resetting sequences for $app..."
         python "$PWD/manage.py" sqlsequencereset "$app" |
             python "$PWD/manage.py" dbshell
     done

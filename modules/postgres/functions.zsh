@@ -6,11 +6,11 @@
 function postgres-setup() {
     # 🐘 Initialize PostgreSQL only if not already running or user missing
     if ! psql -U postgres -c '\q' &>/dev/null; then
-        echo "⚙️  Setting up PostgreSQL for the first time..."
+        _log_info "⚙️  Setting up PostgreSQL for the first time..."
 
         # Start PostgreSQL if not already running
         if ! brew services list | grep -q "^$LATEST_PG.*started"; then
-            echo "🔄 Starting PostgreSQL service..."
+            _log_info "🔄 Starting PostgreSQL service..."
             # brew services start "$LATEST_PG"
         else
             _log_success "✅ PostgreSQL service is already running."
@@ -122,7 +122,7 @@ function postgres-doctor() {
         echo "   Then inside psql, run:"
         echo "     \\password postgres"
         echo ""
-        echo "⚙️  Also ensure the PostgreSQL service is running:"
+        _log_info "⚙️  Also ensure the PostgreSQL service is running:"
         echo "   brew services start $LATEST_PG     "
     fi
 
@@ -167,7 +167,7 @@ function postgres-database-list() {
     echo
     echo "📋 PostgreSQL Databases:"
     echo
-    echo "🔧 System Databases:"
+    _log_info "🔧 System Databases:"
     echo "────────────────────"
     for db in "${system_dbs[@]}"; do
         echo " • $db"
@@ -216,7 +216,7 @@ function postgres-database-create() {
             read -r drop_confirm
             case "$drop_confirm" in
             [Yy][Ee][Ss])
-                echo "🔄 Terminating active sessions for '$db_name'..."
+                _log_info "🔄 Terminating active sessions for '$db_name'..."
                 if ! psql -U postgres -h 127.0.0.1 -c \
                     "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" 2>/dev/null; then
                     _log_error "❌ Error: Failed to terminate active sessions."
@@ -235,7 +235,7 @@ function postgres-database-create() {
                 break
                 ;;
             [Nn][Oo])
-                echo "🚫 Operation canceled. Exiting..."
+                _log_error "🚫 Operation canceled. Exiting..."
                 unset PGPASSWORD
                 return 1
                 ;;
@@ -283,7 +283,7 @@ function postgres-database-delete() {
             read -r drop_confirm
             case "$drop_confirm" in
             [Yy][Ee][Ss])
-                echo "🔄 Terminating active sessions for '$db_name'..."
+                _log_info "🔄 Terminating active sessions for '$db_name'..."
                 psql -U postgres -h localhost -c \
                     "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" >/dev/null
 
@@ -296,7 +296,7 @@ function postgres-database-delete() {
                 break
                 ;;
             [Nn][Oo])
-                echo "🚫 Database '$db_name' was not dropped."
+                _log_error "🚫 Database '$db_name' was not dropped."
                 break
                 ;;
             *)

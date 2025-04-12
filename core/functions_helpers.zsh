@@ -204,3 +204,8 @@ function _log_title() {
 function _log_summary() {
     gum style --border double --padding "1 3" --margin "2 0" --bold --foreground 42 "$@"
 }
+
+# ❓ Question or prompt message
+function _log_question() {
+    gum style --bold --foreground 45 "❓ $@"
+}

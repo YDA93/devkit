@@ -6,7 +6,7 @@
 # 💡 Usage: code-settings
 function code-settings() {
     local SETTINGS_PATH="$HOME/Library/Application Support/Code/User/settings.json"
-    echo "⚙️ Opening VS Code settings..."
+    _log_info "⚙️ Opening VS Code settings..."
     code "$SETTINGS_PATH"
 }
 
@@ -42,7 +42,7 @@ function code-extensions-backup() {
 
     local BACKUP_PATH="$BACKUP_DIR/$BACKUP_FILE"
 
-    echo "💾 Backing up extensions to: $BACKUP_PATH ..."
+    _log_info "💾 Backing up extensions to: $BACKUP_PATH ..."
     code --list-extensions >"$BACKUP_PATH"
 
     _log_success "✅ Backup complete at: $BACKUP_PATH"
@@ -70,7 +70,7 @@ function code-extensions-restore() {
         return 1
     fi
 
-    echo "♻️ Restoring extensions from: $BACKUP_PATH ..."
+    _log_info "♻️ Restoring extensions from: $BACKUP_PATH ..."
     xargs -n1 code --install-extension <"$BACKUP_PATH"
 
     _log_success "✅ Extensions restored successfully!"
@@ -85,7 +85,7 @@ function code-project() {
 
     # If no project is provided, list available projects
     if [[ -z "$PROJECT_NAME" ]]; then
-        echo "📂 Available projects in $BASE_PATH:"
+        _log_info "📂 Available projects in $BASE_PATH:"
         ls -1 "$BASE_PATH"
         return 1
     fi
@@ -95,7 +95,7 @@ function code-project() {
 
     # Check if the directory exists
     if [[ -d "$PROJECT_PATH" ]]; then
-        echo "🚀 Opening project: $PROJECT_NAME"
+        _log_info "🚀 Opening project: $PROJECT_NAME"
         code "$PROJECT_PATH"
     else
         _log_error "❌ Project not found: $PROJECT_PATH"

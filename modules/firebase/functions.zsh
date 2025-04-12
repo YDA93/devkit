@@ -7,7 +7,7 @@
 # - Checks Firebase login status
 # 💡 Usage: firebase-doctor
 function firebase-doctor() {
-    echo "🔥 Checking Firebase CLI..."
+    _log_info "🔥 Checking Firebase CLI..."
 
     if ! command -v firebase &>/dev/null; then
         _log_warning "⚠️  Firebase CLI not found."
@@ -22,7 +22,7 @@ function firebase-doctor() {
         return 1
     fi
 
-    echo "🔐 Checking Firebase login status..."
+    _log_info "🔐 Checking Firebase login status..."
     if firebase login:list | grep -q "@"; then
         _log_success "✅ Logged into Firebase CLI"
     else
@@ -36,7 +36,7 @@ function firebase-doctor() {
 # 📋 Lists all Firebase projects in your account
 # 💡 Usage: firebase-project-list
 function firebase-project-list() {
-    echo "🔍 Fetching Firebase projects..."
+    _log_info "🔍 Fetching Firebase projects..."
     firebase projects:list
 }
 
@@ -55,7 +55,7 @@ function firebase-use-project() {
 # 🔐 Check Firebase CLI full authentication (account + valid token)
 # 💡 Usage: firebase-login-check
 function firebase-login-check() {
-    echo "🔍 Checking Firebase CLI authentication..."
+    _log_info "🔍 Checking Firebase CLI authentication..."
 
     # First, check if an account is configured
     local ACCOUNT=$(firebase login:list 2>/dev/null | grep -Eo "[[:alnum:]_.+-]+@[[:alnum:]_.+-]+")
@@ -72,7 +72,7 @@ function firebase-login-check() {
         _log_success "✅ Firebase token is valid."
     else
         _log_warning "⚠️ Firebase token expired or invalid."
-        echo "➡️ Run: firebase login --reauth"
+        _log_info "➡️ Run: firebase login --reauth"
         return 1
     fi
 }
@@ -160,7 +160,7 @@ function firebase-open-console() {
     fi
 
     local url="https://console.firebase.google.com/project/$project_id/overview"
-    echo "🌐 Opening Firebase console: $url"
+    _log_info "🌐 Opening Firebase console: $url"
     open "$url"
 }
 

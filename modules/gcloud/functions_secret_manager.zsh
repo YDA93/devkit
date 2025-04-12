@@ -10,7 +10,7 @@ function gcloud-secret-manager-env-create() {
 
     _confirm-or-abort "Are you sure you want to create a new secret in Secret Manager?" "$@" || return 1
 
-    echo "🔹 Creating a new secret '$GCP_SECRET_NAME' in Secret Manager..."
+    _log_info "🔹 Creating a new secret '$GCP_SECRET_NAME' in Secret Manager..."
 
     # Create .env file in Secret Manager with the contents of the local .env file and specified region
     gcloud secrets create $GCP_SECRET_NAME \
@@ -32,7 +32,7 @@ function gcloud-secret-manager-env-update() {
 
     _confirm-or-abort "Are you sure you want to update the secret in Secret Manager?" "$@" || return 1
 
-    echo "🔹 Updating the secret '$GCP_SECRET_NAME' in Secret Manager..."
+    _log_info "🔹 Updating the secret '$GCP_SECRET_NAME' in Secret Manager..."
 
     # Add a new version of the secret in Secret Manager with the updated .env file
     gcloud secrets versions add $GCP_SECRET_NAME --data-file=".env" --quiet
@@ -64,7 +64,7 @@ function gcloud-secret-manager-env-delete() {
     _confirm-or-abort "Are you sure you want to delete the secret from Secret Manager
     This action is irreversible and will permanently delete the secret." "$@" || return 1
 
-    echo "🔹 Deleting the secret '$GCP_SECRET_NAME' from Secret Manager..."
+    _log_info "🔹 Deleting the secret '$GCP_SECRET_NAME' from Secret Manager..."
 
     # Delete the secret
     gcloud secrets delete $GCP_SECRET_NAME --quiet

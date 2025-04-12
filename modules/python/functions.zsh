@@ -64,7 +64,7 @@ function python-environment-delete() {
         rm -rf venv
         echo "🗑️ Environment deleted."
     else
-        echo "ℹ️ No virtual environment found to delete."
+        _log_info "ℹ️ No virtual environment found to delete."
     fi
 }
 
@@ -128,12 +128,12 @@ function pip-install() {
     fi
 
     if $install_main; then
-        echo "📦 Installing main dependencies from requirements.txt..."
+        _log_info "📦 Installing main dependencies from requirements.txt..."
         pip install -r requirements.txt || return 1
     fi
 
     if $install_test; then
-        echo "🧪 Installing test/dev dependencies from requirements-test.txt..."
+        _log_info "🧪 Installing test/dev dependencies from requirements-test.txt..."
         pip install -r requirements-test.txt || return 1
     fi
 }
@@ -175,13 +175,13 @@ function pip-update() {
     # Install and update
     if $update_main; then
         pip-install --main || return 1
-        echo "🔄 Updating main dependencies in requirements.txt..."
+        _log_info "🔄 Updating main dependencies in requirements.txt..."
         pip-upgrade requirements.txt || return 1
     fi
 
     if $update_test; then
         pip-install --test || return 1
-        echo "🔄 Updating test dependencies in requirements-test.txt..."
+        _log_info "🔄 Updating test dependencies in requirements-test.txt..."
         pip-upgrade requirements-test.txt || return 1
     fi
 }

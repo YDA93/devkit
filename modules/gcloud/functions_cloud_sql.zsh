@@ -9,7 +9,7 @@ function gcloud-sql-instance-create() {
 
     _confirm-or-abort "Are you sure you want to create a new Cloud SQL instance?" "$@" || return 1
 
-    echo "🔹 Creating a new Cloud SQL instance for PostgreSQL..."
+    _log_info "🔹 Creating a new Cloud SQL instance for PostgreSQL..."
 
     # Define variables for instance configuration
     TIER="db-custom-1-3840" # 1 vCPU, 3.75 GB RAM
@@ -54,7 +54,7 @@ function gcloud-sql-instance-delete() {
 
     INSTANCE_NAME=$GCP_SQL_INSTANCE_ID
 
-    echo "🔹 Deleting Cloud SQL instance: $INSTANCE_NAME ..."
+    _log_info "🔹 Deleting Cloud SQL instance: $INSTANCE_NAME ..."
 
     # Delete the instance
     gcloud sql instances delete $INSTANCE_NAME --quiet
@@ -66,7 +66,7 @@ function gcloud-sql-proxy-start() {
     # Call the configuration loading function
     gcloud-config-load-and-validate || return 1
 
-    echo "🔹 Starting Cloud SQL Proxy..."
+    _log_info "🔹 Starting Cloud SQL Proxy..."
     # If the configuration loads and validates, run the cloud-sql-proxy
     # The port is set to GCP_SQL_PROXY_PORT to avoid conflicts with the default port 3306 & 5432
     ./cloud-sql-proxy --port $GCP_SQL_PROXY_PORT "${GCP_PROJECT_ID}:${GCP_REGION}:${GCP_SQL_INSTANCE_ID}"
@@ -78,7 +78,7 @@ function gcloud-sql-postgres-connect() {
     # Step 1: Load Configuration and Validate
     gcloud-config-load-and-validate || return 1
 
-    echo "🔹 Connecting to the Cloud SQL PostgreSQL instance..."
+    _log_info "🔹 Connecting to the Cloud SQL PostgreSQL instance..."
 
     # Step 2: Run Expect to automate password entry and execute SQL commands
     gcloud sql connect "$GCP_SQL_INSTANCE_ID" --user=postgres --quiet
@@ -92,7 +92,7 @@ function gcloud-sql-db-and-user-create() {
 
     _confirm-or-abort "Are you sure you want to create a new database and user?" "$@" || return 1
 
-    echo "🔹 Creating a new database and user in Cloud SQL for PostgreSQL..."
+    _log_info "🔹 Creating a new database and user in Cloud SQL for PostgreSQL..."
 
     # Step 2: Run Expect to automate password entry and execute SQL commands
     expect <<EOF
@@ -163,7 +163,7 @@ function gcloud-sql-db-and-user-delete() {
 
     _confirm-or-abort "Are you sure you want to delete the database and user '$GCP_SQL_DB_USERNAME'?" "$@" || return 1
 
-    echo "🔹 Deleting the database and user in Cloud SQL for PostgreSQL..."
+    _log_info "🔹 Deleting the database and user in Cloud SQL for PostgreSQL..."
 
     # Run Expect to automate password entry and execute SQL commands
     expect <<EOF
@@ -231,7 +231,7 @@ EOF
 function gcloud-sql-proxy-and-django-setup() {
     _confirm-or-abort "Are you sure you want to start the Cloud SQL Proxy and run Django setup?" "$@" || return 1
 
-    echo "🔹 Starting the Cloud SQL Proxy in a new terminal window, then start Django in Development 
+    _log_info "🔹 Starting the Cloud SQL Proxy in a new terminal window, then start Django in Development 
     settings, apply migrations, and populate the database..."
 
     # Get the current working directory

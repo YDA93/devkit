@@ -77,7 +77,7 @@ function github-ssh-setup() {
         ssh-add "$key_path"
         _log_success "✅ SSH key added to agent."
     else
-        echo "ℹ️  SSH key already added to agent. Skipping."
+        _log_info "ℹ️  SSH key already added to agent. Skipping."
     fi
 
     echo ""
@@ -244,7 +244,7 @@ function github-version-bump() {
     # Check for uncommitted changes
     if ! git diff --quiet || ! git diff --cached --quiet; then
         _log_warning "⚠️  You have uncommitted changes."
-        echo "Do you want to commit all changes before tagging? (y/N)"
+        _log_question "Do you want to commit all changes before tagging? (y/N)"
         read -r commit_before_tag
         if [[ "$commit_before_tag" == "y" ]]; then
             echo "📝 Enter commit message:"
@@ -270,7 +270,7 @@ function github-version-bump() {
     # Check for unpushed commits
     if [[ $(git log --branches --not --remotes) ]]; then
         _log_warning "⚠️  You have unpushed commits."
-        echo "Do you want to push them before tagging? (yes/no)"
+        _log_question "Do you want to push them before tagging? (yes/no)"
         read -r push_before_tag
         if [[ "$push_before_tag" == "yes" ]]; then
             git push || {
@@ -294,7 +294,7 @@ function github-version-bump() {
 
     if [[ -z "$latest_tag" ]]; then
         latest_tag="0.0.0"
-        echo "ℹ️  No tags found. Starting from version: $latest_tag"
+        _log_info "ℹ️  No tags found. Starting from version: $latest_tag"
     else
         echo "🔖 Latest version: $latest_tag"
     fi

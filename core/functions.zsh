@@ -97,7 +97,7 @@ function devkit-is-setup() {
     if ((${#missing[@]} > 0)); then
         if [[ "$quiet" == false ]]; then
             _log_warning "⚠️  DevKit is not fully set up."
-            echo "🚫 Missing tools: ${missing[*]}"
+            _log_error "🚫 Missing tools: ${missing[*]}"
             echo "👉 Run: devkit-pc-setup"
         fi
         return 1
@@ -206,7 +206,7 @@ function devkit-pc-update() {
 # 📋 Checks installed versions of common tools
 # 💡 Usage: devkit-check-tools
 function devkit-check-tools() {
-    echo "🔧 Development Environment Status:"
+    _log_info "🔧 Development Environment Status:"
     echo "────────────────────────────────────"
 
     # Track missing tools
@@ -322,18 +322,18 @@ function devkit-doctor() {
         firebase-doctor || return 1
 
         # Shell
-        echo "🔧 Checking default shell..."
+        _log_info "🔧 Checking default shell..."
         [[ "$SHELL" == *"zsh" ]] && _log_success "✅ Default shell is zsh" ||
             _log_warning "⚠️  Zsh is not your default shell. Set it with: chsh -s $(which zsh)"
 
         # PATH Sanity
-        echo "🔧 Checking PATH..."
+        _log_info "🔧 Checking PATH..."
         echo "$PATH" | grep -q "/usr/local/bin" &&
             _log_success "✅ /usr/local/bin is in PATH" ||
             _log_warning "⚠️  /usr/local/bin is missing from PATH"
 
         _log_success "✅ All checks completed!"
-        echo "🔧 Your devkit environment is ready!"
+        _log_info "🔧 Your devkit environment is ready!"
         echo "────────────────────────────────────"
 
     } 2>&1 | tee -a "$log_file"
@@ -346,7 +346,7 @@ function devkit-doctor() {
 function devkit-update() {
     local repo_url="https://github.com/YDA93/devkit"
 
-    echo "🔄 Checking for devkit updates..."
+    _log_info "🔄 Checking for devkit updates..."
 
     if [[ ! -d "$DEVKIT_ROOT" ]]; then
         echo "📦 devkit not found. Cloning into $DEVKIT_ROOT..."
@@ -379,7 +379,7 @@ function devkit-update() {
     fi
 
     if [[ -z "$local_version" ]]; then
-        echo "ℹ️  No local version found. You might be on initial clone."
+        _log_info "ℹ️  No local version found. You might be on initial clone."
         local_version="none"
     fi
 
@@ -393,7 +393,7 @@ function devkit-update() {
 
     echo "📥 New version available!"
     echo "🔸 Current: $local_version"
-    echo "🔹 Latest : $remote_version"
+    _log_info "🔹 Latest : $remote_version"
 
     echo -n "👉 Do you want to update devkit to version $remote_version now? (y/n): "
     read -r confirm
@@ -410,7 +410,7 @@ function devkit-update() {
     fi
 
     if [[ -f "$DEVKIT_ROOT/bin/devkit.zsh" ]]; then
-        echo "🔁 Reloading devkit..."
+        _log_info "🔁 Reloading devkit..."
         source "$DEVKIT_ROOT/bin/devkit.zsh"
         _log_success "✅ devkit updated and reloaded to version $remote_version."
     fi

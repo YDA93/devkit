@@ -47,7 +47,7 @@ function mas-install-apps() {
         return 1
     fi
 
-    echo "📦 Installing App Store apps from $input"
+    _log_info "📦 Installing App Store apps from $input"
 
     while read -r app_id app_name; do
         [[ -z "$app_id" || "$app_id" =~ ^# ]] && continue
@@ -82,7 +82,7 @@ function mas-install-from-settings() {
         return 1
     fi
 
-    echo "🛍️  Installing selected Mac App Store apps from $settings_file"
+    _log_info "🛍️  Installing selected Mac App Store apps from $settings_file"
     echo ""
 
     source "$settings_file"
@@ -116,9 +116,9 @@ function mas-install-from-settings() {
 # 🔄 Updates installed App Store apps via mas
 # 💡 Usage: mas-maintain
 function mas-maintain() {
-    echo "🔍 Checking for App Store updates..."
+    _log_info "🔍 Checking for App Store updates..."
     mas outdated || return 1
-    echo "⬆️  Upgrading App Store apps..."
+    _log_info "⬆️  Upgrading App Store apps..."
     mas upgrade || return 1
     _log_success "✅ App Store apps updated."
 }

@@ -218,7 +218,7 @@ function homebrew-install-from-settings() {
         return 1
     fi
 
-    echo "🔧 Installing Homebrew packages based on your saved settings..."
+    _log_info "🔧 Installing Homebrew packages based on your saved settings..."
     echo "📄 Source: $settings_file"
     echo ""
 
@@ -229,7 +229,7 @@ function homebrew-install-from-settings() {
     while IFS='=' read -r key value; do
         if [[ "$key" == formula_install_* && "$value" == "\"y\"" ]]; then
             local formula="${key#formula_install_}"
-            echo "🔧 Installing formula: $formula"
+            _log_info "🔧 Installing formula: $formula"
             brew install "$formula" && ((installed_formula++))
         fi
     done <"$settings_file"
@@ -265,11 +265,11 @@ function homebrew-maintain() {
     echo "🩺 Checking system health..."
     brew doctor || _log_warning "⚠️ brew doctor reported issues."
 
-    echo "⬆️  Updating Homebrew..."
+    _log_info "⬆️  Updating Homebrew..."
     brew update || return 1
     _log_success "✅ Homebrew updated."
 
-    echo "🔄 Upgrading formulas..."
+    _log_info "🔄 Upgrading formulas..."
     brew upgrade --formula || return 1
     _log_success "✅ Upgraded formulas."
 
@@ -307,7 +307,7 @@ function homebrew-clean() {
 # - Checks for outdated packages
 # 💡 Usage: homebrew-doctor
 function homebrew-doctor() {
-    echo "🔧 Checking Homebrew..."
+    _log_info "🔧 Checking Homebrew..."
 
     if ! command -v brew &>/dev/null; then
         _log_warning "⚠️  Homebrew is not installed."

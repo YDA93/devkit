@@ -7,7 +7,7 @@
 # 💡 Usage: npm-save-packages
 function npm-save-packages() {
     local output="$DEVKIT_MODULES_DIR/npm/packages.txt"
-    echo "📦 Saving global npm packages to $output"
+    _log_info "📦 Saving global npm packages to $output"
     mkdir -p "$(dirname "$output")"
 
     npm list -g --depth=0 --parseable |
@@ -37,9 +37,9 @@ function npm-install-packages() {
         return 1
     }
 
-    echo "📦 Installing global npm packages from $input"
-    echo "📦 Using prefix: $npm_prefix"
-    echo "📦 Packages:"
+    _log_info "📦 Installing global npm packages from $input"
+    _log_info "📦 Using prefix: $npm_prefix"
+    _log_info "📦 Packages:"
     cat "$input"
     echo ""
 
@@ -92,7 +92,7 @@ function npm-repair() {
         return 1
     }
 
-    echo "🔧 Reinstalling npm via Homebrew ($LATEST_NODE)..."
+    _log_info "🔧 Reinstalling npm via Homebrew ($LATEST_NODE)..."
     brew reinstall "$LATEST_NODE" || return 1
     echo "🧼 Cleaning up existing global packages..."
     npm-uninstall-packages || return 1
@@ -126,7 +126,7 @@ function npm-prune-packages() {
                 _log_error "❌ Uninstalling: $pkg"
                 npm uninstall -g "$pkg"
             else
-                echo "⏭️ Skipping: $pkg"
+                _log_info "⏭️ Skipping: $pkg"
             fi
         fi
     done
@@ -157,7 +157,7 @@ function npm-list-packages() {
 # - Runs `npm doctor`
 # 💡 Usage: npm-doctor
 function npm-doctor() {
-    echo "📦 Checking npm and Node.js..."
+    _log_info "📦 Checking npm and Node.js..."
 
     if ! command -v node &>/dev/null; then
         _log_warning "⚠️  Node.js is not installed or not in PATH."

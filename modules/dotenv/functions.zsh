@@ -48,7 +48,7 @@ function environment-variable-set() {
         return 1
     fi
 
-    echo "🔹 Setting $key=\"$value\" in $env_file..."
+    _log_info "🔹 Setting $key=\"$value\" in $env_file..."
 
     # Escape forward slashes and ampersands for sed replacement
     local escaped_value

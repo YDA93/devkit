@@ -10,27 +10,27 @@
 # - Ensures Xcode and CLI tools are installed
 # 💡 Usage: xcode-setup
 function xcode-setup() {
-    echo "🚀 Starting Xcode setup..."
+    _log_info "🚀 Starting Xcode setup..."
 
     # 🛠️ Installs all available macOS software updates (system + security)
-    echo "📦 Running software updates..."
+    _log_info "📦 Running software updates..."
     _check-software-updates || return 1
 
     # 🔁 Installs Rosetta for Apple Silicon (to run Intel-based apps/tools)
     if /usr/bin/pgrep oahd >/dev/null 2>&1; then
         _log_success "✅ Rosetta is already installed."
     else
-        echo "🔁 Installing Rosetta..."
+        _log_info "🔁 Installing Rosetta..."
         softwareupdate --install-rosetta --agree-to-license || return 1
     fi
 
     # 📜 Accept Xcode license, must be before updating CocoaPods
-    echo "📜 Accepting Xcode license..."
+    _log_info "📜 Accepting Xcode license..."
     sudo xcodebuild -license accept || return 1
 
     # 🍎 Updates CocoaPods master specs repo (used for dependency resolution)
     if command -v pod >/dev/null 2>&1; then
-        echo "📦 Updating CocoaPods specs..."
+        _log_info "📦 Updating CocoaPods specs..."
         pod repo update || return 1
     else
         _log_warning "⚠️ CocoaPods not found. Skipping pod repo update."
@@ -47,7 +47,7 @@ function xcode-setup() {
 
     # 🔍 Check for Xcode Command Line Tools
     if ! xcode-select -p &>/dev/null; then
-        echo "🔧 Installing Xcode Command Line Tools..."
+        _log_info "🔧 Installing Xcode Command Line Tools..."
         xcode-select --install || return 1
     else
         _log_success "✅ Xcode Command Line Tools are installed."
@@ -58,7 +58,7 @@ function xcode-setup() {
         xcode-simulator-first-launch || return 1
     fi
 
-    echo "🎉 Xcode setup completed successfully."
+    _log_success "🎉 Xcode setup completed successfully."
 }
 
 # 📱 Launches iOS Simulator to complete first-run setup
@@ -66,17 +66,17 @@ function xcode-setup() {
 # - Optionally pre-downloads iOS platform support
 # 💡 Usage: xcode-simulator-first-launch
 function xcode-simulator-first-launch() {
-    echo "📱 Launching iOS Simulator for initial setup..."
+    _log_info "📱 Launching iOS Simulator for initial setup..."
 
     # Set Xcode path (only if needed)
     sudo xcode-select -s /Applications/Xcode.app/Contents/Developer || return 1
 
     # Run Xcode's first launch tasks (installs tools, accepts licenses)
-    echo "🔧 Running Xcode first launch tasks..."
+    _log_info "🔧 Running Xcode first launch tasks..."
     sudo xcodebuild -runFirstLaunch || return 1
 
     # Pre-download the iOS platform support (optional but nice)
-    echo "📦 Pre-downloading iOS platform support..."
+    _log_info "📦 Pre-downloading iOS platform support..."
     xcodebuild -downloadPlatform iOS || return 1
 
     _log_success "✅ Xcode and Simulator first-launch setup complete."
@@ -86,7 +86,7 @@ function xcode-simulator-first-launch() {
 # - Checks for `xcode-select`, `xcrun`, iOS simulators, and Rosetta (if Apple Silicon)
 # 💡 Usage: xcode-doctor
 function xcode-doctor() {
-    echo "🔧 Checking Xcode..."
+    _log_info "🔧 Checking Xcode..."
 
     if ! xcode-select -p &>/dev/null; then
         _log_warning "⚠️  Xcode not properly installed or selected."
@@ -99,7 +99,7 @@ function xcode-doctor() {
         return 1
     fi
 
-    echo "📱 Checking iOS simulators..."
+    _log_info "📱 Checking iOS simulators..."
     if xcrun simctl list devices available | grep -qE "iPhone|iPad"; then
         _log_success "✅ iOS simulators are available."
     else
@@ -107,7 +107,7 @@ function xcode-doctor() {
         _log_hint "💡 Open Xcode ➝ Preferences ➝ Components to install simulators."
     fi
 
-    echo "🔧 Checking Rosetta installation..."
+    _log_info "🔧 Checking Rosetta installation..."
     if [[ $(uname -m) == "arm64" ]]; then
         if ! /usr/bin/pgrep oahd &>/dev/null; then
             _log_warning "⚠️  Rosetta is not installed."
