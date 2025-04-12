@@ -10,19 +10,19 @@ function environment-variable-exists() {
 
     # Check if file exists
     if [[ ! -f "$env_file" ]]; then
-        echo "❌ Error: File not found – $env_file"
+        _log_error "❌ Error: File not found – $env_file"
         return 1
     fi
 
     # Check if the variable is present
     if ! grep -q "^${var_name}=" "$env_file"; then
-        echo "❌ Error: $var_name is not defined in $env_file"
+        _log_error "❌ Error: $var_name is not defined in $env_file"
         return 1
     fi
 
     # Check if the variable is not empty
     if grep -q "^${var_name}=$" "$env_file"; then
-        echo "❌ Error: $var_name is defined but empty in $env_file"
+        _log_error "❌ Error: $var_name is defined but empty in $env_file"
         return 1
     fi
 
@@ -37,14 +37,14 @@ function environment-variable-set() {
     local env_file=".env"
 
     if [ -z "$key" ] || [ -z "$value" ]; then
-        echo "❌ Error: Key or value is missing!"
+        _log_error "❌ Error: Key or value is missing!"
         echo "Usage: environment-variable-set [key] [value]"
         return 1
     fi
 
     # Ensure .env file exists
     if [ ! -f "$env_file" ]; then
-        echo "❌ Error: .env file not found."
+        _log_error "❌ Error: .env file not found."
         return 1
     fi
 
@@ -62,7 +62,7 @@ function environment-variable-set() {
         echo "$key=\"$value\"" >>"$env_file"
     fi
 
-    echo "✅ $key successfully set."
+    _log_success "✅ $key successfully set."
 }
 
 # 🔍 Retrieves the value of a variable from a .env file
@@ -90,14 +90,14 @@ function environment-variable-get() {
             shift
             ;;
         -*)
-            echo "❌ Unknown option: $1" >&2
+            _log_error "❌ Unknown option: $1" >&2
             return 1
             ;;
         *)
             if [[ -z "$key" ]]; then
                 key="$1"
             else
-                echo "❌ Unexpected argument: $1" >&2
+                _log_error "❌ Unexpected argument: $1" >&2
                 return 1
             fi
             shift
@@ -106,12 +106,12 @@ function environment-variable-get() {
     done
 
     if [[ -z "$key" ]]; then
-        echo "❌ Error: No key provided."
+        _log_error "❌ Error: No key provided."
         return 1
     fi
 
     if [[ ! -f "$env_file" ]]; then
-        echo "❌ Error: File not found – $env_file"
+        _log_error "❌ Error: File not found – $env_file"
         return 1
     fi
 
@@ -124,7 +124,7 @@ function environment-variable-get() {
     fi
 
     if [[ -z "$value" ]]; then
-        echo "❌ Error: $key is not defined or empty in $env_file"
+        _log_error "❌ Error: $key is not defined or empty in $env_file"
         return 1
     fi
 

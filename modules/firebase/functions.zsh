@@ -10,24 +10,24 @@ function firebase-doctor() {
     echo "🔥 Checking Firebase CLI..."
 
     if ! command -v firebase &>/dev/null; then
-        echo "⚠️  Firebase CLI not found."
-        echo "💡 Install it globally with: npm install -g firebase-tools"
+        _log_warning "⚠️  Firebase CLI not found."
+        _log_hint "💡 Install it globally with: npm install -g firebase-tools"
         return 1
     fi
 
     # Check if Node.js is available (since Firebase CLI depends on it)
     if ! command -v node &>/dev/null; then
-        echo "⚠️  Node.js is not installed or not in PATH."
-        echo "💡 Firebase CLI requires Node.js to work properly."
+        _log_warning "⚠️  Node.js is not installed or not in PATH."
+        _log_hint "💡 Firebase CLI requires Node.js to work properly."
         return 1
     fi
 
     echo "🔐 Checking Firebase login status..."
     if firebase login:list | grep -q "@"; then
-        echo "✅ Logged into Firebase CLI"
+        _log_success "✅ Logged into Firebase CLI"
     else
-        echo "⚠️  Not logged in to Firebase"
-        echo "💡 Run: firebase login"
+        _log_warning "⚠️  Not logged in to Firebase"
+        _log_hint "💡 Run: firebase login"
     fi
 
     return 0
@@ -44,12 +44,12 @@ function firebase-project-list() {
 # 💡 Usage: firebase-use-project <project-id>
 function firebase-use-project() {
     if [[ -z "$1" ]]; then
-        echo "❌ Usage: firebase-use-project <project-id>"
+        _log_error "❌ Usage: firebase-use-project <project-id>"
         return 1
     fi
 
     firebase use "$1"
-    echo "✅ Switched to Firebase project: $1"
+    _log_success "✅ Switched to Firebase project: $1"
 }
 
 # 🔐 Check Firebase CLI full authentication (account + valid token)
@@ -61,17 +61,17 @@ function firebase-login-check() {
     local ACCOUNT=$(firebase login:list 2>/dev/null | grep -Eo "[[:alnum:]_.+-]+@[[:alnum:]_.+-]+")
 
     if [[ -z "$ACCOUNT" ]]; then
-        echo "❌ No Firebase account configured. Run: firebase login"
+        _log_error "❌ No Firebase account configured. Run: firebase login"
         return 1
     fi
 
-    echo "✅ Firebase account detected: $ACCOUNT"
+    _log_success "✅ Firebase account detected: $ACCOUNT"
 
     # Second, test token validity with a safe command
     if firebase projects:list >/dev/null 2>&1; then
-        echo "✅ Firebase token is valid."
+        _log_success "✅ Firebase token is valid."
     else
-        echo "⚠️ Firebase token expired or invalid."
+        _log_warning "⚠️ Firebase token expired or invalid."
         echo "➡️ Run: firebase login --reauth"
         return 1
     fi
@@ -87,7 +87,7 @@ function firebase-deploy-all() {
     _confirm-or-abort "This will deploy all Firebase services (hosting, functions, etc.). Continue?" "$@" || return 1
 
     firebase deploy
-    echo "✅ Firebase deployment complete."
+    _log_success "✅ Firebase deployment complete."
 }
 
 # 🏡 Deploys Firebase hosting only
@@ -96,7 +96,7 @@ function firebase-deploy-hosting() {
     _confirm-or-abort "Deploy Firebase hosting only?" "$@" || return 1
 
     firebase deploy --only hosting
-    echo "✅ Firebase hosting deployed."
+    _log_success "✅ Firebase hosting deployed."
 }
 
 # ☁️ Deploys Firebase Cloud Functions only
@@ -105,7 +105,7 @@ function firebase-deploy-functions() {
     _confirm-or-abort "Deploy Firebase Cloud Functions only?" "$@" || return 1
 
     firebase deploy --only functions
-    echo "✅ Firebase functions deployed."
+    _log_success "✅ Firebase functions deployed."
 }
 
 # 📦 Deploys Firebase Storage rules only
@@ -114,7 +114,7 @@ function firebase-deploy-storage() {
     _confirm-or-abort "Deploy Firebase Storage rules only?" "$@" || return 1
 
     firebase deploy --only storage
-    echo "✅ Firebase Storage rules deployed."
+    _log_success "✅ Firebase Storage rules deployed."
 }
 
 # 🔑 Deploys Firebase Firestore rules only
@@ -123,7 +123,7 @@ function firebase-deploy-firestore() {
     _confirm-or-abort "Deploy Firebase Firestore rules only?" "$@" || return 1
 
     firebase deploy --only firestore:rules
-    echo "✅ Firebase Firestore rules deployed."
+    _log_success "✅ Firebase Firestore rules deployed."
 }
 
 # 🔑 Deploys Firebase Realtime Database rules only
@@ -132,7 +132,7 @@ function firebase-deploy-realtime() {
     _confirm-or-abort "Deploy Firebase Realtime Database rules only?" "$@" || return 1
 
     firebase deploy --only database:rules
-    echo "✅ Firebase Realtime Database rules deployed."
+    _log_success "✅ Firebase Realtime Database rules deployed."
 }
 
 # 🔑 Deploys Firebase Authentication rules only
@@ -141,7 +141,7 @@ function firebase-deploy-auth() {
     _confirm-or-abort "Deploy Firebase Authentication rules only?" "$@" || return 1
 
     firebase deploy --only auth
-    echo "✅ Firebase Authentication rules deployed."
+    _log_success "✅ Firebase Authentication rules deployed."
 }
 
 # ------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ function firebase-open-console() {
     project_id=$(firebase projects:list --format json | jq -r '.[0].projectId')
 
     if [[ -z "$project_id" || "$project_id" == "null" ]]; then
-        echo "❌ Could not determine default Firebase project."
+        _log_error "❌ Could not determine default Firebase project."
         return 1
     fi
 
@@ -189,5 +189,5 @@ function firebase-clear-emulator-data() {
     _confirm-or-abort "This will clear all Firebase emulator data. Continue?" "$@" || return 1
 
     rm -rf ~/.firebase/emulatorhub
-    echo "✅ Emulator data cleared."
+    _log_success "✅ Emulator data cleared."
 }

@@ -1,23 +1,18 @@
-# 🔧 Logs a step with visible progress/status indicators
+# 🔧 Logs a step with visible progress/status indicators (Gum, no spinner)
 # 💡 Usage: _log-update-step "Label" <command>
 function _log-update-step() {
-    local name="$1" # First argument: display name for logging
-    shift           # Remaining arguments: command to execute
+    local name="$1"
+    shift
 
-    echo "\n--------------------------------------------------"
-    echo -e "🔧 Starting update: $name"
-    echo "--------------------------------------------------"
+    gum style --border rounded --padding "0 2" --margin "1 0" --foreground 33 --bold "🔧 Updating $name"
 
-    # Run the update command(s)
     if "$@"; then
-        echo "--------------------------------------------------"
-        echo "✅ Update successful: $name"
+        echo
+        gum style --border rounded --padding "0 2" --margin "1 0" --foreground 42 --bold "✅ Update complete: $name"
     else
-        echo "--------------------------------------------------"
-        echo "❌ Update failed: $name"
+        echo
+        gum style --border rounded --padding "0 2" --margin "1 0" --foreground 196 --bold "❌ Update failed: $name"
     fi
-
-    echo "--------------------------------------------------"
 }
 
 # 🧪 Runs a command, aborts if it fails, and prints custom messages
@@ -31,11 +26,11 @@ function _run-or-abort() {
     "$@"
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
-        echo "❌ Failed: $description"
+        _log_error "❌ Failed: $description"
         return $exit_code
     fi
     if [ -n "$success_msg" ]; then
-        echo "$success_msg"
+        _log_success "$success_msg"
         echo ""
     fi
 }
@@ -53,30 +48,12 @@ function _confirm-or-abort() {
         fi
     done
 
-    local CONFIRM=""
-    while true; do
-        # Properly print message first, then prompt on next line
-        printf "%s\n(yes/no): " "$message"
-
-        if [[ -n "$BASH_VERSION" ]]; then
-            read CONFIRM
-        else
-            read "? " CONFIRM
-        fi
-
-        case "$CONFIRM" in
-        yes)
-            return 0
-            ;;
-        no)
-            echo "Aborting action."
-            return 1
-            ;;
-        *)
-            echo "❌ Please type 'yes' or 'no'."
-            ;;
-        esac
-    done
+    if gum confirm "$message"; then
+        return 0
+    else
+        echo "Aborting action."
+        return 1
+    fi
 }
 
 function _read_setting_from_file() {
@@ -152,37 +129,78 @@ function _append_app_selections_to_settings() {
     echo "" >>"$settings_file"
 }
 
-# 🖨️ Prints a stylized section title to terminal
+# 🖨️ Prints a stylized section title to terminal (Gum version)
 # 💡 Usage: _print_section_title "Title"
 function _print_section_title() {
     local title="$1"
-    local line_length=$((${#title} + 4))
-    local border=$(printf '─%.0s' $(seq 1 $line_length))
 
-    echo
-    echo "┌$border┐"
-    echo "│ $title"
-    echo "└$border┘"
+    gum style \
+        --border normal \
+        --padding "0 2" \
+        --margin "1 0" \
+        --bold \
+        --foreground 33 \
+        "$title"
 }
 
 # 🔄 Checks for and installs macOS updates
 # 💡 Usage: _check-software-updates
 function _check-software-updates() {
     # 🛠️ Installs all available macOS software updates (system + security)
-    echo "🔍 Checking for macOS software updates..."
+    _log_info "🔍 Checking for macOS software updates..."
 
     # Check for available software updates
     available_updates=$(softwareupdate -l 2>&1)
 
     if echo "$available_updates" | grep -q "No new software available"; then
-        echo "✅ No updates available. Skipping installation."
+        _log_success "✅ No updates available. Skipping installation."
         return 0
     else
-        echo "⬇️  Updates available. Installing now..."
+        _log_info "⬇️  Updates available. Installing now..."
         softwareupdate -ia --verbose
-        echo "✅ Updates installed successfully."
-        echo "🔁 A system restart may be required to complete installation."
-        echo "⚠️  Please reboot your Mac and then re-run: devkit-pc-setup"
+        _log_success "✅ Updates installed successfully."
+        _log_info "🔁 A system restart may be required to complete installation."
+        _log_warning "⚠️  Please reboot your Mac and then re-run: devkit-pc-setup"
         return 1 # Signal that a reboot is needed
     fi
+}
+
+# ✅ Success message
+function _log_success() {
+    gum style --bold --foreground 42 "$@"
+}
+
+# ❌ Error message
+function _log_error() {
+    gum style --bold --foreground 196 "$@"
+}
+
+# ⚠️ Warning message
+function _log_warning() {
+    gum style --bold --foreground 220 "$@"
+}
+
+# ℹ️ Info message
+function _log_info() {
+    gum style --foreground 33 "$@"
+}
+
+# 💡 Hint or tip
+function _log_hint() {
+    gum style --foreground 245 "$@"
+}
+
+# 🏁 Section separator
+function _log_separator() {
+    gum style --foreground 245 "────────────────────────────────────────"
+}
+
+# 🖨️ Section title (without box)
+function _log_title() {
+    gum style --bold --foreground 51 "$@"
+}
+
+# 🎉 Final summary banner
+function _log_summary() {
+    gum style --border double --padding "1 3" --margin "2 0" --bold --foreground 42 "$@"
 }

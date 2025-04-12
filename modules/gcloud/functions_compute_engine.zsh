@@ -256,7 +256,7 @@ function gcloud-compute-engine-cloud-load-balancer-setup() {
 
     # Step 1: Create a static IPv4 address
     if ! gcloud-compute-engine-ipv4-create --quiet; then
-        echo "❌ Failed to create static IP."
+        _log_error "❌ Failed to create static IP."
         return 1
     fi
 
@@ -265,37 +265,37 @@ function gcloud-compute-engine-cloud-load-balancer-setup() {
 
     # Step 3: Create a Google-managed SSL certificate
     if ! gcloud-compute-engine-ssl-certificate-create --quiet; then
-        echo "❌ Failed to create SSL certificate."
+        _log_error "❌ Failed to create SSL certificate."
         return 1
     fi
 
     # Step 4: Create a Serverless Network Endpoint Group (NEG)
     if ! gcloud-compute-engine-network-endpoint-group-create --quiet; then
-        echo "❌ Failed to create Network Endpoint Group."
+        _log_error "❌ Failed to create Network Endpoint Group."
         return 1
     fi
 
     # Step 5: Create a Backend Service
     if ! gcloud-compute-engine-backend-service-create --quiet; then
-        echo "❌ Failed to create backend service and attach NEG."
+        _log_error "❌ Failed to create backend service and attach NEG."
         return 1
     fi
 
     # Step 6: Create URL Map for request routing
     if ! gcloud-compute-engine-url-map-create --quiet; then
-        echo "❌ Failed to create URL map."
+        _log_error "❌ Failed to create URL map."
         return 1
     fi
 
     # Step 7: Create HTTPS Proxy and Attach SSL Certificate
     if ! gcloud-compute-engine-target-https-proxy-and-attach-ssl-certificate --quiet; then
-        echo "❌ Failed to create HTTPS target proxy."
+        _log_error "❌ Failed to create HTTPS target proxy."
         return 1
     fi
 
     # Step 8: Create Global Forwarding Rule
     if ! gcloud-compute-engine-global-forwarding-rule-create --quiet; then
-        echo "❌ Failed to create global forwarding rule."
+        _log_error "❌ Failed to create global forwarding rule."
         return 1
     fi
 
@@ -313,26 +313,26 @@ function gcloud-compute-engine-cloud-load-balancer-teardown() {
     echo "⚙️ Starting to teardown the Cloud Load Balancer..."
 
     # Step 1: Delete Global Forwarding Rule
-    gcloud-compute-engine-global-forwarding-rule-delete --quiet || echo "❌ Failed to delete global forwarding rule."
+    gcloud-compute-engine-global-forwarding-rule-delete --quiet || _log_error "❌ Failed to delete global forwarding rule."
 
     # Step 2: Delete Target HTTPS Proxy
-    gcloud-compute-engine-target-https-proxy-delete --quiet || echo "❌ Failed to delete target HTTPS proxy."
+    gcloud-compute-engine-target-https-proxy-delete --quiet || _log_error "❌ Failed to delete target HTTPS proxy."
 
     # Step 3: Delete URL Map
-    gcloud-compute-engine-url-map-delete --quiet || echo "❌ Failed to delete URL map."
+    gcloud-compute-engine-url-map-delete --quiet || _log_error "❌ Failed to delete URL map."
 
     # Step 4: Detach NEG from the Backend Service
     # Attempt to delete the backend service, which also detaches the associated NEG.
-    gcloud-compute-engine-backend-service-delete --quiet || echo "❌ Error: Failed to remove the Network Endpoint Group (NEG) from the backend service and delete the backend service."
+    gcloud-compute-engine-backend-service-delete --quiet || _log_error "❌ Error: Failed to remove the Network Endpoint Group (NEG) from the backend service and delete the backend service."
 
     # Step 5: Delete NEG
-    gcloud-compute-engine-network-endpoint-group-delete --quiet || echo "❌ Failed to delete Network Endpoint Group."
+    gcloud-compute-engine-network-endpoint-group-delete --quiet || _log_error "❌ Failed to delete Network Endpoint Group."
 
     # Step 6: Delete SSL Certificate
-    gcloud-compute-engine-ssl-certificate-delete --quiet || echo "❌ Failed to delete SSL certificate."
+    gcloud-compute-engine-ssl-certificate-delete --quiet || _log_error "❌ Failed to delete SSL certificate."
 
     # Step 7: Delete Static IPv4 Address
-    gcloud-compute-engine-ipv4-delete --quiet || echo "❌ Failed to delete static IP."
+    gcloud-compute-engine-ipv4-delete --quiet || _log_error "❌ Failed to delete static IP."
 
     echo "🎉 Cloud Load Balancer teardown completed successfully!"
 }

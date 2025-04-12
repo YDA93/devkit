@@ -32,7 +32,7 @@ function mas-save-apps() {
         $skip || echo "$id  $name"
     done >"$output"
 
-    echo "✅ Saved App Store apps to $output"
+    _log_success "✅ Saved App Store apps to $output"
 }
 
 # 📦 Installs apps listed in apps.txt using mas (if not already installed)
@@ -43,7 +43,7 @@ function mas-install-apps() {
     local input="$DEVKIT_MODULES_DIR/mas/apps.txt"
 
     if [[ ! -f "$input" ]]; then
-        echo "❌ App list not found at $input"
+        _log_error "❌ App list not found at $input"
         return 1
     fi
 
@@ -52,14 +52,14 @@ function mas-install-apps() {
     while read -r app_id app_name; do
         [[ -z "$app_id" || "$app_id" =~ ^# ]] && continue
         [[ -z "$app_name" ]] && {
-            echo "⚠️  Skipping: missing app name for ID $app_id"
+            _log_warning "⚠️  Skipping: missing app name for ID $app_id"
             continue
         }
 
         install-if-missing "$app_name" "$app_id"
     done <"$input"
 
-    echo "✅ App Store app installation complete."
+    _log_success "✅ App Store app installation complete."
 }
 
 function _get-app-name-from-id() {
@@ -77,12 +77,12 @@ function mas-install-from-settings() {
     local settings_file="$DEVKIT_ROOT/.settings"
 
     if [[ ! -f "$settings_file" ]]; then
-        echo "❌ Settings file not found at $settings_file"
-        echo "💡 Run: devkit-settings-setup"
+        _log_error "❌ Settings file not found at $settings_file"
+        _log_hint "💡 Run: devkit-settings-setup"
         return 1
     fi
 
-    echo "🛍️ Installing selected Mac App Store apps from $settings_file"
+    echo "🛍️  Installing selected Mac App Store apps from $settings_file"
     echo ""
 
     source "$settings_file"
@@ -103,14 +103,14 @@ function mas-install-from-settings() {
 
             [[ -z "$app_name" ]] && app_name="App ID $app_id"
 
-            echo "🛍️ $app_name ($app_id)"
+            echo "🛍️  $app_name ($app_id)"
             install-if-missing "$app_name" "$app_id"
             sleep 2
         fi
     done <"$settings_file"
 
     echo ""
-    echo "✅ App Store app installation (from settings) complete."
+    _log_success "✅ App Store app installation (from settings) complete."
 }
 
 # 🔄 Updates installed App Store apps via mas
@@ -120,7 +120,7 @@ function mas-maintain() {
     mas outdated || return 1
     echo "⬆️  Upgrading App Store apps..."
     mas upgrade || return 1
-    echo "✅ App Store apps updated."
+    _log_success "✅ App Store apps updated."
 }
 
 # ⚙️ Full mas setup: installs saved apps and applies updates
@@ -138,17 +138,17 @@ function install-if-missing() {
     local app_id="$2"
 
     if [[ -z "$app_name" || -z "$app_id" ]]; then
-        echo "❌ Missing app name or ID. Usage: install-if-missing <app_name> <app_id>"
+        _log_error "❌ Missing app name or ID. Usage: install-if-missing <app_name> <app_id>"
         return 1
     fi
 
     if [[ ! -d "/Applications/$app_name.app" ]]; then
         mas install $app_id || {
-            echo "❌ Failed to install $app_name. Please check the App Store ID."
+            _log_error "❌ Failed to install $app_name. Please check the App Store ID."
             return 1
         }
-        echo "✅ Installed $app_name"
+        _log_success "✅ Installed $app_name"
     else
-        echo "✅ $app_name already installed"
+        _log_success "✅ $app_name already installed"
     fi
 }

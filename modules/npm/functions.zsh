@@ -13,11 +13,11 @@ function npm-save-packages() {
     npm list -g --depth=0 --parseable |
         tail -n +2 |
         awk -F/ '{print $NF}' >"$output" || {
-        echo "❌ Failed to save npm packages. Please check your npm installation."
+        _log_error "❌ Failed to save npm packages. Please check your npm installation."
         return 1
     }
 
-    echo "✅ Saved npm packages to $output"
+    _log_success "✅ Saved npm packages to $output"
 }
 
 # 📥 Installs global npm packages from saved list
@@ -27,13 +27,13 @@ function npm-install-packages() {
     local input="$DEVKIT_MODULES_DIR/npm/packages.txt"
 
     if [[ ! -f "$input" ]]; then
-        echo "❌ Package list not found at $input"
+        _log_error "❌ Package list not found at $input"
         return 1
     fi
 
     local npm_prefix
     npm_prefix=$(npm config get prefix) || {
-        echo "❌ Failed to get npm prefix. Please check your npm installation."
+        _log_error "❌ Failed to get npm prefix. Please check your npm installation."
         return 1
     }
 
@@ -44,11 +44,11 @@ function npm-install-packages() {
     echo ""
 
     NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm install -g <"$input" || {
-        echo "❌ Failed to install npm packages. Please check the list."
+        _log_error "❌ Failed to install npm packages. Please check the list."
         return 1
     }
 
-    echo "✅ Installed global npm packages"
+    _log_success "✅ Installed global npm packages"
 
     source "$DEVKIT_ROOT/bin/devkit.zsh"
 }
@@ -60,13 +60,13 @@ function npm-uninstall-packages() {
     local input="$DEVKIT_MODULES_DIR/npm/packages.txt"
 
     if [[ ! -f "$input" ]]; then
-        echo "❌ Package list not found at $input"
+        _log_error "❌ Package list not found at $input"
         return 1
     fi
 
     local npm_prefix
     npm_prefix=$(npm config get prefix) || {
-        echo "❌ Failed to get npm prefix. Please check your npm installation."
+        _log_error "❌ Failed to get npm prefix. Please check your npm installation."
         return 1
     }
 
@@ -77,18 +77,18 @@ function npm-uninstall-packages() {
     echo ""
 
     NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm uninstall -g <"$input" || {
-        echo "❌ Failed to uninstall npm packages. Please check the list."
+        _log_error "❌ Failed to uninstall npm packages. Please check the list."
         return 1
     }
 
-    echo "✅ Uninstalled global npm packages"
+    _log_success "✅ Uninstalled global npm packages"
 }
 
 # ♻️ Repairs npm environment by reinstalling Node, uninstalling, and restoring global packages
 # 💡 Usage: npm-repair
 function npm-repair() {
     LATEST_NODE=$(echo "$DEVKIT_REQUIRED_FORMULA" | grep '^node@' | sort -V | tail -n 1) || {
-        echo "❌ Failed to find the latest Node.js version."
+        _log_error "❌ Failed to find the latest Node.js version."
         return 1
     }
 
@@ -98,7 +98,7 @@ function npm-repair() {
     npm-uninstall-packages || return 1
     echo "♻️ Reinstalling global packages..."
     npm-install-packages || return 1
-    echo "✅ npm repair complete"
+    _log_success "✅ npm repair complete"
 }
 
 # 🔥 Uninstalls global npm packages not listed in packages.txt (with confirmation)
@@ -108,14 +108,14 @@ function npm-prune-packages() {
     local file="$DEVKIT_MODULES_DIR/npm/packages.txt"
 
     if [[ ! -f "$file" ]]; then
-        echo "❌ Package list not found at $file"
+        _log_error "❌ Package list not found at $file"
         return 1
     fi
 
     echo "🧹 Checking for npm packages to uninstall..."
 
     local current_pkgs=($(npm list -g --depth=0 --parseable | tail -n +2 | awk -F/ '{print $NF}')) || {
-        echo "❌ Failed to list npm packages. Please check your npm installation."
+        _log_error "❌ Failed to list npm packages. Please check your npm installation."
         return 1
     }
     local saved_pkgs=($(cat "$file"))
@@ -123,7 +123,7 @@ function npm-prune-packages() {
     for pkg in "${current_pkgs[@]}"; do
         if ! printf '%s\n' "${saved_pkgs[@]}" | grep -qx "$pkg"; then
             if _confirm-or-abort "Uninstall \"$pkg\"? It is not listed in packages.txt." "$@"; then
-                echo "❌ Uninstalling: $pkg"
+                _log_error "❌ Uninstalling: $pkg"
                 npm uninstall -g "$pkg"
             else
                 echo "⏭️ Skipping: $pkg"
@@ -131,7 +131,7 @@ function npm-prune-packages() {
         fi
     done
 
-    echo "✅ npm cleanup complete."
+    _log_success "✅ npm cleanup complete."
 }
 
 # ⚙️ Full npm setup: prune and install from saved package list
@@ -146,7 +146,7 @@ function npm-setup() {
 function npm-list-packages() {
     echo "📦 Installed global npm packages:"
     npm list -g || {
-        echo "❌ Failed to list npm packages. Please check your npm installation."
+        _log_error "❌ Failed to list npm packages. Please check your npm installation."
         return 1
     }
 }
@@ -160,41 +160,41 @@ function npm-doctor() {
     echo "📦 Checking npm and Node.js..."
 
     if ! command -v node &>/dev/null; then
-        echo "⚠️  Node.js is not installed or not in PATH."
-        echo "💡 Install with: brew install node"
+        _log_warning "⚠️  Node.js is not installed or not in PATH."
+        _log_hint "💡 Install with: brew install node"
         return 1
     fi
 
     if ! command -v npm &>/dev/null; then
-        echo "⚠️  npm is not installed."
+        _log_warning "⚠️  npm is not installed."
         return 1
     fi
 
     npm_root=$(npm config get prefix 2>/dev/null) || {
-        echo "⚠️  Failed to get npm prefix. Please check your npm installation."
+        _log_warning "⚠️  Failed to get npm prefix. Please check your npm installation."
         return 1
     }
     echo "📁 npm global prefix: ${npm_root:-⚠️ Not set}"
 
     current_registry=$(npm config get registry)
     if [[ "$current_registry" != "https://registry.npmjs.org/" ]]; then
-        echo "⚠️  npm registry is: $current_registry"
+        _log_warning "⚠️  npm registry is: $current_registry"
         echo "    👉 Consider resetting it:"
         echo "       npm config set registry https://registry.npmjs.org/"
     else
-        echo "✅ npm registry is set to default"
+        _log_success "✅ npm registry is set to default"
     fi
 
     global_path="$npm_root/lib/node_modules"
     if [[ -w "$global_path" ]]; then
-        echo "✅ Global npm packages are writable"
+        _log_success "✅ Global npm packages are writable"
     else
-        echo "⚠️  No write access to global npm packages"
+        _log_warning "⚠️  No write access to global npm packages"
         echo "    👉 Consider using nvm or fnm to manage Node versions and avoid permission issues"
     fi
 
     echo "🧪 Running basic 'npm doctor' check..."
-    npm doctor || echo "⚠️  npm doctor found some issues (see above)"
+    npm doctor || _log_warning "⚠️  npm doctor found some issues (see above)"
 
     return 0
 }

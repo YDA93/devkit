@@ -88,7 +88,7 @@ function gcloud-secret-manager-env-download() {
         echo "🧪 Debug: Reading line $line_number -> '$secret'"
         if [[ -n "$secret" ]]; then
             secrets_array+=("$secret")
-            echo "✅ Added to array: ${secret}"
+            _log_success "✅ Added to array: ${secret}"
         fi
         ((line_number++))
     done <"$temp_file"
@@ -97,7 +97,7 @@ function gcloud-secret-manager-env-download() {
     echo "🧪 Debug: Total secrets in array: ${#secrets_array[@]}"
 
     if [[ ${#secrets_array[@]} -eq 0 ]]; then
-        echo "❌ No secrets found or failed to list secrets"
+        _log_error "❌ No secrets found or failed to list secrets"
         return 1
     fi
 
@@ -115,12 +115,12 @@ function gcloud-secret-manager-env-download() {
     echo "🧪 Debug: User selected: '$selection'"
 
     if ! [[ "$selection" =~ ^[0-9]+$ ]]; then
-        echo "❌ Invalid input: Not a number"
+        _log_error "❌ Invalid input: Not a number"
         return 1
     fi
 
     if ((selection < 1 || selection > ${#secrets_array[@]})); then
-        echo "❌ Invalid input: Out of range"
+        _log_error "❌ Invalid input: Out of range"
         return 1
     fi
 
@@ -134,16 +134,16 @@ function gcloud-secret-manager-env-download() {
         ((counter++))
     done
 
-    echo "✅ Selected secret: '$selected_secret'"
+    _log_success "✅ Selected secret: '$selected_secret'"
     GCP_SECRET_NAME="$selected_secret"
 
     local output_file=".env"
     echo "📥 Downloading '$GCP_SECRET_NAME' from Secret Manager..."
 
     if gcloud secrets versions access latest --secret="$GCP_SECRET_NAME" --quiet >"$output_file"; then
-        echo "✅ .env downloaded and saved to: $output_file"
+        _log_success "✅ .env downloaded and saved to: $output_file"
     else
-        echo "❌ Failed to download .env — make sure the secret exists and has at least one version"
+        _log_error "❌ Failed to download .env — make sure the secret exists and has at least one version"
         return 1
     fi
 }

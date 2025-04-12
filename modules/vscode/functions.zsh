@@ -45,7 +45,7 @@ function code-extensions-backup() {
     echo "💾 Backing up extensions to: $BACKUP_PATH ..."
     code --list-extensions >"$BACKUP_PATH"
 
-    echo "✅ Backup complete at: $BACKUP_PATH"
+    _log_success "✅ Backup complete at: $BACKUP_PATH"
 }
 
 # ♻️ Fully interactive restore of VS Code extensions with default filename (Zsh-compatible)
@@ -66,14 +66,14 @@ function code-extensions-restore() {
     local BACKUP_PATH="$BACKUP_DIR/$BACKUP_FILE"
 
     if [[ ! -f "$BACKUP_PATH" ]]; then
-        echo "❌ Backup file not found at: $BACKUP_PATH"
+        _log_error "❌ Backup file not found at: $BACKUP_PATH"
         return 1
     fi
 
     echo "♻️ Restoring extensions from: $BACKUP_PATH ..."
     xargs -n1 code --install-extension <"$BACKUP_PATH"
 
-    echo "✅ Extensions restored successfully!"
+    _log_success "✅ Extensions restored successfully!"
 }
 
 # 🧭 Opens a project from $HOME/Desktop/dev in VS Code
@@ -98,7 +98,7 @@ function code-project() {
         echo "🚀 Opening project: $PROJECT_NAME"
         code "$PROJECT_PATH"
     else
-        echo "❌ Project not found: $PROJECT_PATH"
+        _log_error "❌ Project not found: $PROJECT_PATH"
         return 1
     fi
 }

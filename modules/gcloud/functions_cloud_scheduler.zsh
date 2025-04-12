@@ -62,7 +62,7 @@ function gcloud-scheduler-jobs-delete() {
         --format="value(httpTarget.uri)"))
 
     if [[ ${#urls[@]} -eq 0 ]]; then
-        echo "⚠️  No Cloud Scheduler jobs found. Nothing to delete."
+        _log_warning "⚠️  No Cloud Scheduler jobs found. Nothing to delete."
         return 0
     fi
 
@@ -80,7 +80,7 @@ function gcloud-scheduler-jobs-delete() {
             --quiet
     done
 
-    echo "✅ Deleted ${#urls[@]} Cloud Scheduler job(s)."
+    _log_success "✅ Deleted ${#urls[@]} Cloud Scheduler job(s)."
 }
 
 # 🔄 Syncs local Django cron jobs with Cloud Scheduler (create/delete as needed)
@@ -95,7 +95,7 @@ function gcloud-scheduler-jobs-sync() {
     declare -A local_jobs
 
     if [[ ${#local_urls[@]} -eq 0 ]]; then
-        echo "⚠️  No local cron URLs found. Will only check for deletions..."
+        _log_warning "⚠️  No local cron URLs found. Will only check for deletions..."
     else
         echo "🔍 Found ${#local_urls[@]} local cron job(s):"
         for url in "${local_urls[@]}"; do
@@ -113,7 +113,7 @@ function gcloud-scheduler-jobs-sync() {
         --format="value(httpTarget.uri)"))
 
     if [[ ${#remote_jobs[@]} -eq 0 ]]; then
-        echo "⚠️  No Cloud Scheduler jobs found. Will only check for creations..."
+        _log_warning "⚠️  No Cloud Scheduler jobs found. Will only check for creations..."
     else
         echo "📡 Found ${#remote_jobs[@]} Cloud Scheduler job(s):"
         for url in "${remote_jobs[@]}"; do
@@ -184,7 +184,7 @@ function gcloud-scheduler-jobs-sync() {
     if [[ ${#to_create_urls[@]} -eq 0 && ${#to_delete_urls[@]} -eq 0 ]]; then
         echo "🟡 No changes needed. GCP Scheduler is already in sync with your local URLs."
     else
-        echo "✅ Update complete:"
+        _log_success "✅ Update complete:"
         if [[ ${#to_create_urls[@]} -gt 0 ]]; then
             echo "  ➕ ${#to_create_urls[@]} job(s) created"
         fi

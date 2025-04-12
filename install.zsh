@@ -17,7 +17,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 if [[ "$SCRIPT_DIR" != "$DEVKIT_DIR" ]]; then
     # If DevKit directory exists and is not empty, prompt user before overwriting
     if [[ -d "$DEVKIT_DIR" && "$(ls -A "$DEVKIT_DIR")" ]]; then
-        echo "⚠️  DevKit directory '$DEVKIT_DIR' already exists and is not empty."
+        _log_warning "⚠️  DevKit directory '$DEVKIT_DIR' already exists and is not empty."
         echo ""
         echo -n "❓ Do you want to overwrite it? [y/N]: "
         read user_choice

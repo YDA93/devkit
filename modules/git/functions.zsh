@@ -10,15 +10,15 @@ function git-setup() {
     local settings_file="$DEVKIT_ROOT/.settings"
 
     if [[ ! -f "$settings_file" ]]; then
-        echo "❌ Settings file not found at $settings_file"
-        echo "💡 Run: devkit-settings-setup"
+        _log_error "❌ Settings file not found at $settings_file"
+        _log_hint "💡 Run: devkit-settings-setup"
         return 1
     fi
 
     source "$settings_file"
 
     if [[ -z "$full_name" || -z "$email" ]]; then
-        echo "❌ Name or email missing from settings file. Aborting."
+        _log_error "❌ Name or email missing from settings file. Aborting."
         return 1
     fi
 
@@ -42,7 +42,7 @@ function git-setup() {
     git config --global color.ui auto
     git config --global pull.ff only
 
-    echo "✅ Git global config has been updated."
+    _log_success "✅ Git global config has been updated."
 }
 
 # 🩺 Checks if Git is properly installed and configured
@@ -54,43 +54,43 @@ function git-doctor() {
     echo "🔧 Checking Git..."
 
     if ! command -v git &>/dev/null; then
-        echo "⚠️  Git is not installed."
-        echo "💡 Install with: brew install git"
+        _log_warning "⚠️  Git is not installed."
+        _log_hint "💡 Install with: brew install git"
         return 1
     fi
 
     echo "🔧 Checking Git configuration..."
     if [[ -z $(git config user.name) || -z $(git config user.email) ]]; then
-        echo "⚠️  Git user.name or user.email not configured"
-        echo "💡 Set them with:"
+        _log_warning "⚠️  Git user.name or user.email not configured"
+        _log_hint "💡 Set them with:"
         echo "   git config --global user.name \"Your Name\""
         echo "   git config --global user.email \"you@example.com\""
     else
-        echo "✅ Git user.name and user.email are set"
+        _log_success "✅ Git user.name and user.email are set"
     fi
 
     echo "📝 Checking for global .gitignore..."
     if git config --get core.excludesfile &>/dev/null; then
-        echo "✅ Global .gitignore is configured"
+        _log_success "✅ Global .gitignore is configured"
     else
-        echo "⚠️  No global .gitignore set"
-        echo "💡 Tip: git config --global core.excludesfile ~/.gitignore_global"
+        _log_warning "⚠️  No global .gitignore set"
+        _log_hint "💡 Tip: git config --global core.excludesfile ~/.gitignore_global"
     fi
 
     echo "🔧 Checking SSH key..."
     if [[ -f ~/.ssh/id_rsa.pub || -f ~/.ssh/id_ed25519.pub ]]; then
-        echo "✅ SSH key found"
+        _log_success "✅ SSH key found"
     else
-        echo "⚠️  No SSH key found in ~/.ssh/"
-        echo "💡 Generate one with: ssh-keygen -t ed25519 -C \"your_email@example.com\""
+        _log_warning "⚠️  No SSH key found in ~/.ssh/"
+        _log_hint "💡 Generate one with: ssh-keygen -t ed25519 -C \"your_email@example.com\""
     fi
 
     echo "🔐 Testing SSH connection to GitHub..."
     if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
-        echo "✅ SSH connection to GitHub works"
+        _log_success "✅ SSH connection to GitHub works"
     else
-        echo "⚠️  SSH connection to GitHub failed or requires verification"
-        echo "💡 Run: ssh -T git@github.com to test manually"
+        _log_warning "⚠️  SSH connection to GitHub failed or requires verification"
+        _log_hint "💡 Run: ssh -T git@github.com to test manually"
     fi
 
     return 0

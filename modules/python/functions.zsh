@@ -12,10 +12,10 @@ function python-environment-activate() {
 
     # Activate if available
     if [[ -f "venv/bin/activate" ]]; then
-        source venv/bin/activate && echo "✅ Environment activated: venv"
+        source venv/bin/activate && _log_success "✅ Environment activated: venv"
     else
-        echo "❌ No virtual environment found at ./venv"
-        echo "💡 Run: python-environment-create"
+        _log_error "❌ No virtual environment found at ./venv"
+        _log_hint "💡 Run: python-environment-create"
         return 1
     fi
 }
@@ -33,10 +33,10 @@ function python-environment-is-active() {
     fi
 
     if [[ "$current_python" == "$expected_python" ]]; then
-        $quiet || echo "✅ Virtual environment is active: venv"
+        $quiet || _log_success "✅ Virtual environment is active: venv"
         return 0
     else
-        $quiet || echo "❌ Virtual environment is not activated."
+        $quiet || _log_error "❌ Virtual environment is not activated."
         return 1
     fi
 }
@@ -45,7 +45,7 @@ function python-environment-is-active() {
 # 💡 Usage: python-environment-create
 function python-environment-create() {
     python -m venv venv || {
-        echo "❌ Failed to create virtual environment."
+        _log_error "❌ Failed to create virtual environment."
         return 1
     }
 
@@ -114,7 +114,7 @@ function pip-install() {
         --main) install_main=true ;;
         --test) install_test=true ;;
         *)
-            echo "❌ Unknown option: $1"
+            _log_error "❌ Unknown option: $1"
             return 1
             ;;
         esac
@@ -146,7 +146,7 @@ function pip-install() {
 function pip-update() {
     # Ensure pip-upgrade is installed
     if ! command -v pip-upgrade >/dev/null 2>&1; then
-        echo "❌ 'pip-upgrader' is not installed. Please install it with: pip install pip-upgrader"
+        _log_error "❌ 'pip-upgrader' is not installed. Please install it with: pip install pip-upgrader"
         return 1
     fi
 
@@ -159,7 +159,7 @@ function pip-update() {
         --main) update_main=true ;;
         --test) update_test=true ;;
         *)
-            echo "❌ Unknown option: $1"
+            _log_error "❌ Unknown option: $1"
             return 1
             ;;
         esac

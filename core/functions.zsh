@@ -43,7 +43,7 @@ function devkit-settings-setup() {
     _append_app_selections_to_settings "cask" "${cask_apps[@]}"
     echo "# formula apps" >>"$settings_file"
     _append_app_selections_to_settings "formula" "${formula_apps[@]}"
-    echo "✅ Settings saved to $settings_file"
+    _log_success "✅ Settings saved to $settings_file"
 
     # Remove the cloned file
     rm -f "$cloned_settings_file"
@@ -61,8 +61,8 @@ function devkit-is-setup() {
 
     if [[ ! -f "$settings_file" ]]; then
         if [[ "$quiet" == false ]]; then
-            echo "❌ Settings file not found at $settings_file"
-            echo "💡 Run: devkit-settings-setup"
+            _log_error "❌ Settings file not found at $settings_file"
+            _log_hint "💡 Run: devkit-settings-setup"
         fi
         return 1
     fi
@@ -96,7 +96,7 @@ function devkit-is-setup() {
 
     if ((${#missing[@]} > 0)); then
         if [[ "$quiet" == false ]]; then
-            echo "⚠️  DevKit is not fully set up."
+            _log_warning "⚠️  DevKit is not fully set up."
             echo "🚫 Missing tools: ${missing[*]}"
             echo "👉 Run: devkit-pc-setup"
         fi
@@ -104,7 +104,7 @@ function devkit-is-setup() {
     fi
 
     if [[ "$quiet" == false ]]; then
-        echo "✅ DevKit is fully set up!"
+        _log_success "✅ DevKit is fully set up!"
     fi
 
     return 0
@@ -147,7 +147,7 @@ function devkit-pc-setup() {
         flutter-android-sdk-setup || return 1
 
         echo "--------------------------------------------------"
-        echo "✅ devkit environment setup complete!"
+        _log_success "✅ devkit environment setup complete!"
         echo "--------------------------------------------------"
 
     } 2>&1 | tee -a "$log_file"
@@ -281,11 +281,11 @@ function devkit-check-tools() {
     echo "────────────────────────────────────"
 
     if ((${#missing_tools[@]} > 0)); then
-        echo "⚠️  Missing tools: ${missing_tools[*]}"
+        _log_warning "⚠️  Missing tools: ${missing_tools[*]}"
         echo "👉 Run: devkit-pc-setup to install and configure required packages."
         return 1
     else
-        echo "✅ All essential tools are installed!"
+        _log_success "✅ All essential tools are installed!"
     fi
 }
 
@@ -323,16 +323,16 @@ function devkit-doctor() {
 
         # Shell
         echo "🔧 Checking default shell..."
-        [[ "$SHELL" == *"zsh" ]] && echo "✅ Default shell is zsh" ||
-            echo "⚠️  Zsh is not your default shell. Set it with: chsh -s $(which zsh)"
+        [[ "$SHELL" == *"zsh" ]] && _log_success "✅ Default shell is zsh" ||
+            _log_warning "⚠️  Zsh is not your default shell. Set it with: chsh -s $(which zsh)"
 
         # PATH Sanity
         echo "🔧 Checking PATH..."
         echo "$PATH" | grep -q "/usr/local/bin" &&
-            echo "✅ /usr/local/bin is in PATH" ||
-            echo "⚠️  /usr/local/bin is missing from PATH"
+            _log_success "✅ /usr/local/bin is in PATH" ||
+            _log_warning "⚠️  /usr/local/bin is missing from PATH"
 
-        echo "✅ All checks completed!"
+        _log_success "✅ All checks completed!"
         echo "🔧 Your devkit environment is ready!"
         echo "────────────────────────────────────"
 
@@ -351,18 +351,18 @@ function devkit-update() {
     if [[ ! -d "$DEVKIT_ROOT" ]]; then
         echo "📦 devkit not found. Cloning into $DEVKIT_ROOT..."
         git clone "$repo_url" "$DEVKIT_ROOT" || {
-            echo "❌ Failed to clone devkit."
+            _log_error "❌ Failed to clone devkit."
             return 1
         }
-        echo "✅ devkit installed for the first time."
+        _log_success "✅ devkit installed for the first time."
         source "$DEVKIT_ROOT/bin/devkit.zsh"
         return 0
     fi
 
     # Fetch latest tags
     git -C "$DEVKIT_ROOT" fetch --tags --quiet || {
-        echo "⚠️  Failed to fetch tags from remote repository."
-        echo "💡 Please check your internet connection or try again later."
+        _log_warning "⚠️  Failed to fetch tags from remote repository."
+        _log_hint "💡 Please check your internet connection or try again later."
         return 1
     }
 
@@ -374,7 +374,7 @@ function devkit-update() {
 
     # Handle case where no tags exist
     if [[ -z "$remote_version" ]]; then
-        echo "⚠️  No remote version tags found."
+        _log_warning "⚠️  No remote version tags found."
         return 1
     fi
 
@@ -387,7 +387,7 @@ function devkit-update() {
     echo "🌐 Remote version: $remote_version"
 
     if [[ "$local_version" == "$remote_version" ]]; then
-        echo "✅ devkit is already up to date (version: $local_version)"
+        _log_success "✅ devkit is already up to date (version: $local_version)"
         return 0
     fi
 
@@ -398,21 +398,21 @@ function devkit-update() {
     echo -n "👉 Do you want to update devkit to version $remote_version now? (y/n): "
     read -r confirm
     if [[ "$confirm" != [Yy] ]]; then
-        echo "❌ Update canceled."
+        _log_error "❌ Update canceled."
         return 0
     fi
 
     echo "🚀 Updating devkit to version $remote_version..."
 
     if ! git -C "$DEVKIT_ROOT" checkout "tags/$remote_version" -f; then
-        echo "❌ Failed to checkout version $remote_version."
+        _log_error "❌ Failed to checkout version $remote_version."
         return 1
     fi
 
     if [[ -f "$DEVKIT_ROOT/bin/devkit.zsh" ]]; then
         echo "🔁 Reloading devkit..."
         source "$DEVKIT_ROOT/bin/devkit.zsh"
-        echo "✅ devkit updated and reloaded to version $remote_version."
+        _log_success "✅ devkit updated and reloaded to version $remote_version."
     fi
 }
 
@@ -421,7 +421,7 @@ function devkit-update() {
 function devkit-version() {
 
     if [[ ! -d "$DEVKIT_ROOT" ]]; then
-        echo "❌ devkit is not installed."
+        _log_error "❌ devkit is not installed."
         return 1
     fi
 
@@ -429,7 +429,7 @@ function devkit-version() {
     current_version=$(git -C "$DEVKIT_ROOT" describe --tags --abbrev=0 2>/dev/null)
 
     if [[ -z "$current_version" ]]; then
-        echo "❌ No version tag found in devkit."
+        _log_error "❌ No version tag found in devkit."
         return 1
     fi
 
