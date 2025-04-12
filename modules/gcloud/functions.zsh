@@ -77,68 +77,68 @@ function gcloud-project-django-setup() {
     gcloud-config-load-and-validate || return 1
 
     local log_file="gcloud_setup_$(date +'%Y%m%d%H%M%S').log"
-    {
-        _confirm-or-abort "Set up a Django project in Google Cloud?" "$@" || return 1
+    # {
+    _confirm-or-abort "Set up a Django project in Google Cloud?" "$@" || return 1
 
-        gcloud-login-cli || return 1
-        gcloud-login-adc || return 1
+    gcloud-login-cli || return 1
+    gcloud-login-adc || return 1
 
-        # Step 1: Create a new Cloud SQL for PostgreSQL instance
-        if ! gcloud-sql-instance-create --quiet; then
-            _log_error "❌ Error creating Cloud SQL instance."
-            return 1
-        fi
+    # Step 1: Create a new Cloud SQL for PostgreSQL instance
+    if ! gcloud-sql-instance-create --quiet; then
+        _log_error "❌ Error creating Cloud SQL instance."
+        return 1
+    fi
 
-        # Step 2: Create database and user in Cloud SQL for PostgreSQL
-        if ! gcloud-sql-db-and-user-create --quiet; then
-            _log_error "❌ Error creating database and user in Cloud SQL instance."
-            return 1
-        fi
+    # Step 2: Create database and user in Cloud SQL for PostgreSQL
+    if ! gcloud-sql-db-and-user-create --quiet; then
+        _log_error "❌ Error creating database and user in Cloud SQL instance."
+        return 1
+    fi
 
-        # Step 3: Create Artifact Registry repository
-        if ! gcloud-artifact-registry-repository-create --quiet; then
-            _log_error "❌ Error creating Artifact Registry repository."
-            return 1
-        fi
+    # Step 3: Create Artifact Registry repository
+    if ! gcloud-artifact-registry-repository-create --quiet; then
+        _log_error "❌ Error creating Artifact Registry repository."
+        return 1
+    fi
 
-        # Step 4: Create Cloud Storage buckets
-        if ! gcloud-storage-buckets-create --quiet; then
-            _log_error "❌ Error creating Cloud Storage buckets."
-            return 1
-        fi
+    # Step 4: Create Cloud Storage buckets
+    if ! gcloud-storage-buckets-create --quiet; then
+        _log_error "❌ Error creating Cloud Storage buckets."
+        return 1
+    fi
 
-        # Step 5: Create Cloud Secret Manager secret
-        if ! gcloud-secret-manager-env-create --quiet; then
-            _log_error "❌ Error creating Secret Manager secret."
-            return 1
-        fi
+    # Step 5: Create Cloud Secret Manager secret
+    if ! gcloud-secret-manager-env-create --quiet; then
+        _log_error "❌ Error creating Secret Manager secret."
+        return 1
+    fi
 
-        # Step 6: Start the Cloud SQL Proxy in a separate terminal and apply migrations and initial data to the database
-        if ! gcloud-sql-proxy-and-django-setup --quiet; then
-            _log_error "❌ Error starting the Cloud SQL Proxy and applying migrations."
-            return 1
-        fi
+    # Step 6: Start the Cloud SQL Proxy in a separate terminal and apply migrations and initial data to the database
+    if ! gcloud-sql-proxy-and-django-setup --quiet; then
+        _log_error "❌ Error starting the Cloud SQL Proxy and applying migrations."
+        return 1
+    fi
 
-        # Step 7: Build and deploy the service to Cloud Run
-        if ! gcloud-run-build-and-deploy-initial --quiet; then
-            _log_error "❌ Error building and deploying the service to Cloud Run."
-            return 1
-        fi
+    # Step 7: Build and deploy the service to Cloud Run
+    if ! gcloud-run-build-and-deploy-initial --quiet; then
+        _log_error "❌ Error building and deploying the service to Cloud Run."
+        return 1
+    fi
 
-        # Step 8: Setup Cloud Load Balancer
-        if ! gcloud-compute-engine-cloud-load-balancer-setup --quiet; then
-            _log_error "❌ Error setting up the Cloud Load Balancer."
-            return 1
-        fi
+    # Step 8: Setup Cloud Load Balancer
+    if ! gcloud-compute-engine-cloud-load-balancer-setup --quiet; then
+        _log_error "❌ Error setting up the Cloud Load Balancer."
+        return 1
+    fi
 
-        # Step 9: Create Cloud Scheduler jobs case exists
-        if ! gcloud-scheduler-jobs-sync --quiet; then
-            _log_error "❌ Error syncing Cloud Scheduler job."
-            return 1
-        fi
+    # Step 9: Create Cloud Scheduler jobs case exists
+    if ! gcloud-scheduler-jobs-sync --quiet; then
+        _log_error "❌ Error syncing Cloud Scheduler job."
+        return 1
+    fi
 
-        _log_success "🎉 Django project in Google Cloud has been successfully set up!"
-    } 2>&1 | tee -a "$log_file"
+    _log_success "🎉 Django project in Google Cloud has been successfully set up!"
+    # } 2>&1 | tee -a "$log_file"
 }
 
 # 💣 Tears down all GCP resources used by the Django project
@@ -147,34 +147,34 @@ function gcloud-project-django-setup() {
 function gcloud-project-django-teardown() {
     gcloud-config-load-and-validate || return 1
     local log_file="gcloud_teardown_$(date +'%Y%m%d%H%M%S').log"
-    {
-        _confirm-or-abort "Tear down the Django project in Google Cloud?" "$@" || return 1
+    # {
+    _confirm-or-abort "Tear down the Django project in Google Cloud?" "$@" || return 1
 
-        gcloud-login-cli || return 1
-        gcloud-login-adc || return 1
+    gcloud-login-cli || return 1
+    gcloud-login-adc || return 1
 
-        # Step 1: Delete Cloud Scheduler job
-        gcloud-scheduler-jobs-delete --quiet
+    # Step 1: Delete Cloud Scheduler job
+    gcloud-scheduler-jobs-delete --quiet
 
-        # Step 2: Delete Cloud Load Balancer
-        gcloud-compute-engine-cloud-load-balancer-teardown --quiet || _log_error "❌ Error deleting the Cloud Load Balancer."
+    # Step 2: Delete Cloud Load Balancer
+    gcloud-compute-engine-cloud-load-balancer-teardown --quiet || _log_error "❌ Error deleting the Cloud Load Balancer."
 
-        # Step 3: Delete Cloud Run service
-        gcloud-run-service-delete --quiet || _log_error "❌ Error deleting the Cloud Run service."
+    # Step 3: Delete Cloud Run service
+    gcloud-run-service-delete --quiet || _log_error "❌ Error deleting the Cloud Run service."
 
-        # Step 4: Delete Cloud Secret Manager secret
-        gcloud-secret-manager-env-delete --quiet || _log_error "❌ Error deleting the Secret Manager secret."
+    # Step 4: Delete Cloud Secret Manager secret
+    gcloud-secret-manager-env-delete --quiet || _log_error "❌ Error deleting the Secret Manager secret."
 
-        # Step 5: Delete Cloud Storage buckets
-        gcloud-storage-buckets-delete --quiet || _log_error "❌ Error deleting Cloud Storage buckets."
+    # Step 5: Delete Cloud Storage buckets
+    gcloud-storage-buckets-delete --quiet || _log_error "❌ Error deleting Cloud Storage buckets."
 
-        # Step 6: Delete Artifact Registry repository
-        gcloud_artifact_registry_repository_delete --quiet || _log_error "❌ Error deleting Artifact Registry repository."
+    # Step 6: Delete Artifact Registry repository
+    gcloud_artifact_registry_repository_delete --quiet || _log_error "❌ Error deleting Artifact Registry repository."
 
-        # Step 7: Delete Cloud SQL for PostgreSQL instance
-        gcloud-sql-instance-delete --quiet || _log_error "❌ Error deleting Cloud SQL instance."
+    # Step 7: Delete Cloud SQL for PostgreSQL instance
+    gcloud-sql-instance-delete --quiet || _log_error "❌ Error deleting Cloud SQL instance."
 
-    } 2>&1 | tee -a "$log_file"
+    # } 2>&1 | tee -a "$log_file"
 
 }
 
@@ -184,41 +184,41 @@ function gcloud-project-django-teardown() {
 function gcloud-project-django-update() {
     gcloud-config-load-and-validate || return 1
     local log_file="gcloud_update_$(date +'%Y%m%d%H%M%S').log"
-    {
-        _confirm-or-abort "Update an existing Django deployment in Google Cloud?" "$@" || return 1
+    # {
+    _confirm-or-abort "Update an existing Django deployment in Google Cloud?" "$@" || return 1
 
-        gcloud-login-cli || return 1
-        gcloud-login-adc || return 1
+    gcloud-login-cli || return 1
+    gcloud-login-adc || return 1
 
-        # Step 1: Build and deploy the latest image to Cloud Run
-        if ! gcloud-run-build-and-deploy-latest --quiet; then
-            _log_error "❌ Error building and deploying the latest image to Cloud Run."
-            return 1
-        fi
+    # Step 1: Build and deploy the latest image to Cloud Run
+    if ! gcloud-run-build-and-deploy-latest --quiet; then
+        _log_error "❌ Error building and deploying the latest image to Cloud Run."
+        return 1
+    fi
 
-        # Step 2: Update Cloud Secret Manager secret
-        if ! gcloud-secret-manager-env-update --quiet; then
-            _log_error "❌ Error updating the Secret Manager secret."
-            return 1
-        fi
+    # Step 2: Update Cloud Secret Manager secret
+    if ! gcloud-secret-manager-env-update --quiet; then
+        _log_error "❌ Error updating the Secret Manager secret."
+        return 1
+    fi
 
-        # Step 3: Update the service URLs environment variable in Cloud Run
-        if ! gcloud-run-set-service-urls-env --quiet; then
-            _log_error "❌ Error updating the Cloud Run service URLs environment variable."
-            return 1
-        fi
+    # Step 3: Update the service URLs environment variable in Cloud Run
+    if ! gcloud-run-set-service-urls-env --quiet; then
+        _log_error "❌ Error updating the Cloud Run service URLs environment variable."
+        return 1
+    fi
 
-        # Step 4: Update Cloud Storage buckets
-        if ! gcloud-storage-buckets-sync-static --quiet; then
-            _log_error "❌ Error updating Cloud Storage buckets."
-            return 1
-        fi
+    # Step 4: Update Cloud Storage buckets
+    if ! gcloud-storage-buckets-sync-static --quiet; then
+        _log_error "❌ Error updating Cloud Storage buckets."
+        return 1
+    fi
 
-        # Step 5: Sync Cloud Scheduler jobs
-        if ! gcloud-scheduler-jobs-sync --quiet; then
-            _log_error "❌ Error syncing Cloud Scheduler jobs."
-            return 1
-        fi
+    # Step 5: Sync Cloud Scheduler jobs
+    if ! gcloud-scheduler-jobs-sync --quiet; then
+        _log_error "❌ Error syncing Cloud Scheduler jobs."
+        return 1
+    fi
 
-    } 2>&1 | tee -a "$log_file"
+    # } 2>&1 | tee -a "$log_file"
 }

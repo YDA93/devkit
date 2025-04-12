@@ -118,37 +118,37 @@ function devkit-pc-setup() {
     mkdir -p "$log_dir"
     local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
-    {
-        _confirm-or-abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
+    # {
+    _confirm-or-abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
 
-        devkit-settings-setup || return 1
+    devkit-settings-setup || return 1
 
-        _check-software-updates || return 1
+    _check-software-updates || return 1
 
-        # 🔄 Setup Git configuration
-        git-setup || return 1
+    # 🔄 Setup Git configuration
+    git-setup || return 1
 
-        # Install Homebrew and packages
-        homebrew-setup || return 1
+    # Install Homebrew and packages
+    homebrew-setup || return 1
 
-        # Now its time to ask the user to configure his cask apps prior to going further
-        _confirm-or-abort "🧩 Please take a moment to open and configure your downloaded apps (e.g. VS Code, Android Studio). Press Enter when you're ready to continue." "$@" || return 1
+    # Now its time to ask the user to configure his cask apps prior to going further
+    _confirm-or-abort "🧩 Please take a moment to open and configure your downloaded apps (e.g. VS Code, Android Studio). Press Enter when you're ready to continue." "$@" || return 1
 
-        # Install NPM and packages
-        npm-setup || return 1
+    # Install NPM and packages
+    npm-setup || return 1
 
-        # Install MAS (Mac App Store) and applications
-        mas-setup || return 1
+    # Install MAS (Mac App Store) and applications
+    mas-setup || return 1
 
-        # Install Xcode and Command Line Tools
-        xcode-setup || return 1
+    # Install Xcode and Command Line Tools
+    xcode-setup || return 1
 
-        # Flutter Android Setup
-        flutter-android-sdk-setup || return 1
+    # Flutter Android Setup
+    flutter-android-sdk-setup || return 1
 
-        gum style --border normal --padding "1 2" --margin "1 0" --foreground 35 --bold "✅ devkit environment setup complete!"
+    gum style --border normal --padding "1 2" --margin "1 0" --foreground 35 --bold "✅ devkit environment setup complete!"
 
-    } 2>&1 | tee -a "$log_file"
+    # } 2>&1 | tee -a "$log_file"
 
 }
 
@@ -159,46 +159,46 @@ function devkit-pc-update() {
     mkdir -p "$log_dir"
     local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
-    {
-        # --- Brew ---
-        _log-update-step "Homebrew and Packages" "homebrew-maintain" || return 1
+    # {
+    # --- Brew ---
+    _log-update-step "Homebrew and Packages" "homebrew-maintain" || return 1
 
-        # --- Pip (Python) ---
-        _log-update-step "pip (Python)" bash -c '
+    # --- Pip (Python) ---
+    _log-update-step "pip (Python)" bash -c '
         pip3 install --upgrade pip setuptools wheel
         ' || return 1
 
-        # --- gcloud ---
-        _log-update-step "gcloud CLI" gcloud components update --quiet || return 1
+    # --- gcloud ---
+    _log-update-step "gcloud CLI" gcloud components update --quiet || return 1
 
-        # --- Flutter ---
-        _log-update-step "Flutter SDK" flutter upgrade --force || return 1
+    # --- Flutter ---
+    _log-update-step "Flutter SDK" flutter upgrade --force || return 1
 
-        # --- NPM ---
-        _log-update-step "NPM and Dependencies" bash -c '
+    # --- NPM ---
+    _log-update-step "NPM and Dependencies" bash -c '
         npm install -g npm@latest
         npm-check -g -u
         ' || return 1
 
-        # --- CocoaPods ---
-        _log-update-step "CocoaPods" pod repo update || return 1
+    # --- CocoaPods ---
+    _log-update-step "CocoaPods" pod repo update || return 1
 
-        # --- Rosetta ---
-        _log-update-step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license || return 1
+    # --- Rosetta ---
+    _log-update-step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license || return 1
 
-        # --- Vscode Extensions ---
-        _log-update-step "VS Code Extensions" code-extensions-update || return 1
+    # --- Vscode Extensions ---
+    _log-update-step "VS Code Extensions" code-extensions-update || return 1
 
-        # --- App Store Apps ---
-        _log-update-step "App Store Apps (via mas-cli)" mas-maintain || return 1
+    # --- App Store Apps ---
+    _log-update-step "App Store Apps (via mas-cli)" mas-maintain || return 1
 
-        # --- Devkit ---
-        _log-update-step "DevKit CLI" devkit-update || return 1
+    # --- Devkit ---
+    _log-update-step "DevKit CLI" devkit-update || return 1
 
-        # --- Software ---
-        _log-update-step "System Updates" softwareupdate -ia --verbose || return 1
+    # --- Software ---
+    _log-update-step "System Updates" softwareupdate -ia --verbose || return 1
 
-    } 2>&1 | tee -a "$log_file"
+    # } 2>&1 | tee -a "$log_file"
 }
 
 # 📋 Checks installed versions of common tools
@@ -294,47 +294,47 @@ function devkit-doctor() {
     mkdir -p "$log_dir"
     local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
-    {
-        _log_info "🔍 Running devkit doctor..."
-        _log_separator
+    # {
+    _log_info "🔍 Running devkit doctor..."
+    _log_separator
 
-        # Check for missing tools
-        devkit-check-tools || return 1
+    # Check for missing tools
+    devkit-check-tools || return 1
 
-        # Homebrew Checks
-        homebrew-doctor || return 1
+    # Homebrew Checks
+    homebrew-doctor || return 1
 
-        # Xcode Checks
-        xcode-doctor || return 1
+    # Xcode Checks
+    xcode-doctor || return 1
 
-        # Git Checks
-        git-doctor || return 1
+    # Git Checks
+    git-doctor || return 1
 
-        # PostgreSQL Checks
-        postgres-doctor || return 1
+    # PostgreSQL Checks
+    postgres-doctor || return 1
 
-        # NPM Checks
-        npm-doctor || return 1
+    # NPM Checks
+    npm-doctor || return 1
 
-        # Firebase Checks
-        firebase-doctor || return 1
+    # Firebase Checks
+    firebase-doctor || return 1
 
-        # Shell
-        _log_info "🔧 Checking default shell..."
-        [[ "$SHELL" == *"zsh" ]] && _log_success "✅ Default shell is zsh" ||
-            _log_warning "⚠️  Zsh is not your default shell. Set it with: chsh -s $(which zsh)"
+    # Shell
+    _log_info "🔧 Checking default shell..."
+    [[ "$SHELL" == *"zsh" ]] && _log_success "✅ Default shell is zsh" ||
+        _log_warning "⚠️  Zsh is not your default shell. Set it with: chsh -s $(which zsh)"
 
-        # PATH Sanity
-        _log_info "🔧 Checking PATH..."
-        echo "$PATH" | grep -q "/usr/local/bin" &&
-            _log_success "✅ /usr/local/bin is in PATH" ||
-            _log_warning "⚠️  /usr/local/bin is missing from PATH"
+    # PATH Sanity
+    _log_info "🔧 Checking PATH..."
+    echo "$PATH" | grep -q "/usr/local/bin" &&
+        _log_success "✅ /usr/local/bin is in PATH" ||
+        _log_warning "⚠️  /usr/local/bin is missing from PATH"
 
-        _log_success "✅ All checks completed!"
-        _log_info "🔧 Your devkit environment is ready!"
-        _log_separator
+    _log_success "✅ All checks completed!"
+    _log_info "🔧 Your devkit environment is ready!"
+    _log_separator
 
-    } 2>&1 | tee -a "$log_file"
+    # } 2>&1 | tee -a "$log_file"
 }
 
 # 🚀 Checks and updates the devkit CLI from GitHub if a new version is available (based on tags)

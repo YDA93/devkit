@@ -170,41 +170,41 @@ function django-database-init() {
     # Redirect output to a log file
     local log_file="migration_$(date +'%Y%m%d%H%M%S').log"
 
-    {
-        # Get the current directory
-        local project_directory="$PWD"
+    # {
+    # Get the current directory
+    local project_directory="$PWD"
 
-        # 1. Validations
-        python-environment-is-active || return 1
-        django-settings local || return 1
-        environment-variable-exists LOCAL_DB_NAME || return 1
-        environment-variable-exists LOCAL_DB_PASSWORD || return 1
+    # 1. Validations
+    python-environment-is-active || return 1
+    django-settings local || return 1
+    environment-variable-exists LOCAL_DB_NAME || return 1
+    environment-variable-exists LOCAL_DB_PASSWORD || return 1
 
-        # Prompt user for confirmation
-        _confirm-or-abort "⚠️ This action will reset the project to its initial state. Proceed?" || return 1
+    # Prompt user for confirmation
+    _confirm-or-abort "⚠️ This action will reset the project to its initial state. Proceed?" || return 1
 
-        # 2. Export the PGPASSWORD environment variable
-        postgres-connect || return 1
+    # 2. Export the PGPASSWORD environment variable
+    postgres-connect || return 1
 
-        # 3. Backup data if needed
-        local backup_performed=false
-        django-data-backup || return 1
+    # 3. Backup data if needed
+    local backup_performed=false
+    django-data-backup || return 1
 
-        # 4. Create a new database
-        postgres-database-create || return 1
+    # 4. Create a new database
+    postgres-database-create || return 1
 
-        # 5. Update the .env file with the correct database name
-        environment-variable-set "LOCAL_DB_NAME" "$db_name" || return 1
+    # 5. Update the .env file with the correct database name
+    environment-variable-set "LOCAL_DB_NAME" "$db_name" || return 1
 
-        # 6. Run initial migrations
-        django-migrate-initial || return 1
+    # 6. Run initial migrations
+    django-migrate-initial || return 1
 
-        # 7. Restoration of data
-        django-data-restore
+    # 7. Restoration of data
+    django-data-restore
 
-        _log_success "✅ Database initialization complete."
+    _log_success "✅ Database initialization complete."
 
-    } 2>&1 | tee -a "$log_file"
+    # } 2>&1 | tee -a "$log_file"
 
 }
 
