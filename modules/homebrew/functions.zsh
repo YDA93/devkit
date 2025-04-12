@@ -292,7 +292,7 @@ function homebrew-clean() {
     brew autoremove || return 1
     _log_success "✅ Removed unused dependencies."
 
-    _log_info "🗑️ Cleaning up old versions and cache..."
+    _log_info "🗑️  Cleaning up old versions and cache..."
     brew cleanup || return 1
     _log_success "✅ Cleaned up old versions and cache."
 
