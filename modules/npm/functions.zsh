@@ -49,6 +49,7 @@ function npm-install-packages() {
     }
 
     _log_success "✅ Installed global npm packages"
+    _log_separator
 
     source "$DEVKIT_ROOT/bin/devkit.zsh"
 }
@@ -132,6 +133,7 @@ function npm-prune-packages() {
     done
 
     _log_success "✅ npm cleanup complete."
+    _log_separator
 }
 
 # ⚙️ Full npm setup: prune and install from saved package list

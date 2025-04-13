@@ -60,6 +60,7 @@ function mas-install-apps() {
     done <"$input"
 
     _log_success "✅ App Store app installation complete."
+    _log_separator
 }
 
 function _get-app-name-from-id() {
@@ -111,6 +112,7 @@ function mas-install-from-settings() {
 
     echo ""
     _log_success "✅ App Store app installation (from settings) complete."
+    _log_separator
 }
 
 # 🔄 Updates installed App Store apps via mas
@@ -121,6 +123,7 @@ function mas-maintain() {
     _log_info "⬆️  Upgrading App Store apps..."
     mas upgrade || return 1
     _log_success "✅ App Store apps updated."
+    _log_separator
 }
 
 # ⚙️ Full mas setup: installs saved apps and applies updates

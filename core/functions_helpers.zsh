@@ -82,6 +82,7 @@ function _check-software-updates() {
 
     if echo "$available_updates" | grep -q "No new software available"; then
         _log_success "✅ No updates available. Skipping installation."
+        _log_separator
         return 0
     else
         _log_info "⬇️  Updates available. Installing now..."
@@ -89,6 +90,7 @@ function _check-software-updates() {
         _log_success "✅ Updates installed successfully."
         _log_info "🔁 A system restart may be required to complete installation."
         _log_warning "⚠️  Please reboot your Mac and then re-run: devkit-pc-setup"
+        _log_separator
         return 1 # Signal that a reboot is needed
     fi
 }

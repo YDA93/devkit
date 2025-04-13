@@ -157,6 +157,7 @@ function java-symlink-latest() {
     else
         _log_success "☕️ OpenJDK $version already symlinked at $target"
     fi
+    _log_separator
 }
 
 # ⚙️ Sets up Android SDK and accepts licenses
@@ -178,13 +179,20 @@ function flutter-android-sdk-setup() {
         "emulator" \
         "cmdline-tools;latest" || return 1
 
+    _log_success "✅ Android SDK packages installed."
+    _log_separator
+
     _run-or-abort "📜 Accepting Android SDK licenses (non-interactive)" \
         "" \
         bash -c "yes | sdkmanager --licenses" || return 1
+    _log_success "✅ Android SDK licenses accepted."
+    _log_separator
 
     _run-or-abort "📜 Accepting Flutter Android licenses (interactive)" \
         "" \
         flutter doctor --android-licenses || return 1
+    _log_success "✅ Flutter Android licenses accepted."
+    _log_separator
 
 }
 

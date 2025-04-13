@@ -6,6 +6,7 @@
 # - Ensures brew is functional afterward
 # 💡 Usage: homebrew-install
 function homebrew-install() {
+    _log_info "🍺 Checking Homebrew installation..."
     # Check if Homebrew is installed
     if ! command -v brew &>/dev/null; then
         _log_info "Homebrew not found. Installing..."
@@ -14,7 +15,9 @@ function homebrew-install() {
             return 1
         }
     else
-        _log_success "Homebrew is already installed."
+        _log_success "✅ Homebrew is already installed."
+        _log_separator
+        return 0
     fi
 
     # Verify Homebrew is working
@@ -24,6 +27,7 @@ function homebrew-install() {
     fi
 
     _log_success "✅ Homebrew is installed and working."
+    _log_separator
 }
 
 # ⚙️ Runs the full Homebrew environment setup:
@@ -102,6 +106,7 @@ function homebrew-install-packages() {
     homebrew-clean || return 1
 
     _log_success "✅ Finished installing Homebrew packages"
+    _log_separator
 }
 
 # 🔥 Uninstalls Homebrew packages not listed in saved package files or .settings
@@ -194,6 +199,7 @@ function homebrew-prune-packages() {
     homebrew-clean || return 1
 
     _log_success "✅ Cleanup complete. Only desired packages remain."
+    _log_separator
 }
 
 # 📋 Lists all currently installed Homebrew packages
@@ -250,6 +256,7 @@ function homebrew-install-from-settings() {
     homebrew-clean || return 1
 
     _log_success "✅ Done! Installed $installed_formula formula and $installed_casks casks from saved settings."
+    _log_separator
 }
 
 # ------------------------------------------------------------------------------
@@ -262,7 +269,7 @@ function homebrew-install-from-settings() {
 # - Cleans unused dependencies
 # 💡 Usage: homebrew-maintain
 function homebrew-maintain() {
-    _log_info "🩺 Checking system health..."
+    _log_info "🩺 Checking brew system health..."
     brew doctor || _log_warning "⚠️ brew doctor reported issues."
 
     _log_info "⬆️  Updating Homebrew..."
@@ -280,6 +287,7 @@ function homebrew-maintain() {
     homebrew-clean || return 1
 
     _log_success "✅ Homebrew maintenance complete!"
+    _log_separator
 }
 
 # ♻️ Cleans up Homebrew:

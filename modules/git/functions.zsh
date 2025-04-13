@@ -7,6 +7,7 @@
 # - Applies essential Git settings (no extras)
 # 💡 Usage: git-setup
 function git-setup() {
+    _log_info "🔧 Setting up Git global configuration..."
     local settings_file="$DEVKIT_ROOT/.settings"
 
     if [[ ! -f "$settings_file" ]]; then
@@ -43,6 +44,7 @@ function git-setup() {
     git config --global pull.ff only
 
     _log_success "✅ Git global config has been updated."
+    _log_separator
 }
 
 # 🩺 Checks if Git is properly installed and configured

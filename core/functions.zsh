@@ -11,9 +11,7 @@ function devkit-settings-setup() {
     local cloned_settings_file="$DEVKIT_ROOT/.settings_clone"
 
     # Check and create the directory safely
-    if mkdir -p "$(dirname "$settings_file")" 2>/dev/null && [ -w "$(dirname "$settings_file")" ]; then
-        _log_success "✅ Settings directory ready: $(dirname "$settings_file")"
-    else
+    if ! mkdir -p "$(dirname "$settings_file")" 2>/dev/null || [ ! -w "$(dirname "$settings_file")" ]; then
         _log_error "❌ Cannot create or write to: $(dirname "$settings_file")"
         _log_hint "➡️ Please check disk space, permissions, or sync conflicts."
         exit 1
@@ -24,16 +22,12 @@ function devkit-settings-setup() {
 
     # Clone settings for safe handling
     if [[ -f "$settings_file" ]]; then
-        if cp "$settings_file" "$cloned_settings_file" 2>/dev/null; then
-            _log_success "✅ Cloned existing settings file"
-        else
+        if ! cp "$settings_file" "$cloned_settings_file" 2>/dev/null; then
             _log_error "❌ Failed to clone settings file to $cloned_settings_file"
             exit 1
         fi
     else
-        if echo "" >"$cloned_settings_file" 2>/dev/null; then
-            _log_success "✅ Created empty cloned settings file"
-        else
+        if ! echo "" >"$cloned_settings_file" 2>/dev/null; then
             _log_error "❌ Failed to create empty cloned settings file: $cloned_settings_file"
             exit 1
         fi
@@ -64,6 +58,7 @@ function devkit-settings-setup() {
     echo "# formula apps" >>"$settings_file"
     _append_app_selections_to_settings "formula" "${formula_apps[@]}"
     _log_success "✅ Settings saved to $settings_file"
+    _log_separator
 
     # Remove the cloned file
     rm -f "$cloned_settings_file"

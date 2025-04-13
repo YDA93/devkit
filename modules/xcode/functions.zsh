@@ -13,45 +13,56 @@ function xcode-setup() {
     _log_info "🚀 Starting Xcode setup..."
 
     # 🛠️ Installs all available macOS software updates (system + security)
-    _log_info "📦 Running software updates..."
     _check-software-updates || return 1
 
     # 🔁 Installs Rosetta for Apple Silicon (to run Intel-based apps/tools)
+    _log_info "🔁 Checking for Rosetta installation..."
     if /usr/bin/pgrep oahd >/dev/null 2>&1; then
         _log_success "✅ Rosetta is already installed."
     else
         _log_info "🔁 Installing Rosetta..."
         softwareupdate --install-rosetta --agree-to-license || return 1
+        _log_success "✅ Rosetta installed successfully."
     fi
+    _log_separator
 
     # 📜 Accept Xcode license, must be before updating CocoaPods
     _log_info "📜 Accepting Xcode license..."
     sudo xcodebuild -license accept || return 1
+    _log_success "✅ Xcode license accepted."
+    _log_separator
 
     # 🍎 Updates CocoaPods master specs repo (used for dependency resolution)
     if command -v pod >/dev/null 2>&1; then
         _log_info "📦 Updating CocoaPods specs..."
         pod repo update || return 1
+        _log_success "✅ CocoaPods specs updated."
+        _log_separator
     else
         _log_warning "⚠️ CocoaPods not found. Skipping pod repo update."
     fi
 
     # 🔍 Check for Xcode installation
+    _log_info "🔍 Checking for Xcode installation..."
     if ! command -v xcodebuild &>/dev/null; then
         _log_error "❌ Xcode not found. Please install it from the App Store manually or using mas:"
         _log_error "   mas install 497799835  # Xcode"
         return 1
     else
         _log_success "✅ Xcode is installed."
+        _log_separator
     fi
 
     # 🔍 Check for Xcode Command Line Tools
+    _log_info "🔍 Checking for Xcode Command Line Tools..."
     if ! xcode-select -p &>/dev/null; then
         _log_info "🔧 Installing Xcode Command Line Tools..."
         xcode-select --install || return 1
+        _log_success "✅ Xcode Command Line Tools installed successfully."
     else
         _log_success "✅ Xcode Command Line Tools are installed."
     fi
+    _log_separator
 
     # 🧪 Run simulator first launch (if function exists)
     if typeset -f xcode-simulator-first-launch >/dev/null; then
@@ -59,6 +70,7 @@ function xcode-setup() {
     fi
 
     _log_success "🎉 Xcode setup completed successfully."
+    _log_separator
 }
 
 # 📱 Launches iOS Simulator to complete first-run setup
