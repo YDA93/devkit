@@ -33,6 +33,9 @@ function devkit-settings-setup() {
         fi
     fi
 
+    # Get user inputs for settings
+    _log_info "🔧 Please provide your details and select the apps you want to install."
+
     # Load basic user info
     full_name=$(gum input --header "👤 Full Name" --value "$(_read_setting_from_file "full_name" "$cloned_settings_file")")
     email=$(gum input --header "📧 Email Address" --value "$(_read_setting_from_file "email" "$cloned_settings_file")")

@@ -199,10 +199,11 @@ function homebrew-prune-packages() {
         fi
     done
 
+    _log_success "✅ Finished pruning Homebrew packages."
+    _log_separator
+
     homebrew-clean || return 1
 
-    _log_success "✅ Cleanup complete. Only desired packages remain."
-    _log_separator
 }
 
 # 📋 Lists all currently installed Homebrew packages
