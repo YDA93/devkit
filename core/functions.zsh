@@ -6,17 +6,37 @@
 # - Stores results in ~/devkit/.settings
 # 💡 Usage: devkit-settings-setup
 function devkit-settings-setup() {
+    # Define file paths
     local settings_file="$DEVKIT_ROOT/.settings"
     local cloned_settings_file="$DEVKIT_ROOT/.settings_clone"
-    mkdir -p "$(dirname "$settings_file")"
 
+    # Check and create the directory safely
+    if mkdir -p "$(dirname "$settings_file")" 2>/dev/null && [ -w "$(dirname "$settings_file")" ]; then
+        _log_success "✅ Settings directory ready: $(dirname "$settings_file")"
+    else
+        _log_error "❌ Cannot create or write to: $(dirname "$settings_file")"
+        _log_hint "➡️ Please check disk space, permissions, or sync conflicts."
+        exit 1
+    fi
+
+    # Welcome message
     gum style --border normal --margin "1 2" --padding "1 2" --bold "👋 Welcome! Let's set up DevKit CLI environment."
 
     # Clone settings for safe handling
     if [[ -f "$settings_file" ]]; then
-        cp "$settings_file" "$cloned_settings_file"
+        if cp "$settings_file" "$cloned_settings_file" 2>/dev/null; then
+            _log_success "✅ Cloned existing settings file"
+        else
+            _log_error "❌ Failed to clone settings file to $cloned_settings_file"
+            exit 1
+        fi
     else
-        >"$cloned_settings_file" # Ensure the clone exists even if empty
+        if echo "" >"$cloned_settings_file" 2>/dev/null; then
+            _log_success "✅ Created empty cloned settings file"
+        else
+            _log_error "❌ Failed to create empty cloned settings file: $cloned_settings_file"
+            exit 1
+        fi
     fi
 
     # Load basic user info
@@ -228,7 +248,7 @@ function devkit-check-tools() {
         fi
     }
 
-    _print_section_title "💻 Shell & System Tools"
+    _log_section_title "💻 Shell & System Tools"
     print_version "🧩" "Devkit" "git" "git -C \$DEVKIT_ROOT describe --tags --abbrev=0 2>/dev/null"
     print_version "🧮" "Zsh" "zsh" "zsh --version | awk '{print \$2}'"
     print_version "🛠 " "Git" "git" "git --version | awk '{print \$3}'"
@@ -237,13 +257,13 @@ function devkit-check-tools() {
     print_version "🧪" "Expect" "expect" "expect -v | awk '{print \$3}'"
     echo
 
-    _print_section_title "🧰 Developer Tools & Editors"
+    _log_section_title "🧰 Developer Tools & Editors"
     print_version "🖥 " "VS Code" "code" "code --version | head -n 1"
     print_version "🏗 " "Android Studio" "studio" "studio --version 2>/dev/null | head -n 1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+'"
     print_version "🧱" "Gradle" "gradle" "gradle --version | awk '/Gradle / {print \$2}'"
     echo
 
-    _print_section_title "⚙️  Languages & Package Managers"
+    _log_section_title "⚙️  Languages & Package Managers"
     print_version "☕" "Java" "java" "java -version 2>&1 | awk -F '\"' '/version/ {print \$2}'"
     print_version "🐍" "Python" "python3" "python3 --version | awk '{print \$2}'"
     print_version "📦" "Pip" "pip3" "pip3 --version | awk '{print \$2}'"
@@ -254,7 +274,7 @@ function devkit-check-tools() {
     print_version "🎯" "Dart" "dart" "dart --version 2>&1 | awk '{print \$4}'"
     echo
 
-    _print_section_title "📱 Mobile Dev Tools"
+    _log_section_title "📱 Mobile Dev Tools"
     print_version "🛠️ " "Xcode" "xcodebuild" "xcodebuild -version | head -n 1 | awk '{print \$2}'"
     print_version "🍎" "CocoaPods" "pod" "pod --version"
     print_version "💙" "Flutter" "flutter" "flutter --version 2>/dev/null | head -n 1 | awk '{print \$2}'"
@@ -262,17 +282,17 @@ function devkit-check-tools() {
     print_version "🔌" "Android Platform Tools" "adb" "adb version | head -n 1 | awk '{print \$5}'"
     echo
 
-    _print_section_title "🚀  Cloud & Deployment"
+    _log_section_title "🚀  Cloud & Deployment"
     print_version "☁️ " "Google Cloud CLI" "gcloud" "gcloud --version | grep 'Google Cloud SDK' | awk '{print \$4}'"
     print_version "🔥" "Firebase CLI" "firebase" "firebase --version"
     print_version "🐳" "Docker" "docker" "docker --version | awk '{gsub(/,/,\"\"); print \$3}'"
     echo
 
-    _print_section_title "🗄️  Databases"
+    _log_section_title "🗄️  Databases"
     print_version "🐘" "PostgreSQL" "psql" "psql --version | awk '{print \$3}'"
     echo
 
-    _print_section_title "🧩 Miscellaneous Tools"
+    _log_section_title "🧩 Miscellaneous Tools"
     print_version "🖨 " "WeasyPrint" "weasyprint" "weasyprint --version | awk '{print \$3}'"
     echo
 
