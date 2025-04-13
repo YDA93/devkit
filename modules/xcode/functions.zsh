@@ -10,7 +10,6 @@
 # - Ensures Xcode and CLI tools are installed
 # 💡 Usage: xcode-setup
 function xcode-setup() {
-    _log_info "🚀 Starting Xcode setup..."
 
     # 🛠️ Installs all available macOS software updates (system + security)
     _check-software-updates || return 1
@@ -69,8 +68,6 @@ function xcode-setup() {
         xcode-simulator-first-launch || return 1
     fi
 
-    _log_success "🎉 Xcode setup completed successfully."
-    _log_separator
 }
 
 # 📱 Launches iOS Simulator to complete first-run setup
@@ -78,38 +75,47 @@ function xcode-setup() {
 # - Optionally pre-downloads iOS platform support
 # 💡 Usage: xcode-simulator-first-launch
 function xcode-simulator-first-launch() {
-    _log_info "📱 Launching iOS Simulator for initial setup..."
-
     # Set Xcode path (only if needed)
+    _log_info "🔧 Setting Xcode path..."
     sudo xcode-select -s /Applications/Xcode.app/Contents/Developer || return 1
+    _log_success "✅ Xcode path set to /Applications/Xcode.app/Contents/Developer."
+    _log_separator
 
     # Run Xcode's first launch tasks (installs tools, accepts licenses)
     _log_info "🔧 Running Xcode first launch tasks..."
     sudo xcodebuild -runFirstLaunch || return 1
+    _log_success "✅ Xcode first launch tasks completed."
+    _log_separator
 
     # Pre-download the iOS platform support (optional but nice)
     _log_info "📦 Pre-downloading iOS platform support..."
     xcodebuild -downloadPlatform iOS || return 1
+    _log_success "✅ iOS platform support pre-downloaded."
+    _log_separator
 
-    _log_success "✅ Xcode and Simulator first-launch setup complete."
 }
 
 # 🩺 Verifies Xcode setup and tools
 # - Checks for `xcode-select`, `xcrun`, iOS simulators, and Rosetta (if Apple Silicon)
 # 💡 Usage: xcode-doctor
 function xcode-doctor() {
-    _log_info "🔧 Checking Xcode..."
 
+    _log_info "🔧 Checking Xcode installation..."
     if ! xcode-select -p &>/dev/null; then
         _log_warning "⚠️  Xcode not properly installed or selected."
         _log_hint "💡 Try: xcode-select --install"
         return 1
     fi
+    _log_success "✅ Xcode is properly installed."
+    _log_separator
 
+    _log_info "🔧 Checking Xcode Command Line Tools..."
     if ! command -v xcrun &>/dev/null; then
         _log_warning "⚠️  'xcrun' not found. Xcode CLI tools may not be fully installed."
         return 1
     fi
+    _log_success "✅ 'xcrun' found."
+    _log_separator
 
     _log_info "📱 Checking iOS simulators..."
     if xcrun simctl list devices available | grep -qE "iPhone|iPad"; then
@@ -118,15 +124,18 @@ function xcode-doctor() {
         _log_warning "⚠️  No available iOS simulators found."
         _log_hint "💡 Open Xcode ➝ Preferences ➝ Components to install simulators."
     fi
+    _log_separator
 
     _log_info "🔧 Checking Rosetta installation..."
     if [[ $(uname -m) == "arm64" ]]; then
         if ! /usr/bin/pgrep oahd &>/dev/null; then
             _log_warning "⚠️  Rosetta is not installed."
             _log_hint "💡 Run: softwareupdate --install-rosetta --agree-to-license"
+            _log_separator
             return 1
         else
             _log_success "✅ Rosetta is installed."
+            _log_separator
         fi
     fi
 
