@@ -21,7 +21,12 @@ function code-extensions() {
 # 💡 Usage: code-extensions-update
 function code-extensions-update() {
     _log_info "♻️  Updating all VS Code extensions..."
-    code --update-extensions
+    code --update-extensions || {
+        _log_error "❌ Failed to update extensions. Please check your VS Code installation."
+        return 1
+    }
+    _log_success "✅ Extensions updated successfully!"
+    _log_separator
 }
 
 # 💾 Fully interactive backup of VS Code extensions with default filename (Zsh-compatible)

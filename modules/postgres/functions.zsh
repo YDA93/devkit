@@ -92,25 +92,31 @@ function postgres-connect() {
 # - Provides guidance if any checks fail
 # 💡 Usage: postgres-doctor
 function postgres-doctor() {
-    _log_info "🐘 Checking PostgreSQL..."
 
+    _log_info "🔧 Checking PostgreSQL installation..."
     if ! command -v psql &>/dev/null; then
         _log_warning "⚠️  psql command not found. PostgreSQL might not be installed."
         _log_hint "💡 Install with: brew install postgresql"
+        _log_separator
         return 1
     fi
+    _log_success "✅ PostgreSQL is installed"
+    _log_separator
 
     _log_info "🛠 Checking if PostgreSQL service is running..."
     if pg_ctl status &>/dev/null || brew services list | grep -E 'postgresql(@[0-9]+)?' &>/dev/null; then
-        _log_success "✅ PostgreSQL service appears to be installed"
+        _log_success "✅ PostgreSQL service appears to be running"
+        _log_separator
     else
         _log_warning "⚠️  PostgreSQL service not running or not installed"
         _log_hint "💡 Start with: brew services start $LATEST_PG"
+        _log_separator
     fi
 
     _log_info "🔑 Checking connection as 'postgres' user..."
     if psql -U postgres -c '\q' &>/dev/null; then
         _log_success "✅ Able to connect as 'postgres'"
+        _log_separator
     else
         _log_warning "⚠️  Cannot connect as 'postgres'"
         _log_hint "💡 Try creating the user with:"
@@ -123,6 +129,7 @@ function postgres-doctor() {
         _log_hint ""
         _log_hint "⚙️  Also ensure the PostgreSQL service is running:"
         _log_hint "   brew services start $LATEST_PG     "
+        _log_separator
     fi
 
     return 0
@@ -251,6 +258,7 @@ function postgres-database-create() {
     fi
 
     _log_success "✅ New database '$db_name' created successfully."
+    _log_separator
     unset PGPASSWORD
 }
 

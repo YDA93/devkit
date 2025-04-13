@@ -113,13 +113,14 @@ function devkit-is-setup() {
         if [[ "$quiet" == false ]]; then
             _log_warning "⚠️  DevKit is not fully set up."
             _log_error "🚫 Missing tools: ${missing[*]}"
-            _log_info "👉 Run: devkit-pc-setup"
+            _log_hint "👉 Run: devkit-pc-setup"
         fi
         return 1
     fi
 
     if [[ "$quiet" == false ]]; then
         _log_success "✅ DevKit is fully set up!"
+        _log_separator
     fi
 
     return 0
@@ -175,43 +176,17 @@ function devkit-pc-update() {
     local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
     # {
-    # --- Brew ---
-    _log-update-step "Homebrew and Packages" "homebrew-maintain" || return 1
-
-    # --- Pip (Python) ---
-    _log-update-step "pip (Python)" bash -c '
-        pip3 install --upgrade pip setuptools wheel
-        ' || return 1
-
-    # --- gcloud ---
-    _log-update-step "gcloud CLI" gcloud components update --quiet || return 1
-
-    # --- Flutter ---
-    _log-update-step "Flutter SDK" flutter upgrade --force || return 1
-
-    # --- NPM ---
-    _log-update-step "NPM and Dependencies" bash -c '
-        npm install -g npm@latest
-        npm-check -g -u
-        ' || return 1
-
-    # --- CocoaPods ---
-    _log-update-step "CocoaPods" pod repo update || return 1
-
-    # --- Rosetta ---
-    _log-update-step "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license || return 1
-
-    # --- Vscode Extensions ---
-    _log-update-step "VS Code Extensions" code-extensions-update || return 1
-
-    # --- App Store Apps ---
-    _log-update-step "App Store Apps (via mas-cli)" mas-maintain || return 1
-
-    # --- Devkit ---
-    _log-update-step "DevKit CLI" devkit-update || return 1
-
-    # --- Software ---
-    _log-update-step "System Updates" softwareupdate -ia --verbose || return 1
+    _log-update-step 1 11 "Homebrew and Packages" homebrew-maintain || return 1
+    _log-update-step 2 11 "pip (Python)" bash -c 'pip3 install --upgrade pip setuptools wheel' || return 1
+    _log-update-step 3 11 "gcloud CLI" gcloud components update --quiet || return 1
+    _log-update-step 4 11 "Flutter SDK" flutter upgrade --force || return 1
+    _log-update-step 5 11 "NPM and Dependencies" bash -c 'npm install -g npm@latest; npm-check -g -u' || return 1
+    _log-update-step 6 11 "CocoaPods" pod repo update || return 1
+    _log-update-step 7 11 "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license || return 1
+    _log-update-step 8 11 "VS Code Extensions" code-extensions-update || return 1
+    _log-update-step 9 11 "App Store Apps (via mas-cli)" mas-maintain || return 1
+    _log-update-step 10 11 "DevKit CLI" devkit-update || return 1
+    _log-update-step 11 11 "System Updates" softwareupdate -ia --verbose || return 1
 
     # } 2>&1 | tee -a "$log_file"
 }
@@ -219,8 +194,7 @@ function devkit-pc-update() {
 # 📋 Checks installed versions of common tools
 # 💡 Usage: devkit-check-tools
 function devkit-check-tools() {
-    _log_info "🔧 Development Environment Status:"
-    _log_separator
+    _log_title "🔧 Development Environment Status:"
 
     # Track missing tools
     local missing_tools=()
@@ -295,10 +269,12 @@ function devkit-check-tools() {
 
     if ((${#missing_tools[@]} > 0)); then
         _log_warning "⚠️  Missing tools: ${missing_tools[*]}"
-        _log_info "👉 Run: devkit-pc-setup to install and configure required packages."
+        _log_hint "👉 Run: devkit-pc-setup to install and configure required packages."
+        _log_separator
         return 1
     else
         _log_success "✅ All essential tools are installed!"
+        _log_separator
     fi
 }
 
@@ -310,8 +286,6 @@ function devkit-doctor() {
     local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
     # {
-    _log_info "🔍 Running devkit doctor..."
-    _log_separator
 
     # Check for missing tools
     devkit-check-tools || return 1
@@ -336,17 +310,17 @@ function devkit-doctor() {
 
     # Shell
     _log_info "🔧 Checking default shell..."
-    [[ "$SHELL" == *"zsh" ]] && _log_success "✅ Default shell is zsh" ||
+    [[ "$SHELL" == *"zsh" ]] && _log_success "✅ Default shell is set to zsh" ||
         _log_warning "⚠️  Zsh is not your default shell. Set it with: chsh -s $(which zsh)"
 
+    _log_separator
+
     # PATH Sanity
-    _log_info "🔧 Checking PATH..."
+    _log_info "🔧 Checking if /usr/local/bin is included in PATH"
     echo "$PATH" | grep -q "/usr/local/bin" &&
         _log_success "✅ /usr/local/bin is in PATH" ||
         _log_warning "⚠️  /usr/local/bin is missing from PATH"
 
-    _log_success "✅ All checks completed!"
-    _log_info "🔧 Your devkit environment is ready!"
     _log_separator
 
     # } 2>&1 | tee -a "$log_file"
@@ -368,31 +342,37 @@ function devkit-update() {
             return 1
         }
         _log_success "✅ devkit installed for the first time."
+        _log_separator
         source "$DEVKIT_ROOT/bin/devkit.zsh"
         return 0
     fi
 
     # Fetch latest tags
+    _log_info "🔄 Fetching latest tags from remote repository..."
     git -C "$DEVKIT_ROOT" fetch --tags --quiet || {
         _log_warning "⚠️  Failed to fetch tags from remote repository."
         _log_hint "💡 Please check your internet connection or try again later."
+        _log_separator
         return 1
     }
+    _log_success "✅ Fetched latest tags from remote repository."
 
     # Get latest local and remote version tags
     local local_version remote_version
-
+    _log_info "🔍 Checking local and remote version tags..."
     local_version=$(git -C "$DEVKIT_ROOT" tag --sort=-v:refname | head -n 1)
     remote_version=$(git -C "$DEVKIT_ROOT" ls-remote --tags --sort='v:refname' "$repo_url" | grep -o 'refs/tags/[^\^{}]*' | awk -F/ '{print $3}' | tail -n 1)
 
     # Handle case where no tags exist
     if [[ -z "$remote_version" ]]; then
         _log_warning "⚠️  No remote version tags found."
+        _log_separator
         return 1
     fi
 
     if [[ -z "$local_version" ]]; then
         _log_info "ℹ️  No local version found. You might be on initial clone."
+        _log_separator
         local_version="none"
     fi
 
@@ -401,17 +381,20 @@ function devkit-update() {
 
     if [[ "$local_version" == "$remote_version" ]]; then
         _log_success "✅ devkit is already up to date (version: $local_version)"
+        _log_separator
         return 0
     fi
 
     _log_info "📥 New version available!"
     _log_info "🔸 Current: $local_version"
     _log_info "🔹 Latest : $remote_version"
+    _log_separator
 
     if gum confirm "👉 Do you want to update devkit to version $remote_version now?"; then
-        _log_info "✅ Proceeding with update to version $remote_version..."
+        _log_info "Proceeding with update to version $remote_version..."
     else
         _log_error "❌ Update canceled."
+        _log_separator
         return 0
     fi
 
@@ -419,13 +402,17 @@ function devkit-update() {
 
     if ! git -C "$DEVKIT_ROOT" checkout "tags/$remote_version" -f; then
         _log_error "❌ Failed to checkout version $remote_version."
+        _log_separator
         return 1
     fi
 
     if [[ -f "$DEVKIT_ROOT/bin/devkit.zsh" ]]; then
+        _log_success "✅ devkit updated to version $remote_version."
+        _log_separator
         _log_info "🔁 Reloading devkit..."
         source "$DEVKIT_ROOT/bin/devkit.zsh"
-        _log_success "✅ devkit updated and reloaded to version $remote_version."
+        _log_success "✅ devkit reloaded."
+        _log_separator
     fi
 }
 
@@ -447,4 +434,5 @@ function devkit-version() {
     fi
 
     _log_info "📦 Current devkit version: $current_version"
+    _log_separator
 }

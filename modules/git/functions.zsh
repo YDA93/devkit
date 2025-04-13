@@ -60,39 +60,49 @@ function git-doctor() {
         _log_hint "💡 Install with: brew install git"
         return 1
     fi
+    _log_success "✅ Git is installed."
+    _log_separator
 
     _log_info "🔧 Checking Git configuration..."
     if [[ -z $(git config user.name) || -z $(git config user.email) ]]; then
         _log_warning "⚠️  Git user.name or user.email not configured"
         _log_hint "💡 Set them with:"
-        echo "   git config --global user.name \"Your Name\""
-        echo "   git config --global user.email \"you@example.com\""
+        _log_hint "   git config --global user.name \"Your Name\""
+        _log_hint "   git config --global user.email \"you@example.com\""
+        _log_separator
     else
         _log_success "✅ Git user.name and user.email are set"
+        _log_separator
     fi
 
     _log_info "📝 Checking for global .gitignore..."
     if git config --get core.excludesfile &>/dev/null; then
         _log_success "✅ Global .gitignore is configured"
+        _log_separator
     else
         _log_warning "⚠️  No global .gitignore set"
         _log_hint "💡 Tip: git config --global core.excludesfile ~/.gitignore_global"
+        _log_separator
     fi
 
     _log_info "🔧 Checking SSH key..."
     if [[ -f ~/.ssh/id_rsa.pub || -f ~/.ssh/id_ed25519.pub ]]; then
         _log_success "✅ SSH key found"
+        _log_separator
     else
         _log_warning "⚠️  No SSH key found in ~/.ssh/"
         _log_hint "💡 Generate one with: ssh-keygen -t ed25519 -C \"your_email@example.com\""
+        _log_separator
     fi
 
     _log_info "🔐 Testing SSH connection to GitHub..."
     if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
         _log_success "✅ SSH connection to GitHub works"
+        _log_separator
     else
         _log_warning "⚠️  SSH connection to GitHub failed or requires verification"
         _log_hint "💡 Run: ssh -T git@github.com to test manually"
+        _log_separator
     fi
 
     return 0

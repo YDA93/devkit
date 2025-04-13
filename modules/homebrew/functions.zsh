@@ -12,6 +12,7 @@ function homebrew-install() {
         _log_info "Homebrew not found. Installing..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
             _log_error "Homebrew installation failed."
+            _log_separator
             return 1
         }
     else
@@ -23,6 +24,7 @@ function homebrew-install() {
     # Verify Homebrew is working
     if ! brew --version &>/dev/null; then
         _log_error "Homebrew seems to be installed but not working properly."
+        _log_separator
         return 1
     fi
 
@@ -65,6 +67,7 @@ function homebrew-save-packages() {
     _log_success "✅ Saved installed packages:"
     _log_info "   📄 Formulas: $formula_output"
     _log_info "   📄 Casks:    $casks_output"
+    _log_separator
 }
 
 # 📦 Installs Homebrew formula and casks from saved package lists
@@ -205,9 +208,9 @@ function homebrew-prune-packages() {
 # 📋 Lists all currently installed Homebrew packages
 # 💡 Usage: homebrew-list-packages
 function homebrew-list-packages() {
-    _log_success "🍺 Installed Homebrew formula:"
+    _log_info "🍺 Installed Homebrew formula:"
     brew list --formula --installed-on-request
-    _log_success "🧴 Installed Homebrew casks:"
+    _log_info "🧴 Installed Homebrew casks:"
     brew list --cask
 }
 
@@ -271,23 +274,26 @@ function homebrew-install-from-settings() {
 function homebrew-maintain() {
     _log_info "🩺 Checking brew system health..."
     brew doctor || _log_warning "⚠️ brew doctor reported issues."
+    _log_success "✅ brew doctor completed."
+    _log_separator
 
     _log_info "⬆️  Updating Homebrew..."
     brew update || return 1
     _log_success "✅ Homebrew updated."
+    _log_separator
 
     _log_info "🔄 Upgrading formulas..."
     brew upgrade --formula || return 1
     _log_success "✅ Upgraded formulas."
+    _log_separator
 
     _log_info "🧴 Upgrading casks..."
     brew upgrade --cask || return 1
     _log_success "✅ Upgraded casks."
+    _log_separator
 
     homebrew-clean || return 1
 
-    _log_success "✅ Homebrew maintenance complete!"
-    _log_separator
 }
 
 # ♻️ Cleans up Homebrew:
@@ -299,14 +305,17 @@ function homebrew-clean() {
     _log_info "🧹 Autoremoving unused dependencies..."
     brew autoremove || return 1
     _log_success "✅ Removed unused dependencies."
+    _log_separator
 
     _log_info "🗑️  Cleaning up old versions and cache..."
     brew cleanup || return 1
     _log_success "✅ Cleaned up old versions and cache."
+    _log_separator
 
     _log_info "📦 Verifying installed packages..."
     brew missing || return 1
     _log_success "✅ Verified installed packages."
+    _log_separator
 }
 
 # 🔧 Checks the status of Homebrew on your system
@@ -315,30 +324,36 @@ function homebrew-clean() {
 # - Checks for outdated packages
 # 💡 Usage: homebrew-doctor
 function homebrew-doctor() {
-    _log_info "🔧 Checking Homebrew..."
+    _log_info "🔧 Checking Homebrew installation..."
 
     if ! command -v brew &>/dev/null; then
         _log_warning "⚠️  Homebrew is not installed."
         _log_hint "👉 You can install it with: homebrew-install"
         return 1
     fi
+    _log_success "✅ Homebrew is installed."
+    _log_separator
 
     _log_info "🩺 Running 'brew doctor'..."
     brew doctor
     if [[ $? -ne 0 ]]; then
         _log_warning "⚠️  Homebrew reports issues. Run 'brew doctor' manually to review details."
+        _log_separator
         return 1
     else
         _log_success "✅ No major issues reported by Homebrew."
+        _log_separator
     fi
 
-    _log_info "📦 Checking for outdated packages..."
+    _log_info "📦 Checking for brew outdated packages..."
     if [[ -n "$(brew outdated)" ]]; then
         _log_warning "⚠️  You have outdated packages."
         _log_hint "👉 Consider running 'brew outdated' to see which ones."
         _log_hint "👉 To upgrade, use: 'homebrew-maintain'"
+        _log_separator
     else
         _log_success "✅ All packages are up to date."
+        _log_separator
     fi
 
     return 0

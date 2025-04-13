@@ -75,9 +75,13 @@ function _log_separator() {
 # 💡 Usage: _log_title "Title"
 function _log_title() {
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
+        _log_separator
         gum style --bold --foreground 51 "$@"
+        _log_separator
     else
+        echo -e "${CYAN}────────────────────────────────────────${NO_COLOR}"
         echo -e "${PURPLE}$@${NO_COLOR}"
+        echo -e "${CYAN}────────────────────────────────────────${NO_COLOR}"
     fi
 }
 
@@ -120,32 +124,32 @@ function _log_question() {
 }
 
 # 🔧 Logs a step with visible progress/status indicators (Gum, no spinner)
-# 💡 Usage: _log-update-step "Label" <command>
+# 💡 Usage: _log-update-step <step_number> <step_total> "Label" <command>
 function _log-update-step() {
-    local name="$1"
-    shift
+    local step_number="$1"
+    local step_total="$2"
+    local name="$3"
+    shift 3
 
+    local prefix="($step_number/$step_total)"
+
+    # Start step: show updating in yellow
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
-        gum style --border rounded --padding "0 2" --margin "1 0" --foreground 33 --bold "🔧 Updating $name"
+        gum style --border rounded --padding "0 2" --margin "0 0" --foreground 226 --bold "$prefix 🔧 Updating $name"
     else
-        echo -e "${CYAN}🔧 Updating $name${NO_COLOR}"
+        echo -e "${YELLOW}$prefix 🔧 Updating $name${NO_COLOR}"
     fi
 
-    if "$@"; then
-        echo
+    # Run the command
+    if ! "$@"; then
         if [[ $GUM_AVAILABLE -eq 1 ]]; then
-            gum style --border rounded --padding "0 2" --margin "1 0" --foreground 42 --bold "✅ Update complete: $name"
+            gum style --border rounded --padding "0 2" --margin "0 0" --foreground 196 --bold "$prefix ❌ Update failed: $name"
         else
-            echo -e "${GREEN}✅ Update complete: $name${NO_COLOR}"
-        fi
-    else
-        echo
-        if [[ $GUM_AVAILABLE -eq 1 ]]; then
-            gum style --border rounded --padding "0 2" --margin "1 0" --foreground 196 --bold "❌ Update failed: $name"
-        else
-            echo -e "${RED}❌ Update failed: $name${NO_COLOR}"
+            echo -e "${RED}$prefix ❌ Update failed: $name${NO_COLOR}"
         fi
     fi
+
+    echo
 }
 
 # 🧪 Runs a command, aborts if it fails, and prints custom messages
@@ -186,6 +190,7 @@ function _confirm-or-abort() {
             return 0
         else
             _log_info "Aborting action."
+            _log_separator
             return 1
         fi
     else

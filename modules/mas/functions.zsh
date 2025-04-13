@@ -120,6 +120,8 @@ function mas-install-from-settings() {
 function mas-maintain() {
     _log_info "🔍 Checking for App Store updates..."
     mas outdated || return 1
+    _log_success "✅ App Store apps are up to date."
+    _log_separator
     _log_info "⬆️  Upgrading App Store apps..."
     mas upgrade || return 1
     _log_success "✅ App Store apps updated."

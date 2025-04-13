@@ -18,6 +18,7 @@ function npm-save-packages() {
     }
 
     _log_success "✅ Saved npm packages to $output"
+    _log_separator
 }
 
 # 📥 Installs global npm packages from saved list
@@ -83,6 +84,7 @@ function npm-uninstall-packages() {
     }
 
     _log_success "✅ Uninstalled global npm packages"
+    _log_separator
 }
 
 # ♻️ Repairs npm environment by reinstalling Node, uninstalling, and restoring global packages
@@ -95,11 +97,16 @@ function npm-repair() {
 
     _log_info "🔧 Reinstalling npm via Homebrew ($LATEST_NODE)..."
     brew reinstall "$LATEST_NODE" || return 1
+    _log_success "✅ Reinstalled npm via Homebrew"
+    _log_separator
     _log_info "🧼 Cleaning up existing global packages..."
     npm-uninstall-packages || return 1
+    _log_success "✅ Cleaned up global npm packages"
+    _log_separator
     _log_info "♻️ Reinstalling global packages..."
     npm-install-packages || return 1
-    _log_success "✅ npm repair complete"
+    _log_success "✅ Reinstalled global npm packages"
+    _log_separator
 }
 
 # 🔥 Uninstalls global npm packages not listed in packages.txt (with confirmation)
@@ -146,11 +153,12 @@ function npm-setup() {
 # 📋 Lists all globally installed npm packages
 # 💡 Usage: npm-list-packages
 function npm-list-packages() {
-    _log_success "📦 Installed global npm packages:"
+    _log_info "📦 Installed global npm packages:"
     npm list -g || {
         _log_error "❌ Failed to list npm packages. Please check your npm installation."
         return 1
     }
+    _log_separator
 }
 
 # 🩺 Diagnoses npm and Node.js setup
@@ -159,44 +167,56 @@ function npm-list-packages() {
 # - Runs `npm doctor`
 # 💡 Usage: npm-doctor
 function npm-doctor() {
-    _log_info "📦 Checking npm and Node.js..."
-
+    _log_info "🔧 Checking Node installation..."
     if ! command -v node &>/dev/null; then
         _log_warning "⚠️  Node.js is not installed or not in PATH."
         _log_hint "💡 Install with: brew install node"
+        _log_separator
         return 1
     fi
+    _log_success "✅ Node.js is installed"
+    _log_separator
 
+    _log_info "🔧 Checking npm installation..."
     if ! command -v npm &>/dev/null; then
         _log_warning "⚠️  npm is not installed."
+        _log_separator
         return 1
     fi
+    _log_success "✅ npm is installed"
+    _log_separator
 
     npm_root=$(npm config get prefix 2>/dev/null) || {
         _log_warning "⚠️  Failed to get npm prefix. Please check your npm installation."
         return 1
     }
-    echo "📁 npm global prefix: ${npm_root:-⚠️ Not set}"
+    _log_info "📁 npm global prefix: ${npm_root:-⚠️ Not set}"
 
     current_registry=$(npm config get registry)
     if [[ "$current_registry" != "https://registry.npmjs.org/" ]]; then
         _log_warning "⚠️  npm registry is: $current_registry"
         _log_hint "    👉 Consider resetting it:"
         _log_hint "       npm config set registry https://registry.npmjs.org/"
+        _log_separator
     else
         _log_success "✅ npm registry is set to default"
+        _log_separator
     fi
 
+    _log_info "🔧 Checking if global npm packages are writable"
     global_path="$npm_root/lib/node_modules"
     if [[ -w "$global_path" ]]; then
         _log_success "✅ Global npm packages are writable"
+        _log_separator
     else
         _log_warning "⚠️  No write access to global npm packages"
         _log_hint "    👉 Consider using nvm or fnm to manage Node versions and avoid permission issues"
+        _log_separator
     fi
 
     _log_info "🧪 Running basic 'npm doctor' check..."
     npm doctor || _log_warning "⚠️  npm doctor found some issues (see above)"
+    _log_separator
 
     return 0
 }
