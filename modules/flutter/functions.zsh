@@ -139,6 +139,7 @@ function java-symlink-latest() {
 
     if [[ ! -d "$brew_jdk_path" ]]; then
         _log_error "❌ Homebrew OpenJDK not found at $brew_jdk_path"
+        _log_separator
         return 1
     fi
 
@@ -152,12 +153,10 @@ function java-symlink-latest() {
         _log_info "☕️ Symlinking OpenJDK $version to $target..."
         sudo ln -sfn "$brew_jdk_path" "$target" || {
             _log_error "❌ Failed to create symlink at $target"
+            _log_separator
             return 1
         }
-    else
-        _log_success "☕️ OpenJDK $version already symlinked at $target"
     fi
-    _log_separator
 }
 
 # ⚙️ Sets up Android SDK and accepts licenses
@@ -166,6 +165,8 @@ function flutter-android-sdk-setup() {
     _run-or-abort "☕️ Symlinking OpenJDK" \
         "✅ OpenJDK symlinked." \
         java-symlink-latest || return 1
+
+    _log_separator
 
     local latest_build_tools
     latest_build_tools=$(_android-latest-build-tools)

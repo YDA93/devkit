@@ -81,7 +81,7 @@ function _check-software-updates() {
     available_updates=$(softwareupdate -l 2>&1)
 
     if echo "$available_updates" | grep -q "No new software available"; then
-        _log_success "✅ No updates available. Skipping installation."
+        _log_success "✅ No updates available."
         _log_separator
         return 0
     else
