@@ -80,7 +80,7 @@ function gcloud-scheduler-jobs-delete() {
             --quiet
     done
 
-    _log_success "✅ Deleted ${#urls[@]} Cloud Scheduler job(s)."
+    _log_success "✓ Deleted ${#urls[@]} Cloud Scheduler job(s)."
 }
 
 # 🔄 Syncs local Django cron jobs with Cloud Scheduler (create/delete as needed)
@@ -184,7 +184,7 @@ function gcloud-scheduler-jobs-sync() {
     if [[ ${#to_create_urls[@]} -eq 0 && ${#to_delete_urls[@]} -eq 0 ]]; then
         _log_success "🟡 No changes needed. GCP Scheduler is already in sync with your local URLs."
     else
-        _log_success "✅ Update complete:"
+        _log_success "✓ Update complete:"
         if [[ ${#to_create_urls[@]} -gt 0 ]]; then
             _log_success "  ➕ ${#to_create_urls[@]} job(s) created"
         fi

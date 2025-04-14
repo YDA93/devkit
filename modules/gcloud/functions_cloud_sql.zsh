@@ -131,7 +131,7 @@ function gcloud-sql-db-and-user-create() {
                     expect "$GCP_SQL_DB_NAME=>"
                 }
                 "$GCP_SQL_DB_NAME=>" { }
-                timeout { puts "❌ ERROR: Switching databases failed."; exit 1 }
+                timeout { puts "✗ ERROR: Switching databases failed."; exit 1 }
             }
 
             sleep 2
@@ -196,7 +196,7 @@ function gcloud-sql-db-and-user-delete() {
             send -- "DROP DATABASE \"$GCP_SQL_DB_NAME\";\r"
             expect {
                 "ERROR: database .* is being accessed by other users" {
-                    send_user "\n❌ ERROR: Cannot drop database \"$GCP_SQL_DB_NAME\" because it is in use.\n"
+                    send_user "\n✗ ERROR: Cannot drop database \"$GCP_SQL_DB_NAME\" because it is in use.\n"
                     exit 1
                 }
                 "postgres=>"
@@ -207,7 +207,7 @@ function gcloud-sql-db-and-user-delete() {
             send -- "DROP USER \"$GCP_SQL_DB_USERNAME\";\r"
             expect {
                 "ERROR: role .* does not exist" {
-                    send_user "\n❌ ERROR: Cannot drop user \"$GCP_SQL_DB_USERNAME\" because it does not exist.\n"
+                    send_user "\n✗ ERROR: Cannot drop user \"$GCP_SQL_DB_USERNAME\" because it does not exist.\n"
                     exit 1
                 }
                 "postgres=>"
@@ -255,13 +255,13 @@ EOF
         if lsof -iTCP -sTCP:LISTEN -nP | grep -q ":$GCP_SQL_PROXY_PORT"; then
             # Second, confirm the port is actually responding using `nc`
             if nc -z 127.0.0.1 $GCP_SQL_PROXY_PORT 2>/dev/null; then
-                _log_success "✅ Cloud SQL Proxy is running on 127.0.0.1:$GCP_SQL_PROXY_PORT!"
+                _log_success "✓ Cloud SQL Proxy is running on 127.0.0.1:$GCP_SQL_PROXY_PORT!"
                 break
             fi
         fi
 
         if ((retries-- <= 0)); then
-            _log_error "❌ Cloud SQL Proxy failed to start within the expected time (30s)."
+            _log_error "✗ Cloud SQL Proxy failed to start within the expected time (30s)."
             return 1
         fi
 
@@ -270,9 +270,9 @@ EOF
 
     # Run Django setup in previous terminal
     if django-settings dev && python manage.py migrate && python manage.py populate_database; then
-        _log_success "✅ Django setup completed successfully!"
+        _log_success "✓ Django setup completed successfully!"
     else
-        _log_error "❌ Django setup failed."
+        _log_error "✗ Django setup failed."
         return 1
     fi
 }

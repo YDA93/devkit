@@ -28,7 +28,7 @@ function docker-daemon-start() {
         sleep 5
     done
 
-    $quiet || _log_success "✅ Docker is now running!"
+    $quiet || _log_success "✓ Docker is now running!"
 }
 
 # ♻️ Restarts Docker Desktop
@@ -57,7 +57,7 @@ function docker-kill-all() {
 function docker-clean-all() {
     _log_info "🧹 Cleaning up Docker..."
     docker system prune -af --volumes
-    _log_success "✅ Docker cleaned"
+    _log_success "✓ Docker cleaned"
 }
 
 # ------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ function docker-list-networks() {
 # 💡 Usage: docker-inspect-container <container_id_or_name>
 function docker-inspect-container() {
     if [[ -z "$1" ]]; then
-        _log_error "❌ Usage: docker-inspect-container <container_name_or_id>"
+        _log_error "✗ Usage: docker-inspect-container <container_name_or_id>"
         return 1
     fi
 
@@ -129,7 +129,7 @@ function docker-inspect-container() {
 # 💡 Usage: docker-logs <container_id_or_name>
 function docker-logs() {
     if [[ -z "$1" ]]; then
-        _log_error "❌ Usage: docker-logs <container_name_or_id>"
+        _log_error "✗ Usage: docker-logs <container_name_or_id>"
         return 1
     fi
 

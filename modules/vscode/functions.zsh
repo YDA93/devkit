@@ -22,11 +22,11 @@ function code-extensions() {
 function code-extensions-update() {
     _log_info "♻️  Updating all VS Code extensions..."
     code --update-extensions || {
-        _log_error "❌ Failed to update extensions. Please check your VS Code installation."
+        _log_error "✗ Failed to update extensions. Please check your VS Code installation."
         return 1
     }
-    _log_success "✅ Extensions updated successfully!"
-    _log_separator
+    _log_success "✓ Extensions updated successfully!"
+    echo
 }
 
 # 💾 Fully interactive backup of VS Code extensions with default filename (Zsh-compatible)
@@ -49,7 +49,7 @@ function code-extensions-backup() {
 
     # Confirm before proceeding
     if ! gum confirm "💾 Confirm backup to: $BACKUP_PATH ?"; then
-        _log_error "❌ Backup cancelled."
+        _log_error "✗ Backup cancelled."
         return 1
     fi
 
@@ -58,7 +58,7 @@ function code-extensions-backup() {
         code --list-extensions >"$BACKUP_PATH"
 
     # Success message
-    _log_success "✅ Backup complete at: $BACKUP_PATH"
+    _log_success "✓ Backup complete at: $BACKUP_PATH"
 }
 
 # ♻️ Fully interactive restore of VS Code extensions with default filename (Zsh-compatible)
@@ -80,14 +80,14 @@ function code-extensions-restore() {
 
     # Validate backup file exists
     if [[ ! -f "$BACKUP_PATH" ]]; then
-        _log_error "❌ Backup file not found at: $BACKUP_PATH"
+        _log_error "✗ Backup file not found at: $BACKUP_PATH"
         return 1
     fi
 
     _log_info "♻️ Restoring extensions from: $BACKUP_PATH ..."
     xargs -n1 code --install-extension <"$BACKUP_PATH"
 
-    _log_success "✅ Extensions restored successfully!"
+    _log_success "✓ Extensions restored successfully!"
 }
 
 # 🧭 Opens a project from $HOME/Desktop/dev in VS Code
@@ -112,7 +112,7 @@ function code-project() {
         _log_info "🚀 Opening project: $PROJECT_NAME"
         code "$PROJECT_PATH"
     else
-        _log_error "❌ Project not found: $PROJECT_PATH"
+        _log_error "✗ Project not found: $PROJECT_PATH"
         return 1
     fi
 }

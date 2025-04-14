@@ -20,13 +20,13 @@ if ! command -v brew >/dev/null 2>&1; then
 
     # Verify brew is now available
     if ! command -v brew >/dev/null 2>&1; then
-        echo "❌ Homebrew installation failed. Please install it manually and re-run the installer."
+        echo "✗ Homebrew installation failed. Please install it manually and re-run the installer."
         exit 1
     fi
 
-    echo "✅ Homebrew installed successfully."
+    echo "✓ Homebrew installed successfully."
 else
-    echo "✅ Homebrew already installed."
+    echo "✓ Homebrew already installed."
 fi
 
 # Check if Gum is installed
@@ -36,13 +36,13 @@ if ! command -v gum >/dev/null 2>&1; then
 
     # Verify gum is now available
     if ! command -v gum >/dev/null 2>&1; then
-        echo "❌ Gum installation failed. Please install it manually and re-run the installer."
+        echo "✗ Gum installation failed. Please install it manually and re-run the installer."
         exit 1
     fi
 
-    echo "✅ Gum installed successfully."
+    echo "✓ Gum installed successfully."
 else
-    echo "✅ Gum already installed."
+    echo "✓ Gum already installed."
 fi
 
 # Determine the directory of this script
@@ -81,11 +81,11 @@ source "$DEVKIT_ROOT/config.zsh"
 # Ensure Oh My Zsh is installed (required dependency)
 echo "🚀 Checking for Oh My Zsh..."
 if [ -d "$HOME/.oh-my-zsh" ]; then
-    echo "✅ Oh My Zsh already installed."
+    echo "✓ Oh My Zsh already installed."
 else
     echo "🧩 Installing Oh My Zsh..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    echo "✅ Oh My Zsh installed."
+    echo "✓ Oh My Zsh installed."
 fi
 
 # Prepare the line to source DevKit in .zshrc

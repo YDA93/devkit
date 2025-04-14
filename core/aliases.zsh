@@ -17,7 +17,7 @@ alias devkit-terminal-restart="osascript -e 'tell application \"Terminal\" to cl
 alias devkit-pc-public-ip="curl -s https://ipinfo.io/ip"
 
 # 🧹 Flush the DNS cache (macOS)
-alias devkit-pc-dns-flush="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder && _log_success '✅ DNS cache flushed.'"
+alias devkit-pc-dns-flush="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder && _log_success '✓ DNS cache flushed.'"
 
 # 📡 Ping Google DNS (check internet connection)
 alias devkit-pc-ping="ping -c 4 8.8.8.8"

@@ -6,30 +6,35 @@
 # - Ensures brew is functional afterward
 # 💡 Usage: homebrew-install
 function homebrew-install() {
+    _log_inline_title "Homebrew Installation"
+
     _log_info "🍺 Checking Homebrew installation..."
     # Check if Homebrew is installed
     if ! command -v brew &>/dev/null; then
         _log_info "Homebrew not found. Installing..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
             _log_error "Homebrew installation failed."
-            _log_separator
+            echo
             return 1
         }
     else
-        _log_success "✅ Homebrew is already installed."
-        _log_separator
+        _log_success "✓ Homebrew is already installed."
+        echo
         return 0
     fi
 
     # Verify Homebrew is working
     if ! brew --version &>/dev/null; then
         _log_error "Homebrew seems to be installed but not working properly."
-        _log_separator
+        echo
         return 1
     fi
 
-    _log_success "✅ Homebrew is installed and working."
-    _log_separator
+    _log_success "✓ Homebrew is installed and working."
+    echo
+
+    _log_inline_title "End of Homebrew Installation"
+    echo
 }
 
 # ⚙️ Runs the full Homebrew environment setup:
@@ -53,6 +58,8 @@ function homebrew-setup() {
 # 📄 Output: $DEVKIT_MODULES_DIR/homebrew/formulas.txt and casks.txt
 # 💡 Usage: homebrew-save-packages
 function homebrew-save-packages() {
+    _log_inline_title "Homebrew Package Backup"
+
     local base_dir="$DEVKIT_MODULES_DIR/homebrew"
     local formula_output="$base_dir/formulas.txt"
     local casks_output="$base_dir/casks.txt"
@@ -64,29 +71,33 @@ function homebrew-save-packages() {
     brew list --formula --installed-on-request >"$formula_output"
     brew list --cask >"$casks_output"
 
-    _log_success "✅ Saved installed packages:"
+    _log_success "✓ Saved installed packages:"
     _log_info "   📄 Formulas: $formula_output"
     _log_info "   📄 Casks:    $casks_output"
-    _log_separator
+    echo
+
+    _log_inline_title "End of Homebrew Package Backup"
+    echo
 }
 
 # 📦 Installs Homebrew formula and casks from saved package lists
 # 📄 Input: $DEVKIT_MODULES_DIR/homebrew/formulas.txt and casks.txt
 # 💡 Usage: homebrew-install-packages
 function homebrew-install-packages() {
+    _log_inline_title "Homebrew Package Installation"
     local base_dir="$DEVKIT_MODULES_DIR/homebrew"
     local formula_input="$base_dir/formulas.txt"
     local casks_input="$base_dir/casks.txt"
 
     if [[ ! -f "$formula_input" && ! -f "$casks_input" ]]; then
-        _log_error "❌ No package lists found in $base_dir"
+        _log_error "✗ No package lists found in $base_dir"
         return 1
     fi
 
     if [[ -f "$formula_input" ]]; then
         _log_info "🍺 Installing Homebrew formula from $formula_input"
         xargs brew install --formula <"$formula_input" || {
-            _log_error "❌ Failed to install formula. Please check the list."
+            _log_error "✗ Failed to install formula. Please check the list."
             return 1
         }
     fi
@@ -94,20 +105,23 @@ function homebrew-install-packages() {
     source "$DEVKIT_ROOT/bin/devkit.zsh"
 
     postgres-setup || {
-        _log_error "❌ Failed to set up PostgreSQL. Please check the setup."
+        _log_error "✗ Failed to set up PostgreSQL. Please check the setup."
         return 1
     }
 
     if [[ -f "$casks_input" ]]; then
         _log_info "🧴 Installing Homebrew casks from $casks_input"
         xargs brew install --cask <"$casks_input" || {
-            _log_error "❌ Failed to install casks. Please check the list."
+            _log_error "✗ Failed to install casks. Please check the list."
             return 1
         }
     fi
 
-    _log_success "✅ Finished installing Homebrew packages"
-    _log_separator
+    _log_success "✓ Finished installing Homebrew packages"
+    echo
+
+    _log_inline_title "End of Homebrew Package Installation"
+    echo
 
     homebrew-clean || return 1
 
@@ -118,13 +132,14 @@ function homebrew-install-packages() {
 # - Prompts before each uninstall
 # 💡 Usage: homebrew-prune-packages
 function homebrew-prune-packages() {
+    _log_inline_title "Homebrew Package Pruning"
     local base_dir="$DEVKIT_MODULES_DIR/homebrew"
     local formula_file="$base_dir/formulas.txt"
     local casks_file="$base_dir/casks.txt"
     local settings_file="$DEVKIT_ROOT/.settings"
 
     if [[ ! -f "$formula_file" && ! -f "$casks_file" && ! -f "$settings_file" ]]; then
-        _log_error "❌ No package lists or settings file found."
+        _log_error "✗ No package lists or settings file found."
         return 1
     fi
 
@@ -180,7 +195,7 @@ function homebrew-prune-packages() {
     for pkg in "${current_formula[@]}"; do
         if ! printf '%s\n' "${desired_formula[@]}" | grep -qx "$pkg"; then
             if _confirm-or-abort "Uninstall formula \"$pkg\"? It's not in formulas.txt or settings." "$@"; then
-                _log_error "❌ Uninstalling formula: $pkg"
+                _log_error "✗ Uninstalling formula: $pkg"
                 brew uninstall --ignore-dependencies "$pkg"
             else
                 _log_info "⏭️ Skipping formula: $pkg"
@@ -192,7 +207,7 @@ function homebrew-prune-packages() {
     for cask in "${current_casks[@]}"; do
         if ! printf '%s\n' "${desired_casks[@]}" | grep -qx "$cask"; then
             if _confirm-or-abort "Uninstall cask \"$cask\"? It's not in casks.txt or settings." "$@"; then
-                _log_error "❌ Uninstalling cask: $cask"
+                _log_error "✗ Uninstalling cask: $cask"
                 brew uninstall --cask "$cask"
             else
                 _log_info "⏭️ Skipping cask: $cask"
@@ -200,8 +215,11 @@ function homebrew-prune-packages() {
         fi
     done
 
-    _log_success "✅ Finished pruning Homebrew packages."
-    _log_separator
+    _log_success "✓ Finished pruning Homebrew packages."
+    echo
+
+    _log_inline_title "End of Homebrew Package Pruning"
+    echo
 
     homebrew-clean || return 1
 
@@ -210,10 +228,13 @@ function homebrew-prune-packages() {
 # 📋 Lists all currently installed Homebrew packages
 # 💡 Usage: homebrew-list-packages
 function homebrew-list-packages() {
+    _log_inline_title "Homebrew Package List"
     _log_info "🍺 Installed Homebrew formula:"
     brew list --formula --installed-on-request
     _log_info "🧴 Installed Homebrew casks:"
     brew list --cask
+    _log_inline_title "End of Homebrew Package List"
+    echo
 }
 
 # 📦 Installs Homebrew formula and casks based on user settings
@@ -221,10 +242,11 @@ function homebrew-list-packages() {
 # - Only installs entries marked "y"
 # 💡 Usage: homebrew-install-from-settings
 function homebrew-install-from-settings() {
+    _log_inline_title "Homebrew Package Installation from Settings"
     local settings_file="$DEVKIT_ROOT/.settings"
 
     if [[ ! -f "$settings_file" ]]; then
-        _log_error "❌ Settings file not found at $settings_file"
+        _log_error "✗ Settings file not found at $settings_file"
         _log_hint "💡 Run: devkit-settings-setup"
         return 1
     fi
@@ -256,8 +278,11 @@ function homebrew-install-from-settings() {
             brew install --cask "$cask" && ((installed_casks++))
         fi
     done <"$settings_file"
-    _log_success "✅ Done! Installed $installed_formula formula and $installed_casks casks from saved settings."
-    _log_separator
+    _log_success "✓ Done! Installed $installed_formula formula and $installed_casks casks from saved settings."
+    echo
+
+    _log_inline_title "End of Homebrew Package Installation from Settings"
+    echo
 
     homebrew-clean || return 1
 
@@ -273,25 +298,30 @@ function homebrew-install-from-settings() {
 # - Cleans unused dependencies
 # 💡 Usage: homebrew-maintain
 function homebrew-maintain() {
+    _log_inline_title "Homebrew Maintenance"
+
     _log_info "🩺 Checking brew system health..."
     brew doctor || _log_warning "⚠️ brew doctor reported issues."
-    _log_success "✅ brew doctor completed."
-    _log_separator
+    _log_success "✓ brew doctor completed."
+    echo
 
     _log_info "⬆️  Updating Homebrew..."
     brew update || return 1
-    _log_success "✅ Homebrew updated."
-    _log_separator
+    _log_success "✓ Homebrew updated."
+    echo
 
     _log_info "🔄 Upgrading formulas..."
     brew upgrade --formula || return 1
-    _log_success "✅ Upgraded formulas."
-    _log_separator
+    _log_success "✓ Upgraded formulas."
+    echo
 
     _log_info "🧴 Upgrading casks..."
     brew upgrade --cask || return 1
-    _log_success "✅ Upgraded casks."
-    _log_separator
+    _log_success "✓ Upgraded casks."
+    echo
+
+    _log_inline_title "End of Homebrew Maintenance"
+    echo
 
     homebrew-clean || return 1
 
@@ -303,20 +333,25 @@ function homebrew-maintain() {
 # - Verifies installed packages
 # 💡 Usage: homebrew-clean
 function homebrew-clean() {
+    _log_inline_title "Homebrew Cleanup"
+
     _log_info "🧹 Autoremoving unused dependencies..."
     brew autoremove || return 1
-    _log_success "✅ Removed unused dependencies."
-    _log_separator
+    _log_success "✓ Removed unused dependencies."
+    echo
 
     _log_info "🗑️  Cleaning up old versions and cache..."
     brew cleanup || return 1
-    _log_success "✅ Cleaned up old versions and cache."
-    _log_separator
+    _log_success "✓ Cleaned up old versions and cache."
+    echo
 
     _log_info "📦 Verifying installed packages..."
     brew missing || return 1
-    _log_success "✅ Verified installed packages."
-    _log_separator
+    _log_success "✓ Verified installed packages."
+    echo
+
+    _log_inline_title "End of Homebrew Cleanup"
+    echo
 }
 
 # 🔧 Checks the status of Homebrew on your system
@@ -325,6 +360,9 @@ function homebrew-clean() {
 # - Checks for outdated packages
 # 💡 Usage: homebrew-doctor
 function homebrew-doctor() {
+
+    _log_inline_title "Homebrew Doctor"
+
     _log_info "🔧 Checking Homebrew installation..."
 
     if ! command -v brew &>/dev/null; then
@@ -332,18 +370,18 @@ function homebrew-doctor() {
         _log_hint "👉 You can install it with: homebrew-install"
         return 1
     fi
-    _log_success "✅ Homebrew is installed."
-    _log_separator
+    _log_success "✓ Homebrew is installed."
+    echo
 
     _log_info "🩺 Running 'brew doctor'..."
     brew doctor
     if [[ $? -ne 0 ]]; then
         _log_warning "⚠️  Homebrew reports issues. Run 'brew doctor' manually to review details."
-        _log_separator
+        echo
         return 1
     else
-        _log_success "✅ No major issues reported by Homebrew."
-        _log_separator
+        _log_success "✓ No major issues reported by Homebrew."
+        echo
     fi
 
     _log_info "📦 Checking for brew outdated packages..."
@@ -351,11 +389,13 @@ function homebrew-doctor() {
         _log_warning "⚠️  You have outdated packages."
         _log_hint "👉 Consider running 'brew outdated' to see which ones."
         _log_hint "👉 To upgrade, use: 'homebrew-maintain'"
-        _log_separator
+        echo
     else
-        _log_success "✅ All packages are up to date."
-        _log_separator
+        _log_success "✓ All packages are up to date."
+        echo
     fi
 
+    _log_inline_title "End of Homebrew Doctor"
+    echo
     return 0
 }

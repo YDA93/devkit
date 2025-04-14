@@ -61,13 +61,58 @@ function _log_hint() {
     fi
 }
 
-# 🏁 Prints a section separator
-# 💡 Usage: _log_separator
+# 🧩 Prints a section separator
+# 💡 Usage: _log_separator [style...] [color]
+# Styles:
+#   - double   : uses double line character
+#   - divided  : adds spacing between characters
+# Color:
+#   - Pass any number (e.g., 196) to set foreground color
 function _log_separator() {
-    if [[ $GUM_AVAILABLE -eq 1 ]]; then
-        gum style --foreground 245 "────────────────────────────────────────"
+    local styles=("$@")
+    local char="─"
+    local separator=""
+    local divided=false
+    local color_code="245" # default light gray
+    local color_fallback="${LIGHT_GRAY}"
+
+    # Parse styles and color
+    for style in "${styles[@]}"; do
+        case "$style" in
+        double)
+            char="═"
+            ;;
+        divided)
+            divided=true
+            ;;
+        '' | *[!0-9]*)
+            # Not a number, skip
+            ;;
+        *)
+            # If it's a number, treat it as color
+            color_code="$style"
+            color_fallback="\033[38;5;${color_code}m"
+            ;;
+        esac
+    done
+
+    # Build the separator
+    if [[ $divided == true ]]; then
+        for _ in {1..30}; do
+            separator+="$char "
+        done
+        separator="${separator%" "}" # remove trailing space
     else
-        echo -e "${LIGHT_GRAY}────────────────────────────────────────${NO_COLOR}"
+        for _ in {1..40}; do
+            separator+="$char"
+        done
+    fi
+
+    # Print with Gum or fallback
+    if [[ $GUM_AVAILABLE -eq 1 ]]; then
+        gum style --foreground "$color_code" "$separator"
+    else
+        echo -e "${color_fallback}${separator}${NO_COLOR}"
     fi
 }
 
@@ -94,7 +139,7 @@ function _log_section_title() {
         gum style \
             --border normal \
             --padding "0 2" \
-            --margin "1 0" \
+            --margin "0 0" \
             --bold \
             --foreground 33 \
             "$title"
@@ -143,22 +188,60 @@ function _log-step() {
     fi
 
     # Start step: show starting message
-    if [[ $GUM_AVAILABLE -eq 1 ]]; then
-        gum style --border rounded --padding "0 2" --margin "0 0" --foreground 226 --bold "$prefix 🔧 $action $name"
-    else
-        echo -e "${YELLOW}$prefix 🔧 $action $name${NO_COLOR}"
-    fi
+    echo
+    _log_heading info "$prefix 🔧 $action $name"
 
     # Run the command
     if ! "$@"; then
-        if [[ $GUM_AVAILABLE -eq 1 ]]; then
-            gum style --border rounded --padding "0 2" --margin "0 0" --foreground 196 --bold "$prefix ❌ $action failed: $name"
-        else
-            echo -e "${RED}$prefix ❌ $action failed: $name${NO_COLOR}"
-        fi
+        _log_heading error "$prefix ✗ $action failed: $name"
     fi
+    _log_separator 245 # double + divided, gray
+}
 
-    echo
+# 🧩 Prints an inline title with light dividers
+# 💡 Usage: _log_inline_title "Your title"
+function _log_inline_title() {
+    local title="$1"
+    local divider="➖"
+    local side_length=3
+
+    local line
+    for _ in $(seq 1 $side_length); do
+        line+="$divider"
+    done
+
+    echo -e "$line $title $line"
+}
+
+# 🖨️ Prints a heading with a border (Gum version)
+# 💡 Usage: _log_heading <type: info|error> "Heading text"
+function _log_heading() {
+    local type="$1"
+    local title="$2"
+
+    local color_code
+    local color_fallback
+
+    case "$type" in
+    info)
+        color_code=226
+        color_fallback="${YELLOW}"
+        ;;
+    error)
+        color_code=196
+        color_fallback="${RED}"
+        ;;
+    *)
+        color_code=226 # Default to info
+        color_fallback="${YELLOW}"
+        ;;
+    esac
+
+    if [[ $GUM_AVAILABLE -eq 1 ]]; then
+        gum style --border rounded --padding "0 2" --margin "0 0" --foreground "$color_code" --bold "$title"
+    else
+        echo -e "${color_fallback}${title}${NO_COLOR}"
+    fi
 }
 
 # 🧪 Runs a command, aborts if it fails, and prints custom messages
@@ -172,7 +255,7 @@ function _run-or-abort() {
     "$@"
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
-        _log_error "❌ Failed: $description"
+        _log_error "✗ Failed: $description"
         return $exit_code
     fi
     if [ -n "$success_msg" ]; then
@@ -199,7 +282,7 @@ function _confirm-or-abort() {
             return 0
         else
             _log_info "Aborting action."
-            _log_separator
+            echo
             return 1
         fi
     else

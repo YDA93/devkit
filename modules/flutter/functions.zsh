@@ -6,15 +6,15 @@
 # 💡 Usage: flutter-flutterfire-init
 function flutter-flutterfire-init() {
     firebase login || {
-        _log_error "❌ Firebase login failed. Please log in to Firebase CLI."
+        _log_error "✗ Firebase login failed. Please log in to Firebase CLI."
         return 1
     }
     flutter-flutterfire-activate || {
-        _log_error "❌ FlutterFire CLI activation failed."
+        _log_error "✗ FlutterFire CLI activation failed."
         return 1
     }
     flutterfire configure || {
-        _log_error "❌ FlutterFire configuration failed."
+        _log_error "✗ FlutterFire configuration failed."
         return 1
     }
 }
@@ -23,15 +23,15 @@ function flutter-flutterfire-init() {
 # 💡 Usage: flutter-firebase-environment-create
 function flutter-firebase-environment-create() {
     python3.12 -m venv venv || {
-        _log_error "❌ Failed to create virtual environment."
+        _log_error "✗ Failed to create virtual environment."
         return 1
     }
     source venv/bin/activate || {
-        _log_error "❌ Failed to activate virtual environment."
+        _log_error "✗ Failed to activate virtual environment."
         return 1
     }
     _log_success 'environment created. & activated.' || {
-        _log_error "❌ Failed to activate virtual environment."
+        _log_error "✗ Failed to activate virtual environment."
         return 1
     }
 }
@@ -40,15 +40,15 @@ function flutter-firebase-environment-create() {
 # 💡 Usage: flutter-firebase-environment-setup
 function flutter-firebase-environment-setup() {
     python-environment-delete || {
-        _log_error "❌ Failed to delete existing virtual environment."
+        _log_error "✗ Failed to delete existing virtual environment."
         return 1
     }
     flutter-firebase-environment-create || {
-        _log_error "❌ Failed to create virtual environment."
+        _log_error "✗ Failed to create virtual environment."
         return 1
     }
     pip-update || {
-        _log_error "❌ Failed to update pip."
+        _log_error "✗ Failed to update pip."
         return 1
     }
 }
@@ -57,23 +57,23 @@ function flutter-firebase-environment-setup() {
 # 💡 Usage: flutter-firebase-update-functions
 function flutter-firebase-update-functions() {
     if [ ! -d "firebase/functions" ]; then
-        _log_error "❌ No Firebase functions directory found at firebase/functions."
+        _log_error "✗ No Firebase functions directory found at firebase/functions."
         return 1
     fi
 
     cd firebase/functions || {
-        _log_error "❌ Failed to change directory to firebase/functions."
+        _log_error "✗ Failed to change directory to firebase/functions."
         return 1
     }
 
     flutter-firebase-environment-setup || {
-        _log_error "❌ Failed to set up Firebase environment."
+        _log_error "✗ Failed to set up Firebase environment."
         cd ../.. # Ensure we try to go back even on failure
         return 1
     }
 
     cd ../.. || {
-        _log_error "❌ Failed to change directory back to root."
+        _log_error "✗ Failed to change directory back to root."
         return 1
     }
 }
@@ -93,13 +93,13 @@ function flutter-firebase-upload-crashlytics-symbols() {
 
     # Validate input
     if [[ -z "$APP_ID" ]]; then
-        _log_error "❌ App ID is required. Aborting."
+        _log_error "✗ App ID is required. Aborting."
         return 1
     fi
 
     # Check if symbols directory exists
     if [[ ! -d "$SYMBOLS_PATH" ]]; then
-        _log_error "❌ Symbols directory not found at: $SYMBOLS_PATH"
+        _log_error "✗ Symbols directory not found at: $SYMBOLS_PATH"
         _log_error "📁 Please make sure obfuscated symbols are built and placed there."
         return 1
     fi
@@ -113,7 +113,7 @@ function flutter-firebase-upload-crashlytics-symbols() {
     firebase crashlytics:symbols:upload --app="$APP_ID" "$SYMBOLS_PATH"
 
     if [[ $? -eq 0 ]]; then
-        _log_success "✅ Symbols uploaded successfully!"
+        _log_success "✓ Symbols uploaded successfully!"
     else
         _log_warning "⚠️ Upload failed. Please check the App ID and symbols path."
     fi
@@ -138,8 +138,8 @@ function java-symlink-latest() {
     local brew_jdk_path="$HOMEBREW_OPT_PREFIX/openjdk/libexec/openjdk.jdk"
 
     if [[ ! -d "$brew_jdk_path" ]]; then
-        _log_error "❌ Homebrew OpenJDK not found at $brew_jdk_path"
-        _log_separator
+        _log_error "✗ Homebrew OpenJDK not found at $brew_jdk_path"
+        echo
         return 1
     fi
 
@@ -152,8 +152,8 @@ function java-symlink-latest() {
     if [[ ! -d "$target" ]]; then
         _log_info "☕️ Symlinking OpenJDK $version to $target..."
         sudo ln -sfn "$brew_jdk_path" "$target" || {
-            _log_error "❌ Failed to create symlink at $target"
-            _log_separator
+            _log_error "✗ Failed to create symlink at $target"
+            echo
             return 1
         }
     fi
@@ -163,10 +163,10 @@ function java-symlink-latest() {
 # 💡 Usage: flutter-android-sdk-setup
 function flutter-android-sdk-setup() {
     _run-or-abort "☕️ Symlinking OpenJDK" \
-        "✅ OpenJDK symlinked." \
+        "✓ OpenJDK symlinked." \
         java-symlink-latest || return 1
 
-    _log_separator
+    echo
 
     local latest_build_tools
     latest_build_tools=$(_android-latest-build-tools)
@@ -180,20 +180,20 @@ function flutter-android-sdk-setup() {
         "emulator" \
         "cmdline-tools;latest" || return 1
 
-    _log_success "✅ Android SDK packages installed."
-    _log_separator
+    _log_success "✓ Android SDK packages installed."
+    echo
 
     _run-or-abort "📜 Accepting Android SDK licenses (non-interactive)" \
         "" \
         bash -c "yes | sdkmanager --licenses" || return 1
-    _log_success "✅ Android SDK licenses accepted."
-    _log_separator
+    _log_success "✓ Android SDK licenses accepted."
+    echo
 
     _run-or-abort "📜 Accepting Flutter Android licenses (interactive)" \
         "" \
         flutter doctor --android-licenses || return 1
-    _log_success "✅ Flutter Android licenses accepted."
-    _log_separator
+    _log_success "✓ Flutter Android licenses accepted."
+    echo
 
 }
 
@@ -205,11 +205,11 @@ function flutter-android-sdk-setup() {
 # 💡 Usage: flutter-update-splash
 function flutter-update-splash() {
     dart run flutter_native_splash:remove || {
-        _log_error "❌ Failed to remove existing splash screen."
+        _log_error "✗ Failed to remove existing splash screen."
         return 1
     }
     dart run flutter_native_splash:create || {
-        _log_error "❌ Failed to create new splash screen."
+        _log_error "✗ Failed to create new splash screen."
         return 1
     }
 }
@@ -218,41 +218,41 @@ function flutter-update-splash() {
 # 💡 Usage: flutter-update-fontawesome
 function flutter-update-fontawesome() {
     if [ ! -d "assets/font_awesome_flutter" ]; then
-        _log_error "❌ No FontAwesome directory found at assets/font_awesome_flutter."
+        _log_error "✗ No FontAwesome directory found at assets/font_awesome_flutter."
         return 1
     fi
 
     cd assets/font_awesome_flutter || {
-        _log_error "❌ Failed to change directory to assets/font_awesome_flutter."
+        _log_error "✗ Failed to change directory to assets/font_awesome_flutter."
         return 1
     }
 
     flutter-clean || {
-        _log_error "❌ Failed to clean Flutter project."
+        _log_error "✗ Failed to clean Flutter project."
         cd ../..
         return 1
     }
 
     flutter-dart-fix || {
-        _log_error "❌ Failed to apply Dart fixes."
+        _log_error "✗ Failed to apply Dart fixes."
         cd ../..
         return 1
     }
 
     cd util || {
-        _log_error "❌ Failed to change directory to util."
+        _log_error "✗ Failed to change directory to util."
         cd ../..
         return 1
     }
 
     sh ./configurator.sh || {
-        _log_error "❌ Failed to run configurator.sh."
+        _log_error "✗ Failed to run configurator.sh."
         cd ../..
         return 1
     }
 
     cd ../../.. || {
-        _log_error "❌ Failed to change directory back to root."
+        _log_error "✗ Failed to change directory back to root."
         return 1
     }
 }
@@ -270,19 +270,19 @@ function flutter-adb-connect() {
 
     # Step 1: List the devices
     adb devices || {
-        _log_error "❌ Failed to list devices. Ensure adb is installed and running."
+        _log_error "✗ Failed to list devices. Ensure adb is installed and running."
         return 1
     }
 
     # Step 2: Connect to the device using adb
     adb connect "$IP_ADDRESS:$PORT" || {
-        _log_error "❌ Failed to connect to $IP_ADDRESS:$PORT. Ensure the device is reachable."
+        _log_error "✗ Failed to connect to $IP_ADDRESS:$PORT. Ensure the device is reachable."
         return 1
     }
 
     # Step 3: Verify the connection
     adb devices || {
-        _log_error "❌ Failed to verify connection. Ensure adb is installed and running."
+        _log_error "✗ Failed to verify connection. Ensure adb is installed and running."
         return 1
     }
 
@@ -296,7 +296,7 @@ function flutter-adb-connect() {
 
     # Update launch.json in place with the new port
     sed -i '' -E "s/$SEARCH_PATTERN/$REPLACE_PATTERN/g" .vscode/launch.json || {
-        _log_error "❌ Failed to update .vscode/launch.json. Ensure the file exists and is writable."
+        _log_error "✗ Failed to update .vscode/launch.json. Ensure the file exists and is writable."
         return 1
     }
 
@@ -311,7 +311,7 @@ function flutter-adb-connect() {
 # 💡 Usage: flutter-delete-unused-strings
 function flutter-delete-unused-strings() {
     dart pub global activate l10nization_cli || {
-        _log_error "❌ Failed to activate l10nization_cli."
+        _log_error "✗ Failed to activate l10nization_cli."
         return 1
     }
 
@@ -364,27 +364,27 @@ function flutter-delete-unused-strings() {
 function flutter-cache-reset() {
     _log_info "Clearing cache of Pod, Flutter, and Ccache..."
     cd ios || {
-        _log_error "❌ Failed to change directory to ios."
+        _log_error "✗ Failed to change directory to ios."
         return 1
     }
     pod cache clean --all || {
-        _log_error "❌ Failed to clean Pod cache."
+        _log_error "✗ Failed to clean Pod cache."
         return 1
     }
     cd .. || {
-        _log_error "❌ Failed to change directory back to root."
+        _log_error "✗ Failed to change directory back to root."
         return 1
     }
     flutter pub cache repair || {
-        _log_error "❌ Failed to repair Flutter pub cache."
+        _log_error "✗ Failed to repair Flutter pub cache."
         return 1
     }
     ccache -z || {
-        _log_error "❌ Failed to Resets the cache statistics."
+        _log_error "✗ Failed to Resets the cache statistics."
         return 1
     }
     ccache -C || {
-        _log_error "❌ Failed to Clears the cache contents."
+        _log_error "✗ Failed to Clears the cache contents."
         return 1
     }
 }
@@ -393,19 +393,19 @@ function flutter-cache-reset() {
 # 💡 Usage: flutter-ios-reinstall-podfile
 function flutter-ios-reinstall-podfile() {
     cd ios || {
-        _log_error "❌ Failed to change directory to ios."
+        _log_error "✗ Failed to change directory to ios."
         return 1
     }
     rm Podfile.lock || {
-        _log_error "❌ Failed to remove Podfile.lock."
+        _log_error "✗ Failed to remove Podfile.lock."
         return 1
     }
     pod install --repo-update || {
-        _log_error "❌ Failed to install pods."
+        _log_error "✗ Failed to install pods."
         return 1
     }
     cd .. || {
-        _log_error "❌ Failed to change directory back to root."
+        _log_error "✗ Failed to change directory back to root."
         return 1
     }
 }
@@ -414,23 +414,23 @@ function flutter-ios-reinstall-podfile() {
 # 💡 Usage: flutter-clean
 function flutter-clean() {
     flutter clean || {
-        _log_error "❌ Failed to clean Flutter project."
+        _log_error "✗ Failed to clean Flutter project."
         return 1
     }
     flutter pub upgrade || {
-        _log_error "❌ Failed to upgrade Flutter packages."
+        _log_error "✗ Failed to upgrade Flutter packages."
         return 1
     }
     flutter pub outdated || {
-        _log_error "❌ Failed to check for outdated packages."
+        _log_error "✗ Failed to check for outdated packages."
         return 1
     }
     flutter pub upgrade --major-versions || {
-        _log_error "❌ Failed to upgrade major versions of packages."
+        _log_error "✗ Failed to upgrade major versions of packages."
         return 1
     }
     flutter-dart-fix || {
-        _log_error "❌ Failed to apply Dart fixes."
+        _log_error "✗ Failed to apply Dart fixes."
         return 1
     }
 }
@@ -440,29 +440,29 @@ function flutter-clean() {
 function flutter-maintain() {
     {
         flutter-flutterfire-activate || {
-            _log_error "❌ Failed to activate FlutterFire CLI."
+            _log_error "✗ Failed to activate FlutterFire CLI."
             return 1
         }
         flutter-firebase-update-functions
         flutter-update-fontawesome
         flutter-ios-reinstall-podfile || {
-            _log_error "❌ Failed to reinstall Podfile."
+            _log_error "✗ Failed to reinstall Podfile."
             return 1
         }
         flutter-update-icon || {
-            _log_error "❌ Failed to update app icons."
+            _log_error "✗ Failed to update app icons."
             return 1
         }
         flutter-update-splash || {
-            _log_error "❌ Failed to update splash screen."
+            _log_error "✗ Failed to update splash screen."
             return 1
         }
         flutter-build-runner || {
-            _log_error "❌ Failed to run build_runner."
+            _log_error "✗ Failed to run build_runner."
             return 1
         }
         flutter-clean || {
-            _log_error "❌ Failed to clean Flutter project."
+            _log_error "✗ Failed to clean Flutter project."
             return 1
         }
     } | tee -a ./flutter-maintain.log

@@ -28,7 +28,7 @@ function django-project-start() {
     # Start Django project
     django-admin startproject "$projectname" . || return 1
 
-    _log_success "✅ Django project '$projectname' created and ready!"
+    _log_success "✓ Django project '$projectname' created and ready!"
 }
 
 # 📦 Starts a new Django app inside the current project
@@ -202,7 +202,7 @@ function django-database-init() {
     # 7. Restoration of data
     django-data-restore
 
-    _log_success "✅ Database initialization complete."
+    _log_success "✓ Database initialization complete."
 
     # } 2>&1 | tee -a "$log_file"
 
@@ -227,7 +227,7 @@ function django-data-backup() {
     python "$PWD/manage.py" dumpdata \
         --natural-foreign --natural-primary --indent 2 >data.json || return 1
 
-    _log_success "✅ Data backup completed and saved to data.json."
+    _log_success "✓ Data backup completed and saved to data.json."
     backup_performed=true
     sleep 1
 }
@@ -252,19 +252,19 @@ function django-data-restore() {
         backup_file=$(gum input --placeholder "/path/to/backup.sql" --prompt "📂 Enter the path to the backup file: ")
 
         if [[ -z "$backup_file" ]]; then
-            _log_error "❌ No file path entered. Aborting restore."
+            _log_error "✗ No file path entered. Aborting restore."
             return 1
         fi
 
         if [[ ! -f "$backup_file" ]]; then
-            _log_error "❌ File '$backup_file' does not exist. Aborting restore."
+            _log_error "✗ File '$backup_file' does not exist. Aborting restore."
             return 1
         fi
     fi
 
     _log_info "📥 Restoring Django data from '$backup_file'..."
     python "$PWD/manage.py" loaddata "$backup_file" --traceback || return 1
-    _log_success "✅ Data restoration complete."
+    _log_success "✓ Data restoration complete."
 
     _log_info "🔁 Resetting database sequences..."
     apps=$(python "$PWD/manage.py" shell -c \
@@ -276,7 +276,7 @@ function django-data-restore() {
             python "$PWD/manage.py" dbshell
     done
 
-    _log_success "✅ Database sequences reset."
+    _log_success "✓ Database sequences reset."
 }
 
 # ------------------------------------------------------------------------------
@@ -342,7 +342,7 @@ function django-upload-env-to-github-secrets() {
     # Get repo name in format owner/repo
     local REPO
     REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner) || {
-        _log_error "❌ Failed to get repo name"
+        _log_error "✗ Failed to get repo name"
         return 1
     }
 
@@ -350,11 +350,11 @@ function django-upload-env-to-github-secrets() {
 
     # Upload .env file content directly as multiline secret
     gh secret set ENVIRONMENT_VARIABLES --repo "$REPO" <.env || {
-        _log_error "❌ Failed to upload ENVIRONMENT_VARIABLES"
+        _log_error "✗ Failed to upload ENVIRONMENT_VARIABLES"
         return 1
     }
 
-    _log_success "✅ Uploaded ENVIRONMENT_VARIABLES to $REPO"
+    _log_success "✓ Uploaded ENVIRONMENT_VARIABLES to $REPO"
 
     _log_info "🔐 Uploading GCP_CREDENTIALS to GitHub secrets..."
 
@@ -364,17 +364,17 @@ function django-upload-env-to-github-secrets() {
 
     # Validate that it's not empty
     if [[ -z "$GCP_CREDS" ]]; then
-        _log_error "❌ GCP_CREDENTIALS is empty or failed to load"
+        _log_error "✗ GCP_CREDENTIALS is empty or failed to load"
         return 1
     fi
 
     # Upload GCP_CREDENTIALS as a separate GitHub secret
     gh secret set GCP_CREDENTIALS --repo "$REPO" -b"$GCP_CREDS" || {
-        _log_error "❌ Failed to upload GCP_CREDENTIALS"
+        _log_error "✗ Failed to upload GCP_CREDENTIALS"
         return 1
     }
 
-    _log_success "✅ Uploaded GCP_CREDENTIALS to $REPO"
+    _log_success "✓ Uploaded GCP_CREDENTIALS to $REPO"
 }
 
 # ------------------------------------------------------------------------------
@@ -461,7 +461,7 @@ function django-find-cron-urls() {
 
     # 🧾 Print the results
     if [[ ${#matches[@]} -gt 0 ]]; then
-        _log_success "✅ Found ${#matches[@]} cron path(s):"
+        _log_success "✓ Found ${#matches[@]} cron path(s):"
         for match in "${matches[@]}"; do
             _log_success "  ➤ $match"
         done
