@@ -54,7 +54,8 @@ if [[ "$SCRIPT_DIR" != "$DEVKIT_DIR" ]]; then
     if [[ -d "$DEVKIT_DIR" && "$(ls -A "$DEVKIT_DIR")" ]]; then
         echo "⚠️  DevKit directory '$DEVKIT_DIR' already exists and is not empty."
         echo ""
-        read -rp "❓ Do you want to overwrite it? (y/n): " confirm
+        printf "❓ Do you want to overwrite it? (y/n): "
+        read confirm
         if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
             echo "🚫 Installation cancelled by user."
             exit 1

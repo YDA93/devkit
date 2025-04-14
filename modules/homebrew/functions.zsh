@@ -106,10 +106,11 @@ function homebrew-install-packages() {
         }
     fi
 
-    homebrew-clean || return 1
-
     _log_success "✅ Finished installing Homebrew packages"
     _log_separator
+
+    homebrew-clean || return 1
+
 }
 
 # 🔥 Uninstalls Homebrew packages not listed in saved package files or .settings
@@ -255,12 +256,11 @@ function homebrew-install-from-settings() {
             brew install --cask "$cask" && ((installed_casks++))
         fi
     done <"$settings_file"
-
-    echo ""
-    homebrew-clean || return 1
-
     _log_success "✅ Done! Installed $installed_formula formula and $installed_casks casks from saved settings."
     _log_separator
+
+    homebrew-clean || return 1
+
 }
 
 # ------------------------------------------------------------------------------
