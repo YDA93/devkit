@@ -17,9 +17,6 @@ function devkit-settings-setup() {
         exit 1
     fi
 
-    # Welcome message
-    gum style --border normal --margin "1 2" --padding "1 2" --bold "👋 Welcome! Let's set up DevKit CLI environment."
-
     # Clone settings for safe handling
     if [[ -f "$settings_file" ]]; then
         if ! cp "$settings_file" "$cloned_settings_file" 2>/dev/null; then
@@ -139,6 +136,13 @@ function devkit-pc-setup() {
 
     # {
     _confirm-or-abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
+
+    # Welcome message
+    gum style --border double --margin "2 4" --padding "1 4" --bold --align center --foreground 39 "👋 Welcome to DevKit CLI Setup!
+
+    🚀 We’ll prepare your system and guide you step by step.
+    Sit tight while we set everything up for you."
+
     local total_steps=8
     local step=1
 
@@ -162,7 +166,7 @@ function devkit-pc-setup() {
     _log-step setup $step $total_steps "Flutter Android SDK Setup" flutter-android-sdk-setup || return 1
     ((step++))
 
-    gum style --border normal --padding "1 2" --margin "1 0" --foreground 35 --bold "✅ devkit environment setup complete!"
+    gum style --border double --padding "1 4" --margin "2 0" --foreground 42 --bold --align center "✅ DevKit environment setup complete!"
 
     # } 2>&1 | tee -a "$log_file"
 
@@ -178,6 +182,9 @@ function devkit-pc-update() {
     # {
     local total_steps=10
     local step=1
+    gum style --border double --margin "2 4" --padding "1 4" --bold --align center --foreground 39 "🔄 Running DevKit Update
+
+    We’ll keep things fast and make sure you're up to date."
 
     _log-step update $step $total_steps "Homebrew and Packages" homebrew-maintain || return 1
     ((step++))
@@ -198,6 +205,10 @@ function devkit-pc-update() {
     _log-step update $step $total_steps "App Store Apps (via mas-cli)" mas-maintain || return 1
     ((step++))
     _log-step update $step $total_steps "DevKit CLI" devkit-update || return
+
+    gum style --border rounded --margin "1 2" --padding "1 4" --bold --align center --foreground 42 "✅ DevKit Update Complete!
+
+    Your environment is fresh and ready to go."
 
     # } 2>&1 | tee -a "$log_file"
 }
