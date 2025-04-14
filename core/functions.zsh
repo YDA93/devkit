@@ -350,33 +350,32 @@ function devkit-update() {
         return 0
     fi
 
-    # Fetch latest tags
-    _log_info "🔄 Fetching latest tags from remote repository..."
+    # Fetch latest tags and branches
+    _log_info "🔄 Fetching latest tags and branches from remote repository..."
     git -C "$DEVKIT_ROOT" fetch --tags --quiet || {
         _log_warning "⚠️  Failed to fetch tags from remote repository."
         _log_hint "💡 Please check your internet connection or try again later."
         _log_separator
         return 1
     }
-    _log_success "✅ Fetched latest tags from remote repository."
+    git -C "$DEVKIT_ROOT" fetch origin --prune --quiet || {
+        _log_warning "⚠️  Failed to fetch branches from remote repository."
+        _log_hint "💡 Please check your internet connection or try again later."
+        _log_separator
+        return 1
+    }
 
     # Get latest local and remote version tags
     local local_version remote_version
     _log_info "🔍 Checking local and remote version tags..."
-    local_version=$(git -C "$DEVKIT_ROOT" tag --sort=-v:refname | head -n 1)
+    # ✅ Current tag at HEAD, or "no-tag"
+    local_version=$(git -C "$DEVKIT_ROOT" describe --tags --exact-match 2>/dev/null || echo "no-tag")
     remote_version=$(git -C "$DEVKIT_ROOT" ls-remote --tags --sort='v:refname' "$repo_url" | grep -o 'refs/tags/[^\^{}]*' | awk -F/ '{print $3}' | tail -n 1)
 
-    # Handle case where no tags exist
     if [[ -z "$remote_version" ]]; then
         _log_warning "⚠️  No remote version tags found."
         _log_separator
         return 1
-    fi
-
-    if [[ -z "$local_version" ]]; then
-        _log_info "ℹ️  No local version found. You might be on initial clone."
-        _log_separator
-        local_version="none"
     fi
 
     _log_info "🔖 Local version: $local_version"
@@ -393,9 +392,7 @@ function devkit-update() {
     _log_info "🔹 Latest : $remote_version"
     _log_separator
 
-    if gum confirm "👉 Do you want to update devkit to version $remote_version now?"; then
-        _log_info "Proceeding with update to version $remote_version..."
-    else
+    if ! gum confirm "👉 Do you want to update devkit to version $remote_version now?"; then
         _log_error "❌ Update canceled."
         _log_separator
         return 0
@@ -403,15 +400,27 @@ function devkit-update() {
 
     _log_info "🚀 Updating devkit to version $remote_version..."
 
-    if ! git -C "$DEVKIT_ROOT" checkout "tags/$remote_version" -f; then
-        _log_error "❌ Failed to checkout version $remote_version."
+    # ✅ Check out main branch (or detect default branch dynamically)
+    local default_branch
+    default_branch=$(git -C "$DEVKIT_ROOT" remote show origin | grep 'HEAD branch' | awk '{print $NF}')
+
+    git -C "$DEVKIT_ROOT" checkout "$default_branch" -f || {
+        _log_error "❌ Failed to checkout branch $default_branch."
         _log_separator
         return 1
-    fi
+    }
 
-    if [[ -f "$DEVKIT_ROOT/bin/devkit.zsh" ]]; then
-        _log_success "✅ devkit updated to version $remote_version."
+    git -C "$DEVKIT_ROOT" pull origin "$default_branch" || {
+        _log_error "❌ Failed to pull latest changes from $default_branch."
         _log_separator
+        return 1
+    }
+
+    _log_success "✅ devkit updated to latest version on branch: $default_branch"
+    _log_separator
+
+    # Reload devkit if the script exists
+    if [[ -f "$DEVKIT_ROOT/bin/devkit.zsh" ]]; then
         _log_info "🔁 Reloading devkit..."
         source "$DEVKIT_ROOT/bin/devkit.zsh"
         _log_success "✅ devkit reloaded."
