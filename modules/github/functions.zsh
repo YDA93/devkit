@@ -364,7 +364,7 @@ function github-version-bump() {
         return 1
     }
 
-    _log_success "✓ Version $new_version has been tagged and pushed to origin."
+    _log_success "✓ Version $new_version has been tagged and pushed to origin (previous: $latest_tag)."
 }
 
 # ------------------------------------------------------------------------------
