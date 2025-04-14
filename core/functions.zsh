@@ -176,7 +176,7 @@ function devkit-pc-update() {
     local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
     # {
-    local total_steps=11
+    local total_steps=10
     local step=1
 
     _log-step update $step $total_steps "Homebrew and Packages" homebrew-maintain || return 1
