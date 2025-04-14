@@ -124,28 +124,37 @@ function _log_question() {
 }
 
 # 🔧 Logs a step with visible progress/status indicators (Gum, no spinner)
-# 💡 Usage: _log-update-step <step_number> <step_total> "Label" <command>
-function _log-update-step() {
-    local step_number="$1"
-    local step_total="$2"
-    local name="$3"
-    shift 3
+# 💡 Usage: _log-step <mode: setup|update> <step_number> <step_total> "Label" <command>
+function _log-step() {
+    local mode="$1" # setup or update
+    local step_number="$2"
+    local step_total="$3"
+    local name="$4"
+    shift 4
 
     local prefix="($step_number/$step_total)"
 
-    # Start step: show updating in yellow
-    if [[ $GUM_AVAILABLE -eq 1 ]]; then
-        gum style --border rounded --padding "0 2" --margin "0 0" --foreground 226 --bold "$prefix 🔧 Updating $name"
+    # Choose wording based on mode
+    local action
+    if [[ "$mode" == "setup" ]]; then
+        action="Setting up"
     else
-        echo -e "${YELLOW}$prefix 🔧 Updating $name${NO_COLOR}"
+        action="Updating"
+    fi
+
+    # Start step: show starting message
+    if [[ $GUM_AVAILABLE -eq 1 ]]; then
+        gum style --border rounded --padding "0 2" --margin "0 0" --foreground 226 --bold "$prefix 🔧 $action $name"
+    else
+        echo -e "${YELLOW}$prefix 🔧 $action $name${NO_COLOR}"
     fi
 
     # Run the command
     if ! "$@"; then
         if [[ $GUM_AVAILABLE -eq 1 ]]; then
-            gum style --border rounded --padding "0 2" --margin "0 0" --foreground 196 --bold "$prefix ❌ Update failed: $name"
+            gum style --border rounded --padding "0 2" --margin "0 0" --foreground 196 --bold "$prefix ❌ $action failed: $name"
         else
-            echo -e "${RED}$prefix ❌ Update failed: $name${NO_COLOR}"
+            echo -e "${RED}$prefix ❌ $action failed: $name${NO_COLOR}"
         fi
     fi
 

@@ -139,31 +139,28 @@ function devkit-pc-setup() {
 
     # {
     _confirm-or-abort "Are you sure you want to set up your devkit environment?" "$@" || return 1
+    local total_steps=8
+    local step=1
 
-    devkit-settings-setup || return 1
+    _log-step setup $step $total_steps "DevKit Settings" devkit-settings-setup || return 1
+    ((step++))
+    _log-step setup $step $total_steps "Software Updates Check" _check-software-updates || return 1
+    ((step++))
+    _log-step setup $step $total_steps "Git Configuration" git-setup || return 1
+    ((step++))
+    _log-step setup $step $total_steps "Homebrew and Packages" homebrew-setup || return 1
+    ((step++))
 
-    _check-software-updates || return 1
-
-    # 🔄 Setup Git configuration
-    git-setup || return 1
-
-    # Install Homebrew and packages
-    homebrew-setup || return 1
-
-    # Now its time to ask the user to configure his cask apps prior to going further
     _confirm-or-abort "🧩 Please take a moment to open and configure your downloaded apps (e.g. VS Code, Android Studio). Press Enter when you're ready to continue." "$@" || return 1
 
-    # Install NPM and packages
-    npm-setup || return 1
-
-    # Install MAS (Mac App Store) and applications
-    mas-setup || return 1
-
-    # Install Xcode and Command Line Tools
-    xcode-setup || return 1
-
-    # Flutter Android Setup
-    flutter-android-sdk-setup || return 1
+    _log-step setup $step $total_steps "NPM Setup" npm-setup || return 1
+    ((step++))
+    _log-step setup $step $total_steps "Mac App Store Applications" mas-setup || return 1
+    ((step++))
+    _log-step setup $step $total_steps "Xcode and Command Line Tools" xcode-setup || return 1
+    ((step++))
+    _log-step setup $step $total_steps "Flutter Android SDK Setup" flutter-android-sdk-setup || return 1
+    ((step++))
 
     gum style --border normal --padding "1 2" --margin "1 0" --foreground 35 --bold "✅ devkit environment setup complete!"
 
@@ -179,17 +176,28 @@ function devkit-pc-update() {
     local log_file="$log_dir/$(date +'%Y%m%d%H%M%S').log"
 
     # {
-    _log-update-step 1 11 "Homebrew and Packages" homebrew-maintain || return 1
-    _log-update-step 2 11 "pip (Python)" bash -c 'pip3 install --upgrade pip setuptools wheel' || return 1
-    _log-update-step 3 11 "gcloud CLI" gcloud components update --quiet || return 1
-    _log-update-step 4 11 "Flutter SDK" flutter upgrade --force || return 1
-    _log-update-step 5 11 "NPM and Dependencies" bash -c 'npm install -g npm@latest; npm-check -g -u' || return 1
-    _log-update-step 6 11 "CocoaPods" pod repo update || return 1
-    _log-update-step 7 11 "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license || return 1
-    _log-update-step 8 11 "VS Code Extensions" code-extensions-update || return 1
-    _log-update-step 9 11 "App Store Apps (via mas-cli)" mas-maintain || return 1
-    _log-update-step 10 11 "DevKit CLI" devkit-update || return 1
-    _log-update-step 11 11 "System Updates" softwareupdate -ia --verbose || return 1
+    local total_steps=11
+    local step=1
+
+    _log-step update $step $total_steps "Homebrew and Packages" homebrew-maintain || return 1
+    ((step++))
+    _log-step update $step $total_steps "pip (Python)" bash -c 'pip3 install --upgrade pip setuptools wheel' || return 1
+    ((step++))
+    _log-step update $step $total_steps "gcloud CLI" gcloud components update --quiet || return 1
+    ((step++))
+    _log-step update $step $total_steps "Flutter SDK" flutter upgrade --force || return 1
+    ((step++))
+    _log-step update $step $total_steps "NPM and Dependencies" bash -c 'npm install -g npm@latest; npm-check -g -u' || return 1
+    ((step++))
+    _log-step update $step $total_steps "CocoaPods" pod repo update || return 1
+    ((step++))
+    _log-step update $step $total_steps "Rosetta (Intel Compatibility)" softwareupdate --install-rosetta --agree-to-license || return 1
+    ((step++))
+    _log-step update $step $total_steps "VS Code Extensions" code-extensions-update || return 1
+    ((step++))
+    _log-step update $step $total_steps "App Store Apps (via mas-cli)" mas-maintain || return 1
+    ((step++))
+    _log-step update $step $total_steps "DevKit CLI" devkit-update || return
 
     # } 2>&1 | tee -a "$log_file"
 }
