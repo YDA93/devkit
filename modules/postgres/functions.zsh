@@ -22,9 +22,11 @@ function postgres-setup() {
             createuser -s postgres
         else
             _log_success "✓ 'postgres' user already exists."
+            echo
         fi
     else
         _log_success "✓ PostgreSQL is already set up and ready."
+        echo
     fi
 }
 

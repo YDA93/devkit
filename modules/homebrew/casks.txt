@@ -1,3 +1,4 @@
+iterm2
 chatgpt
 google-chrome
 visual-studio-code

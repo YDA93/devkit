@@ -11,6 +11,24 @@ if command -v brew &>/dev/null; then
     export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
 fi
 
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+# Enable Powerlevel10k instant prompt (safe for Bash shells)
+if [ -n "$ZSH_VERSION" ]; then
+    eval 'p10k_file="${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"'
+    [[ -r "$p10k_file" ]] && source "$p10k_file"
+fi
+
+# Safely source Powerlevel10k if it exists
+p10k_theme_path="$HOMEBREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
+if [[ -f "$p10k_theme_path" ]]; then
+    source "$p10k_theme_path"
+fi
+
+# To customize prompt, run `p10k configure` or edit "$DEVKIT_MODULES_DIR/iterm2/.p10k.zsh".
+[[ ! -f "$DEVKIT_MODULES_DIR/iterm2/.p10k.zsh" ]] || source "$DEVKIT_MODULES_DIR/iterm2/.p10k.zsh"
+
 # 🧾 Extract top-level Homebrew formula from formulas.txt
 if [[ -f "$DEVKIT_MODULES_DIR/homebrew/formulas.txt" ]]; then
     DEVKIT_REQUIRED_FORMULA=$(awk '!/^#/ && NF' "$DEVKIT_MODULES_DIR/homebrew/formulas.txt")
