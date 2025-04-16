@@ -57,7 +57,7 @@ function iterm2-uninstall() {
 # 🖥️ Sets up iTerm2 with a custom dynamic profile and key bindings
 # 💡 Usage: iterm2-profile-setup
 function iterm2-profile-setup() {
-    _log_info "🖥️ Setting up iTerm2 profile..."
+    _log_info "🖥️  Setting up iTerm2 profile..."
 
     local source_path="$DEVKIT_MODULES_DIR/iterm2/natural_text_editing.json"
     local target_dir="$HOME/Library/Application Support/iTerm2/DynamicProfiles"

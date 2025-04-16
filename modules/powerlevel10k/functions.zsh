@@ -26,6 +26,14 @@ function powerlevel10k-setup() {
     _log_inline_title "End of Powerlevel10k VS Code Font Set"
     echo
 
+    _log_inline_title "Powerlevel10k Terminal Font Set"
+    powerlevel10k-terminal-font-set
+    _log_inline_title "End of Powerlevel10k Terminal Font Set"
+    echo
+
+    _log_success "✓ Powerlevel10k setup completed successfully."
+    echo
+
 }
 
 # 🧹 Uninstalls Powerlevel10k
@@ -48,6 +56,11 @@ function powerlevel10k-uninstall() {
     _log_inline_title "End of Powerlevel10k VS Code Font Unset"
     echo
 
+    _log_inline_title "Powerlevel10k Terminal Font Unset"
+    powerlevel10k-terminal-font-unset || return 1
+    _log_inline_title "End of Powerlevel10k Terminal Font Unset"
+    echo
+
     _log_success "✓ Powerlevel10k uninstalled successfully."
     echo
 }
@@ -59,7 +72,7 @@ function powerlevel10k-uninstall() {
 # 🖥️ Sets the Powerlevel10k terminal font to "MesloLGS NF"
 # 💡 Usage: powerlevel10k-vscode-font-set
 function powerlevel10k-vscode-font-set() {
-    _log_info "🖥️ Setting Powerlevel10k terminal font to 'MesloLGS NF'..."
+    _log_info "🖥️  Setting Powerlevel10k terminal font to 'MesloLGS NF'..."
     SETTINGS_FILE="$HOME/Library/Application Support/Code/User/settings.json"
     TMP_FILE="${SETTINGS_FILE}.tmp"
     DESIRED_FONT="MesloLGS NF"
@@ -179,61 +192,83 @@ function powerlevel10k-font-uninstall() {
     echo
 }
 
-# Set the Terminal font for the current default profile
+# 🖥️ Sets the Terminal theme and font to "MesloLGS NF" and applies the "Cool Night" theme
+# 💡 Usage: powerlevel10k-terminal-font-set
 function powerlevel10k-terminal-font-set() {
-    _log_info "🖥️ Setting Terminal font to 'MesloLGS NF'..."
-    # Font to apply — make sure it's installed on the system (e.g., via Nerd Fonts)
+    _log_info "🖥️  Applying Terminal theme and font: 'MesloLGS NF'..."
     local FONT_NAME="MesloLGS NF"
     local PLIST="$HOME/Library/Preferences/com.apple.Terminal.plist"
+    local THEME_FILE="$DEVKIT_MODULES_DIR/iterm2/cool-night.terminal"
 
-    # Convert the plist to XML so we can read it reliably
-    _log_info "📦 Converting Terminal plist to XML (if needed)..."
-    plutil -convert xml1 "$PLIST" 2>/dev/null
-
-    # Get the current default profile
-    _log_info "🔍 Determining the default Terminal profile..."
-    local PROFILE
-    PROFILE=$(defaults read com.apple.Terminal "Default Window Settings" 2>/dev/null)
-
-    # If the profile wasn't found, abort
-    if [[ -z "$PROFILE" ]]; then
-        _log_error "✗ Could not determine the default Terminal profile."
-        echo
+    _log_info "📄 Ensuring Terminal plist is in XML format..."
+    plutil -convert xml1 "$PLIST" 2>/dev/null || {
+        _log_error "❌ Failed to convert Terminal plist to XML format."
         return 1
-    fi
-    _log_info "🔍 Current default profile: $PROFILE"
+    }
 
-    _log_info "🎹 Enabling 'Use Option as Meta key' for profile \"$PROFILE\"..."
+    _log_info "🎨 Importing Terminal theme \"$THEME_FILE\"..."
+    open "$THEME_FILE" || {
+        _log_error "❌ Failed to open Terminal theme file: $THEME_FILE"
+        return 1
+    }
+    sleep 1 # Give Terminal time to register the new theme
 
-    # Escape single quotes inside $PROFILE (just in case)
-    SAFE_PROFILE=$(echo "$PROFILE" | sed "s/'/\\\\'/g")
+    local THEME_NAME
+    THEME_NAME=$(basename "$THEME_FILE" .terminal)
 
-    # Convert to XML to ensure we can safely read keys
-    plutil -convert xml1 "$PLIST" 2>/dev/null
+    _log_info "🎛️  Configuring 'Use Option as Meta key' for profile \"$THEME_NAME\"..."
+    local SAFE_THEME_NAME
+    SAFE_THEME_NAME=$(echo "$THEME_NAME" | sed "s/'/\\\\'/g")
 
-    # Check if key exists
-    if /usr/libexec/PlistBuddy -c "Print :'Window Settings':'$SAFE_PROFILE':useOptionAsMetaKey" "$PLIST" &>/dev/null; then
-        _log_info "🔄 'useOptionAsMetaKey' already exists. Updating to true..."
-        /usr/libexec/PlistBuddy -c "Set :'Window Settings':'$SAFE_PROFILE':useOptionAsMetaKey true" "$PLIST"
+    if /usr/libexec/PlistBuddy -c "Print :'Window Settings':'$SAFE_THEME_NAME':useOptionAsMetaKey" "$PLIST" &>/dev/null; then
+        _log_info "🔁 Key 'useOptionAsMetaKey' found. Updating to 'true'..."
+        /usr/libexec/PlistBuddy -c "Set :'Window Settings':'$SAFE_THEME_NAME':useOptionAsMetaKey true" "$PLIST" || {
+            _log_error "❌ Failed to update 'useOptionAsMetaKey'."
+            return 1
+        }
     else
-        _log_info "➕ Adding 'useOptionAsMetaKey' as a new key..."
-        /usr/libexec/PlistBuddy -c "Add :'Window Settings':'$SAFE_PROFILE':useOptionAsMetaKey bool true" "$PLIST"
+        _log_info "➕ Key 'useOptionAsMetaKey' not found. Adding it..."
+        /usr/libexec/PlistBuddy -c "Add :'Window Settings':'$SAFE_THEME_NAME':useOptionAsMetaKey bool true" "$PLIST" || {
+            _log_error "❌ Failed to add 'useOptionAsMetaKey'."
+            return 1
+        }
     fi
 
-    # Apply the font and enable "Use Option as Meta key"
-    _log_info "🛠️  Setting font \"$FONT_NAME\" and enabling Option-as-Meta for Profile \"$PROFILE\"..."
+    _log_info "🔠 Applying font \"$FONT_NAME\" to \"$THEME_NAME\"..."
     osascript <<EOF
 tell application "Terminal"
-    set profileSettings to settings set "$PROFILE"
+    set profileSettings to settings set "$THEME_NAME"
     set font name of profileSettings to "$FONT_NAME"
 end tell
 EOF
 
-    # Set as both default and startup profile (safe redundancy)
-    _log_info "📌 Confirming \"$PROFILE\" as default and startup profile..."
-    defaults write com.apple.Terminal "Default Window Settings" -string "$PROFILE"
-    defaults write com.apple.Terminal "Startup Window Settings" -string "$PROFILE"
+    _log_info "📌 Setting \"$THEME_NAME\" as default and startup profile..."
+    defaults write com.apple.Terminal "Default Window Settings" -string "$THEME_NAME" || {
+        _log_error "❌ Failed to set Default Window Settings."
+        return 1
+    }
+    defaults write com.apple.Terminal "Startup Window Settings" -string "$THEME_NAME" || {
+        _log_error "❌ Failed to set Startup Window Settings."
+        return 1
+    }
+    sleep 1
+    _log_success "🎉 Terminal theme and font successfully applied!"
+    _log_hint "💡 Please restart macOS Terminal and iTerm2 to apply the full changes."
+    echo
+}
 
-    _log_success "✓ All done! Font updated and Option-as-Meta enabled."
-    _log_hint "👉 Restart Terminal to see the changes."
+# 🧹 Unsets the Terminal theme and font
+# 💡 Usage: powerlevel10k-terminal-font-unset
+function powerlevel10k-terminal-font-unset() {
+    local PLIST="$HOME/Library/Preferences/com.apple.Terminal.plist"
+    local SAVED_STATE="$HOME/Library/Saved Application State/com.apple.Terminal.savedState"
+
+    _log_info "🗑️ Removing Terminal preferences..."
+    rm -f "$PLIST"
+
+    _log_info "🧼 Removing saved Terminal window state..."
+    rm -rf "$SAVED_STATE"
+
+    _log_success "✅ Terminal has been reset to factory defaults."
+    _log_hint "💡 Please restart macOS Terminal to apply the full changes."
 }
