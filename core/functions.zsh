@@ -166,6 +166,15 @@ function devkit-pc-setup() {
     _log-step setup $step $total_steps "Flutter Android SDK Setup" flutter-android-sdk-setup || return 1
     ((step++))
 
+    # ✅ Optional iTerm2 setup
+    echo
+    if gum confirm "🖥️  Would you like to install and configure iTerm2 now?"; then
+        _log_info "📦 Running iTerm2 setup..."
+        iterm2-setup || _log_error "✗ iTerm2 setup failed."
+    else
+        _log_info "⏭️ Skipped iTerm2 setup."
+    fi
+
     gum style --border double --padding "1 4" --margin "2 0" --foreground 42 --bold --align center "✓ DevKit environment setup complete!"
 
     # } 2>&1 | tee -a "$log_file"
