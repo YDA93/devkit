@@ -30,10 +30,5 @@ function iterm2-setup() {
     }
 
     killall iTerm2 &>/dev/null
-    open -a iTerm || {
-        _log_error "✗ Failed to relaunch iTerm2."
-        return 1
-    }
 
-    _log_success "✓ iTerm2 profile installed and set as default."
 }
