@@ -143,8 +143,11 @@ function devkit-pc-setup() {
     🚀 We’ll prepare your system and guide you step by step.
     Sit tight while we set everything up for you."
 
-    local total_steps=8
+    local total_steps=9
     local step=1
+
+    _log-step update $step $total_steps "DevKit CLI" devkit-update || return
+    ((step++))
 
     _log-step setup $step $total_steps "DevKit Settings" devkit-settings-setup || return 1
     ((step++))
