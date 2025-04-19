@@ -9,8 +9,8 @@
 function git-setup() {
     _log_info "🔧 Setting up Git global configuration..."
 
-    $full_name=devkit-settings get string full_name
-    $email=devkit-settings get string email
+    full_name=$(devkit-settings get string full_name)
+    email=$(devkit-settings get string email)
 
     if [[ -z "$full_name" || -z "$email" ]]; then
         _log_error "✗ Name or email missing from settings file. Aborting."

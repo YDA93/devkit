@@ -1,1 +1,2 @@
+powerlevel10k
 weasyprint

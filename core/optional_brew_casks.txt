@@ -1,9 +1,7 @@
-discord
 cloudflare-warp
+discord
 firefox
-onedrive
-whatsapp
-zoom
+iterm2
 microsoft-auto-update
 microsoft-edge
 microsoft-excel
@@ -11,3 +9,6 @@ microsoft-outlook
 microsoft-powerpoint
 microsoft-teams
 microsoft-word
+onedrive
+whatsapp
+zoom

@@ -130,6 +130,12 @@ function devkit-settings-setup() {
     _devkit-settings-select-optional-apps cask optional_brew_casks.txt
     _devkit-settings-select-optional-apps formula optional_brew_formulas.txt
 
+    if gum confirm "🌙 Would you like to use the cool night theme for your terminal?"; then
+        terminal-theme-setup
+    else
+        echo "👍 Keeping your current theme."
+    fi
+
     _log_success "✓ Settings saved successfully."
     echo
 }
