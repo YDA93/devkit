@@ -2,72 +2,10 @@
 # 🧰 DevKit Support Utilities
 # ------------------------------------------------------------------------------
 
-# 🧰 Initializes your CLI by asking user for name, email, and app selections (multi-select)
-# - Stores results in ~/devkit/.settings
-# 💡 Usage: devkit-settings-setup
-function devkit-settings-setup() {
-    # Define file paths
-    local settings_file="$DEVKIT_ROOT/.settings"
-    local cloned_settings_file="$DEVKIT_ROOT/.settings_clone"
-
-    # Check and create the directory safely
-    if ! mkdir -p "$(dirname "$settings_file")" 2>/dev/null || [ ! -w "$(dirname "$settings_file")" ]; then
-        _log_error "✗ Cannot create or write to: $(dirname "$settings_file")"
-        _log_hint "➡️ Please check disk space, permissions, or sync conflicts."
-        exit 1
-    fi
-
-    # Clone settings for safe handling
-    if [[ -f "$settings_file" ]]; then
-        if ! cp "$settings_file" "$cloned_settings_file" 2>/dev/null; then
-            _log_error "✗ Failed to clone settings file to $cloned_settings_file"
-            exit 1
-        fi
-    else
-        if ! echo "" >"$cloned_settings_file" 2>/dev/null; then
-            _log_error "✗ Failed to create empty cloned settings file: $cloned_settings_file"
-            exit 1
-        fi
-    fi
-
-    # Get user inputs for settings
-    _log_info "🔧 Please provide your details and select the apps you want to install."
-
-    # Load basic user info
-    full_name=$(gum input --header "👤 Full Name" --value "$(_read_setting_from_file "full_name" "$cloned_settings_file")")
-    email=$(gum input --header "📧 Email Address" --value "$(_read_setting_from_file "email" "$cloned_settings_file")")
-
-    # Define app lists
-    local mas_apps=("1450874784|Transporter" "899247664|TestFlight" "1287239339|ColorSlurp" "409183694|Keynote" "409201541|Pages" "409203825|Numbers")
-    local cask_apps=("discord" "cloudflare-warp" "firefox" "onedrive" "whatsapp" "zoom" "microsoft-auto-update" "microsoft-edge" "microsoft-excel" "microsoft-outlook" "microsoft-powerpoint" "microsoft-teams" "microsoft-word")
-    local formula_apps=("weasyprint")
-
-    # Handle each type of app
-    _show_app_selection_menu "mas" "${mas_apps[@]}"
-    _show_app_selection_menu "cask" "${cask_apps[@]}"
-    _show_app_selection_menu "formula" "${formula_apps[@]}"
-
-    # Cleanup and save settings
-    echo "full_name=\"$full_name\"" >"$settings_file"
-    echo "email=\"$email\"" >>"$settings_file"
-    echo "" >>"$settings_file"
-    echo "# mas apps" >>"$settings_file"
-    _append_app_selections_to_settings "mas" "${mas_apps[@]}"
-    echo "# cask apps" >>"$settings_file"
-    _append_app_selections_to_settings "cask" "${cask_apps[@]}"
-    echo "# formula apps" >>"$settings_file"
-    _append_app_selections_to_settings "formula" "${formula_apps[@]}"
-    _log_success "✓ Settings saved to $settings_file"
-    echo
-
-    # Remove the cloned file
-    rm -f "$cloned_settings_file"
-}
-
 # ✅ Checks if all required tools are installed
 # 💡 Usage: devkit-is-setup [--quiet]
 function devkit-is-setup() {
-    local settings_file="$DEVKIT_ROOT/.settings"
+    local settings_file="$DEVKIT_ROOT/settings.json"
 
     local quiet=false
     if [[ "$1" == "--quiet" || "$1" == "-q" ]]; then

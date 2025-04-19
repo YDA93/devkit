@@ -14,7 +14,7 @@ No more manual installs — manage your MAS apps like any other package!
 
 ## 🔧 Setup & Initialization
 
-- **`mas-setup`** — Full setup: install apps from saved list and `.settings`, then check for updates.
+- **`mas-setup`** — Full setup: install apps from saved list and `settings.json`, then check for updates.
 
 ---
 
@@ -22,7 +22,7 @@ No more manual installs — manage your MAS apps like any other package!
 
 - **`mas-save-apps`** — Save currently installed MAS apps (skips cask-preferred).
 - **`mas-install-apps`** — Install apps from your saved list.
-- **`mas-install-from-settings`** — Install apps based on `.settings` selections.
+- **`mas-install-from-settings`** — Install apps based on `settings.json` selections.
 - **`install-if-missing <name> <id>`** — Install app only if not already installed.
 
 ---

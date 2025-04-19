@@ -77,7 +77,7 @@ function _get-app-name-from-id() {
         sed 's/"trackName":"\(.*\)"/\1/'
 }
 
-# 📦 Installs App Store apps based on .settings (dynamic app list)
+# 📦 Installs App Store apps based on settings.json (dynamic app list)
 # - Installs only apps marked as "y" (mas_install_<id>)
 # - Gets app name dynamically via `mas info`
 # 💡 Usage: mas-install-from-settings
@@ -85,7 +85,7 @@ function mas-install-from-settings() {
 
     _log_inline_title "App Store Installation from Settings"
 
-    local settings_file="$DEVKIT_ROOT/.settings"
+    local settings_file="$DEVKIT_ROOT/settings.json"
 
     if [[ ! -f "$settings_file" ]]; then
         _log_error "✗ Settings file not found at $settings_file"
@@ -96,8 +96,6 @@ function mas-install-from-settings() {
     _log_info "🛍️  Installing selected Mac App Store apps from $settings_file"
     echo ""
 
-    source "$settings_file"
-
     _get-app-name-from-id() {
         local app_id="$1"
         curl -s "https://itunes.apple.com/lookup?id=$app_id" |
@@ -105,20 +103,19 @@ function mas-install-from-settings() {
             sed 's/"trackName":"\(.*\)"/\1/'
     }
 
-    while IFS='=' read -r key value; do
-        [[ "$value" != "\"y\"" ]] && continue
+    mas_app_entries=($(devkit-settings get array mas_apps))
 
-        if [[ "$key" == mas_install_* ]]; then
-            local app_id="${key#mas_install_}"
-            local app_name=$(_get-app-name-from-id "$app_id")
+    for entry in "${mas_app_entries[@]}"; do
+        # Use a subshell to safely split on '|'
+        app_id=$(echo "$entry" | cut -d '|' -f 1)
+        app_name=$(echo "$entry" | cut -d '|' -f 2-)
 
-            [[ -z "$app_name" ]] && app_name="App ID $app_id"
+        [[ -z "$app_id" ]] && continue
 
-            _log_info "🛍️  $app_name ($app_id)"
-            install-if-missing "$app_name" "$app_id"
-            sleep 2
-        fi
-    done <"$settings_file"
+        _log_info "🛍️  $app_name ($app_id)"
+        install-if-missing "$app_name" "$app_id"
+        sleep 2
+    done
 
     echo ""
     _log_success "✓ App Store app installation (from settings) complete."

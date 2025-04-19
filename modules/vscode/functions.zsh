@@ -127,3 +127,69 @@ function _code-project-completions() {
 # 🧩 Enables tab completion for `code-project`
 # 💡 Internal setup – no direct usage
 complete -F _code-project-completions code-project
+
+# 🖥️ Sets the Powerlevel10k terminal font to "MesloLGS NF"
+# 💡 Usage: code-font-set
+function code-font-set() {
+    if [ ! -d "/Applications/Visual Studio Code.app" ]; then
+        return 0
+    fi
+
+    _log_info "🖥️  Setting Powerlevel10k terminal font to 'MesloLGS NF'..."
+    SETTINGS_FILE="$HOME/Library/Application Support/Code/User/settings.json"
+    TMP_FILE="${SETTINGS_FILE}.tmp"
+    DESIRED_FONT="MesloLGS NF"
+
+    # Check if the file exists and is valid JSON
+    if ! jq empty "$SETTINGS_FILE" 2>/dev/null; then
+        _log_error "✗ settings.json contains invalid JSON (e.g., trailing commas or syntax errors)."
+        _log_hint "👉 Open it in VS Code to fix:"
+        _log_hint "   code \"$SETTINGS_FILE\""
+        echo
+        return 1
+    fi
+
+    # Only update if the value differs
+    CURRENT_FONT=$(jq -r '."terminal.integrated.fontFamily"' "$SETTINGS_FILE")
+    if [[ "$CURRENT_FONT" == "$DESIRED_FONT" ]]; then
+        _log_success "✓ Font already set to \"$DESIRED_FONT\". No changes made."
+        echo
+        return 0
+    fi
+
+    # Update safely
+    jq --arg font "$DESIRED_FONT" '."terminal.integrated.fontFamily" = $font' "$SETTINGS_FILE" >"$TMP_FILE" &&
+        mv "$TMP_FILE" "$SETTINGS_FILE" &&
+        _log_success "✓ terminal.integrated.fontFamily set to \"$DESIRED_FONT\"" && echo
+}
+
+# 🧹 Unsets the Powerlevel10k terminal font in VS Code settings
+# 💡 Usage: code-font-unset
+function code-font-unset() {
+    if [ ! -d "/Applications/Visual Studio Code.app" ]; then
+        return 0
+    fi
+    _log_info "🧹 Unsetting Powerlevel10k terminal font in VS Code settings..."
+    SETTINGS_FILE="$HOME/Library/Application Support/Code/User/settings.json"
+    TMP_FILE="${SETTINGS_FILE}.tmp"
+
+    # Check if the file exists and is valid JSON
+    if ! jq empty "$SETTINGS_FILE" 2>/dev/null; then
+        _log_error "✗ settings.json contains invalid JSON (e.g., trailing commas or syntax errors)."
+        _log_hint "👉 Open it in VS Code to fix:"
+        _log_hint "   code \"$SETTINGS_FILE\""
+        echo
+        return 1
+    fi
+
+    # Only update if the value differs
+    CURRENT_FONT=$(jq -r '."terminal.integrated.fontFamily"' "$SETTINGS_FILE")
+    if [[ "$CURRENT_FONT" != "null" ]]; then
+        jq 'del(."terminal.integrated.fontFamily")' "$SETTINGS_FILE" >"$TMP_FILE" &&
+            mv "$TMP_FILE" "$SETTINGS_FILE" &&
+            _log_success "✓ terminal.integrated.fontFamily removed"
+    else
+        _log_success "✓ Font already unset. No changes made."
+    fi
+    echo
+}

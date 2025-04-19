@@ -127,8 +127,8 @@ function homebrew-install-packages() {
 
 }
 
-# 🔥 Uninstalls Homebrew packages not listed in saved package files or .settings
-# - Reads from: formulas.txt, casks.txt, and .settings
+# 🔥 Uninstalls Homebrew packages not listed in saved package files or settings.json
+# - Reads from: formulas.txt, casks.txt, and settings.json
 # - Prompts before each uninstall
 # 💡 Usage: homebrew-prune-packages
 function homebrew-prune-packages() {
@@ -136,7 +136,7 @@ function homebrew-prune-packages() {
     local base_dir="$DEVKIT_MODULES_DIR/homebrew"
     local formula_file="$base_dir/formulas.txt"
     local casks_file="$base_dir/casks.txt"
-    local settings_file="$DEVKIT_ROOT/.settings"
+    local settings_file="$DEVKIT_ROOT/settings.json"
 
     if [[ ! -f "$formula_file" && ! -f "$casks_file" && ! -f "$settings_file" ]]; then
         _log_error "✗ No package lists or settings file found."
@@ -144,13 +144,12 @@ function homebrew-prune-packages() {
     fi
 
     _log_info "🧹 Checking for Homebrew packages to uninstall..."
-    [[ -f "$settings_file" ]] && source "$settings_file"
 
     local current_formula=($(brew list --formula --installed-on-request))
     local current_casks=($(brew list --cask))
 
-    local desired_formula=()
-    local desired_casks=()
+    local desired_formula=$(devkit-settings get array formula_apps)
+    local desired_casks=$(devkit-settings get array cask_apps)
 
     # 1. From formulas.txt
     if [[ -f "$formula_file" ]]; then
@@ -160,31 +159,12 @@ function homebrew-prune-packages() {
         done <"$formula_file"
     fi
 
-    # 2. From .settings (formula)
-    if [[ -f "$settings_file" ]]; then
-        while IFS='=' read -r key value; do
-            [[ "$value" != "\"y\"" ]] && continue
-            [[ "$key" == formula_install_* ]] && desired_formula+=("${key#formula_install_}")
-        done <"$settings_file"
-    fi
-
-    # 3. From casks.txt
+    # 2. From casks.txt
     if [[ -f "$casks_file" ]]; then
         while IFS= read -r line || [[ -n "$line" ]]; do
             [[ -z "$line" || "$line" =~ ^# ]] && continue
             desired_casks+=("$line")
         done <"$casks_file"
-    fi
-
-    # 4. From .settings (cask)
-    if [[ -f "$settings_file" ]]; then
-        while IFS='=' read -r key value; do
-            [[ "$value" != "\"y\"" ]] && continue
-            if [[ "$key" == cask_install_* ]]; then
-                local raw="${key#cask_install_}"
-                desired_casks+=("${raw//_/-}") # Convert back to real cask name
-            fi
-        done <"$settings_file"
     fi
 
     # Remove duplicates from arrays
@@ -238,12 +218,12 @@ function homebrew-list-packages() {
 }
 
 # 📦 Installs Homebrew formula and casks based on user settings
-# - Reads $DEVKIT_ROOT/.settings
+# - Reads $DEVKIT_ROOT/settings.json
 # - Only installs entries marked "y"
 # 💡 Usage: homebrew-install-from-settings
 function homebrew-install-from-settings() {
     _log_inline_title "Homebrew Package Installation from Settings"
-    local settings_file="$DEVKIT_ROOT/.settings"
+    local settings_file="$DEVKIT_ROOT/settings.json"
 
     if [[ ! -f "$settings_file" ]]; then
         _log_error "✗ Settings file not found at $settings_file"
@@ -252,32 +232,28 @@ function homebrew-install-from-settings() {
     fi
 
     _log_info "🔧 Installing Homebrew packages based on your saved settings..."
-    _log_info "📄 Source: $settings_file"
     echo ""
 
-    source "$settings_file"
-
     _log_info "🍺 Installing selected Homebrew formula..."
+    formulas=($(devkit-settings get array formula_apps))
     local installed_formula=0
-    while IFS='=' read -r key value; do
-        if [[ "$key" == formula_install_* && "$value" == "\"y\"" ]]; then
-            local formula="${key#formula_install_}"
-            _log_info "🔧 Installing formula: $formula"
-            brew install "$formula" && ((installed_formula++))
+    for formula in "${formulas[@]}"; do
+        _log_info "🔧 Installing formula: $formula"
+        if brew install "$formula"; then
+            ((installed_formula++))
         fi
-    done <"$settings_file"
+    done
 
     echo ""
     _log_info "🧴 Installing selected Homebrew casks..."
+    casks=($(devkit-settings get array cask_apps))
     local installed_casks=0
-    while IFS='=' read -r key value; do
-        if [[ "$key" == cask_install_* && "$value" == "\"y\"" ]]; then
-            local raw_cask="${key#cask_install_}"
-            local cask="${raw_cask//_/-}" # 🔁 Replace underscores back to hyphens
-            _log_info "📦 Installing cask: $cask"
-            brew install --cask "$cask" && ((installed_casks++))
+    for cask in "${casks[@]}"; do
+        _log_info "🔧 Installing cask: $cask"
+        if brew install --cask "$cask"; then
+            ((installed_casks++))
         fi
-    done <"$settings_file"
+    done
     _log_success "✓ Done! Installed $installed_formula formula and $installed_casks casks from saved settings."
     echo
 

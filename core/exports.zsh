@@ -26,8 +26,8 @@ if [[ -f "$p10k_theme_path" ]]; then
     source "$p10k_theme_path"
 fi
 
-# To customize prompt, run `p10k configure` or edit "$DEVKIT_MODULES_DIR/iterm2/.p10k.zsh".
-[[ ! -f "$DEVKIT_MODULES_DIR/iterm2/.p10k.zsh" ]] || source "$DEVKIT_MODULES_DIR/iterm2/.p10k.zsh"
+# To customize prompt, run `p10k configure` or edit "$DEVKIT_MODULES_DIR/powerlevel10k/.p10k.zsh".
+[[ ! -f "$DEVKIT_MODULES_DIR/powerlevel10k/.p10k.zsh" ]] || source "$DEVKIT_MODULES_DIR/powerlevel10k/.p10k.zsh"
 
 # 🧾 Extract top-level Homebrew formula from formulas.txt
 if [[ -f "$DEVKIT_MODULES_DIR/homebrew/formulas.txt" ]]; then

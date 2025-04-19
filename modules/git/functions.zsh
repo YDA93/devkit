@@ -8,15 +8,9 @@
 # 💡 Usage: git-setup
 function git-setup() {
     _log_info "🔧 Setting up Git global configuration..."
-    local settings_file="$DEVKIT_ROOT/.settings"
 
-    if [[ ! -f "$settings_file" ]]; then
-        _log_error "✗ Settings file not found at $settings_file"
-        _log_hint "💡 Run: devkit-settings-setup"
-        return 1
-    fi
-
-    source "$settings_file"
+    $full_name=devkit-settings get string full_name
+    $email=devkit-settings get string email
 
     if [[ -z "$full_name" || -z "$email" ]]; then
         _log_error "✗ Name or email missing from settings file. Aborting."

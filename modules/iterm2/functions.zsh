@@ -18,11 +18,6 @@ function iterm2-setup() {
 
     powerlevel10k-setup || return 1
 
-    _log_inline_title "Iterm2 Profile Setup"
-    iterm2-profile-setup || return 1
-    _log_inline_title "End of iTerm2 Profile Setup"
-    echo
-
     _log_success "✓ iTerm2 setup completed successfully."
 
     _log_hint "💡 Please restart both Terminal and iTerm2 to fully apply the changes."
@@ -39,11 +34,6 @@ function iterm2-uninstall() {
     _log_inline_title "End of iTerm2 Uninstall"
     echo
 
-    _log_inline_title "Iterm2 Profile Uninstall"
-    iterm2-profile-uninstall || return 1
-    _log_inline_title "End of iTerm2 Profile Uninstall"
-    echo
-
     powerlevel10k-uninstall || return 1
 
     _log_success "✓ iTerm2 uninstalled successfully."
@@ -51,13 +41,19 @@ function iterm2-uninstall() {
 }
 
 # ------------------------------------------------------------------------------
-# 👤 iTerm2 Profile Setup
+# 👤 iTerm2 Theme Setup
 # ------------------------------------------------------------------------------
 
 # 🖥️ Sets up iTerm2 with a custom dynamic profile and key bindings
-# 💡 Usage: iterm2-profile-setup
-function iterm2-profile-setup() {
-    _log_info "🖥️  Setting up iTerm2 profile..."
+# 💡 Usage: iterm2-theme-setup
+function iterm2-theme-setup() {
+    if [ ! -d "/Applications/iTerm.app" ]; then
+        return 0
+    fi
+
+    font-install-meslo-nerd || return 1
+
+    _log_info "🖥️  Setting up iTerm2 theme..."
 
     local source_path="$DEVKIT_MODULES_DIR/iterm2/natural_text_editing.json"
     local target_dir="$HOME/Library/Application Support/iTerm2/DynamicProfiles"
@@ -87,77 +83,14 @@ function iterm2-profile-setup() {
         return 1
     }
 
-    _log_success "✓ iTerm2 profile installed successfully. Please restart iTerm2."
+    _log_success "✓ iTerm2 theme installed successfully. Please close and reopen iTerm2 to apply the changes."
     echo
-
-    if [[ "$TERM_PROGRAM" == "iTerm.app" ]]; then
-        iterm2-restart-via-terminal
-    else
-        _log_info "Restarting iTerm2 from outside (e.g. Terminal)..."
-        osascript -e 'tell application "iTerm" to quit'
-        sleep 1
-        open -a iTerm
-    fi
 }
 
-# 🔁 Restarts iTerm2 from Terminal.app without killing its own shell
-# 💡 Usage: iterm2-restart-via-terminal
-function iterm2-restart-via-terminal() {
-    _log_info "🔁 Restarting iTerm2 via Terminal.app proxy..."
-    defaults write com.googlecode.iterm2 PromptOnQuit -bool false
-
-    echo
-    _log_hint "⚠️  macOS may ask for permission to allow Terminal and iTerm to control each other."
-    _log_hint "👉 To allow automation:"
-    _log_hint "   System Settings → Privacy & Security → Automation"
-    echo
-
-    if gum confirm "👉 Open Automation settings now?"; then
-        open "x-apple.systempreferences:com.apple.preference.security?Privacy_Automation"
-        if ! gum confirm "👉 Restart iTerm2 now?"; then
-            _log_info "⏸️  Skipping iTerm2 restart."
-            return 0
-        fi
-    fi
-
-    osascript <<'EOF'
-tell application "Terminal"
-  activate
-  if not (exists window 1) then
-    do script ""
-  end if
-  do script "
-    echo '🛠 Quitting iTerm2...';
-    osascript -e 'tell application \"iTerm\" to quit';
-    sleep 1;
-
-    echo '🚀 Reopening iTerm2...';
-    open -a iTerm;
-
-    echo '📡 Waiting for iTerm2 to come online...';
-    while ! pgrep -x iTerm2 >/dev/null; do sleep 0.5; done;
-
-    echo '🧹 Asking iTerm2 to close this Terminal window...';
-    osascript -e '
-      tell application \"iTerm\"
-        delay 1
-        tell current window
-          tell current session
-            write text \"sleep 2.5; osascript -e \\\"tell application \\\\\\\"Terminal\\\\\\\" to close front window\\\"; exit\"
-          end tell
-          create tab with default profile
-        end tell
-      end tell
-    ';
-  " in front window
-end tell
-EOF
-}
-
-# 🧹 Uninstalls iTerm2 profile
-# 💡 Usage: iterm2-profile-uninstall
-function iterm2-profile-uninstall() {
-    _log_info "🧹 Uninstalling iTerm2 profile..."
+# 🧹 Uninstalls iTerm2 Theme
+# 💡 Usage: iterm2-theme-uninstall
+function iterm2-theme-uninstall() {
+    _log_info "🧹 Uninstalling iTerm2 theme..."
     local target_dir="$HOME/Library/Application Support/iTerm2/DynamicProfiles"
     local target_path="$target_dir/natural_text_editing.json"
 
@@ -169,10 +102,11 @@ function iterm2-profile-uninstall() {
         }
     else
         _log_info "✓ No iTerm2 profile found to remove."
+        return 0
     fi
 
     defaults delete com.googlecode.iterm2 "Default Bookmark Guid"
 
-    _log_success "✓ iTerm2 profile uninstalled successfully."
+    _log_success "✓ iTerm2 theme uninstalled successfully."
     echo
 }
