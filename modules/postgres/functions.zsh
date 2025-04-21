@@ -11,7 +11,7 @@ function postgres-setup() {
         # Start PostgreSQL if not already running
         if ! brew services list | grep -q "^$LATEST_PG.*started"; then
             _log_info "🔄 Starting PostgreSQL service..."
-            # brew services start "$LATEST_PG"
+            brew services start "$LATEST_PG"
         else
             _log_success "✓ PostgreSQL service is already running."
         fi

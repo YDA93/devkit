@@ -194,6 +194,7 @@ function _log-step() {
     # Run the command
     if ! "$@"; then
         _log_heading error "$prefix ✗ $action failed: $name"
+        return 1
     fi
     _log_separator 245 # double + divided, gray
 }

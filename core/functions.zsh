@@ -84,7 +84,7 @@ function devkit-pc-setup() {
     local total_steps=9
     local step=1
 
-    _log-step update $step $total_steps "DevKit CLI" devkit-update || return
+    _log-step update $step $total_steps "DevKit CLI" devkit-update || return 1
     ((step++))
 
     _log-step setup $step $total_steps "DevKit Settings" devkit-settings-setup || return 1
