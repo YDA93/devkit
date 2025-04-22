@@ -16,7 +16,7 @@ function docker-daemon-start() {
         fi
     done
 
-    $quiet || _log_info "⏳ Starting Docker Daemon..."
+    $quiet || _log-info "⏳ Starting Docker Daemon..."
 
     # Start Docker silently
     nohup open -a Docker --args --unattended &>/dev/null &
@@ -24,18 +24,18 @@ function docker-daemon-start() {
 
     # Wait for Docker to become ready
     while ! docker info &>/dev/null; do
-        $quiet || _log_info "⏳ Waiting for Docker to start..."
+        $quiet || _log-info "⏳ Waiting for Docker to start..."
         sleep 5
     done
 
-    $quiet || _log_success "✓ Docker is now running!"
+    $quiet || _log-success "✓ Docker is now running!"
 }
 
 # ♻️ Restarts Docker Desktop
 # - Stops all Docker processes and starts Docker again
 # 💡 Usage: docker-daemon-restart
 function docker-daemon-restart() {
-    _log_info "♻️  Restarting Docker Desktop..."
+    _log-info "♻️  Restarting Docker Desktop..."
     pkill -f Docker
     sleep 2
     docker-daemon-start
@@ -48,16 +48,16 @@ function docker-daemon-restart() {
 # 🛑 Kills all running Docker containers
 # 💡 Usage: docker-kill-all
 function docker-kill-all() {
-    _log_info "🛑 Killing all running Docker containers..."
+    _log-info "🛑 Killing all running Docker containers..."
     docker ps -q | xargs -r docker kill
 }
 
 # 🧹 Removes stopped containers, unused images, volumes, and networks
 # 💡 Usage: docker-clean-all
 function docker-clean-all() {
-    _log_info "🧹 Cleaning up Docker..."
+    _log-info "🧹 Cleaning up Docker..."
     docker system prune -af --volumes
-    _log_success "✓ Docker cleaned"
+    _log-success "✓ Docker cleaned"
 }
 
 # ------------------------------------------------------------------------------
@@ -67,8 +67,8 @@ function docker-clean-all() {
 # 📋 Displays Docker and Docker Compose versions
 # 💡 Usage: docker-show-versions
 function docker-show-versions() {
-    _log_info "🐳 Docker CLI: $(docker --version | cut -d ' ' -f 3 | tr -d ',')"
-    _log_info "🔧 Compose:    $(docker compose version --short 2>/dev/null || _log_error 'not installed')"
+    _log-info "🐳 Docker CLI: $(docker --version | cut -d ' ' -f 3 | tr -d ',')"
+    _log-info "🔧 Compose:    $(docker compose version --short 2>/dev/null || _log-error 'not installed')"
 }
 
 # ------------------------------------------------------------------------------
@@ -78,35 +78,35 @@ function docker-show-versions() {
 # 📦 Lists all Docker containers (running and stopped)
 # 💡 Usage: docker-list-containers
 function docker-list-containers() {
-    _log_info "📦 All Docker containers:"
+    _log-info "📦 All Docker containers:"
     docker ps -a --format "table {{.ID}}\t{{.Status}}\t{{.Names}}\t{{.Image}}"
 }
 
 # 🟢 Lists only running Docker containers
 # 💡 Usage: docker-list-running
 function docker-list-running() {
-    _log_info "🟢 Running Docker containers:"
+    _log-info "🟢 Running Docker containers:"
     docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"
 }
 
 # 🖼️ Lists all Docker images
 # 💡 Usage: docker-list-images
 function docker-list-images() {
-    _log_info "🖼️ Docker images:"
+    _log-info "🖼️ Docker images:"
     docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}"
 }
 
 # 📁 Lists all Docker volumes
 # 💡 Usage: docker-list-volumes
 function docker-list-volumes() {
-    _log_info "📁 Docker volumes:"
+    _log-info "📁 Docker volumes:"
     docker volume ls
 }
 
 # 🌐 Lists all Docker networks
 # 💡 Usage: docker-list-networks
 function docker-list-networks() {
-    _log_info "🌐 Docker networks:"
+    _log-info "🌐 Docker networks:"
     docker network ls
 }
 
@@ -118,7 +118,7 @@ function docker-list-networks() {
 # 💡 Usage: docker-inspect-container <container_id_or_name>
 function docker-inspect-container() {
     if [[ -z "$1" ]]; then
-        _log_error "✗ Usage: docker-inspect-container <container_name_or_id>"
+        _log-error "✗ Usage: docker-inspect-container <container_name_or_id>"
         return 1
     fi
 
@@ -129,7 +129,7 @@ function docker-inspect-container() {
 # 💡 Usage: docker-logs <container_id_or_name>
 function docker-logs() {
     if [[ -z "$1" ]]; then
-        _log_error "✗ Usage: docker-logs <container_name_or_id>"
+        _log-error "✗ Usage: docker-logs <container_name_or_id>"
         return 1
     fi
 

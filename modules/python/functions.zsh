@@ -12,10 +12,10 @@ function python-environment-activate() {
 
     # Activate if available
     if [[ -f "venv/bin/activate" ]]; then
-        source venv/bin/activate && _log_success "✓ Environment activated: venv"
+        source venv/bin/activate && _log-success "✓ Environment activated: venv"
     else
-        _log_error "✗ No virtual environment found at ./venv"
-        _log_hint "💡 Run: python-environment-create"
+        _log-error "✗ No virtual environment found at ./venv"
+        _log-hint "💡 Run: python-environment-create"
         return 1
     fi
 }
@@ -33,10 +33,10 @@ function python-environment-is-active() {
     fi
 
     if [[ "$current_python" == "$expected_python" ]]; then
-        $quiet || _log_success "✓ Virtual environment is active: venv"
+        $quiet || _log-success "✓ Virtual environment is active: venv"
         return 0
     else
-        $quiet || _log_error "✗ Virtual environment is not activated."
+        $quiet || _log-error "✗ Virtual environment is not activated."
         return 1
     fi
 }
@@ -45,7 +45,7 @@ function python-environment-is-active() {
 # 💡 Usage: python-environment-create
 function python-environment-create() {
     python -m venv venv || {
-        _log_error "✗ Failed to create virtual environment."
+        _log-error "✗ Failed to create virtual environment."
         return 1
     }
 
@@ -57,14 +57,14 @@ function python-environment-create() {
 function python-environment-delete() {
     if python-environment-is-active --quiet; then
         deactivate
-        _log_success "📴 Deactivated virtual environment."
+        _log-success "📴 Deactivated virtual environment."
     fi
 
     if [[ -d venv ]]; then
         rm -rf venv
-        _log_success "🗑️ Environment deleted."
+        _log-success "🗑️ Environment deleted."
     else
-        _log_info "ℹ️ No virtual environment found to delete."
+        _log-info "ℹ️ No virtual environment found to delete."
     fi
 }
 
@@ -114,7 +114,7 @@ function pip-install() {
         --main) install_main=true ;;
         --test) install_test=true ;;
         *)
-            _log_error "✗ Unknown option: $1"
+            _log-error "✗ Unknown option: $1"
             return 1
             ;;
         esac
@@ -128,12 +128,12 @@ function pip-install() {
     fi
 
     if $install_main; then
-        _log_info "📦 Installing main dependencies from requirements.txt..."
+        _log-info "📦 Installing main dependencies from requirements.txt..."
         pip install -r requirements.txt || return 1
     fi
 
     if $install_test; then
-        _log_info "🧪 Installing test/dev dependencies from requirements-test.txt..."
+        _log-info "🧪 Installing test/dev dependencies from requirements-test.txt..."
         pip install -r requirements-test.txt || return 1
     fi
 }
@@ -146,7 +146,7 @@ function pip-install() {
 function pip-update() {
     # Ensure pip-upgrade is installed
     if ! command -v pip-upgrade >/dev/null 2>&1; then
-        _log_error "✗ 'pip-upgrader' is not installed. Please install it with: pip install pip-upgrader"
+        _log-error "✗ 'pip-upgrader' is not installed. Please install it with: pip install pip-upgrader"
         return 1
     fi
 
@@ -159,7 +159,7 @@ function pip-update() {
         --main) update_main=true ;;
         --test) update_test=true ;;
         *)
-            _log_error "✗ Unknown option: $1"
+            _log-error "✗ Unknown option: $1"
             return 1
             ;;
         esac
@@ -175,13 +175,13 @@ function pip-update() {
     # Install and update
     if $update_main; then
         pip-install --main || return 1
-        _log_info "🔄 Updating main dependencies in requirements.txt..."
+        _log-info "🔄 Updating main dependencies in requirements.txt..."
         pip-upgrade requirements.txt || return 1
     fi
 
     if $update_test; then
         pip-install --test || return 1
-        _log_info "🔄 Updating test dependencies in requirements-test.txt..."
+        _log-info "🔄 Updating test dependencies in requirements-test.txt..."
         pip-upgrade requirements-test.txt || return 1
     fi
 }

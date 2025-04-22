@@ -1,24 +1,41 @@
-function _settings_parser_get_string() {
+# 🔍 Retrieves a string value from the settings file
+# 💡 Usage: _settings-parser-get-string <key>
+function _settings-parser-get-string() {
     local key="$1"
     jq -r --arg k "$key" '.[$k] // empty' "$CLI_SETTINGS_FILE"
 }
 
-function _settings_parser_get_bool() {
+# 🔍 Retrieves a boolean value from the settings file
+# 💡 Usage: _settings-parser-get-bool <key>
+function _settings-parser-get-bool() {
     local key="$1"
-    jq -r --arg k "$key" '.[$k] // empty' "$CLI_SETTINGS_FILE"
+    local value
+    value=$(jq -r --arg k "$key" '.[$k] // empty' "$CLI_SETTINGS_FILE")
+
+    if [[ "$value" == "true" ]]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
-function _settings_parser_get_array() {
+# 🔍 Retrieves an array value from the settings file (one element per line)
+# 💡 Usage: _settings-parser-get-array <key>
+function _settings-parser-get-array() {
     local key="$1"
     jq -r --arg k "$key" '.[$k] // empty | select(type == "array") | .[]' "$CLI_SETTINGS_FILE"
 }
 
-function _settings_parser_get_json() {
+# 🔍 Retrieves a raw JSON value from the settings file
+# 💡 Usage: _settings-parser-get-json <key>
+function _settings-parser-get-json() {
     local key="$1"
     jq --arg k "$key" '.[$k] // empty' "$CLI_SETTINGS_FILE"
 }
 
-function _settings_parser_set_string() {
+# ✏️  Sets a string value in the settings file
+# 💡 Usage: _settings-parser-set-string <key> <value>
+function _settings-parser-set-string() {
     local key="$1"
     local val="$2"
     local tmp="$(mktemp)"
@@ -26,7 +43,9 @@ function _settings_parser_set_string() {
     [[ $verbose -eq 1 ]] && echo "✓ Set $key = \"$val\" (string)"
 }
 
-function _settings_parser_set_bool() {
+# ✏️  Sets a boolean value in the settings file ("true" or "false")
+# 💡 Usage: _settings-parser-set-bool <key> <true|false>
+function _settings-parser-set-bool() {
     local key="$1"
     local val="$2"
     if [[ "$val" != "true" && "$val" != "false" ]]; then
@@ -38,7 +57,9 @@ function _settings_parser_set_bool() {
     [[ $verbose -eq 1 ]] && echo "✓ Set $key = $val (boolean)"
 }
 
-function _settings_parser_set_array() {
+# ✏️  Sets an array value in the settings file
+# 💡 Usage: _settings-parser-set-array <key> <item1> <item2> ...
+function _settings-parser-set-array() {
     local key="$1"
     shift
     local array_json
@@ -52,7 +73,9 @@ function _settings_parser_set_array() {
     [[ $verbose -eq 1 ]] && echo "✓ Set $key = $array_json (array)"
 }
 
-function _settings_parser_set_json() {
+# ✏️  Sets a raw JSON value in the settings file
+# 💡 Usage: _settings-parser-set-json <key> '<json_value>'
+function _settings-parser-set-json() {
     local key="$1"
     local val="$2"
     if [[ "$val" != \{* && "$val" != \[* ]]; then

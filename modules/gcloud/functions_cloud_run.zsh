@@ -9,7 +9,7 @@ function gcloud-run-build-image() {
 
     _confirm-or-abort "Are you sure you want to build the Docker image and deploy the service to Cloud Run?" "$@" || return 1
 
-    _log_info "🔹 Building the Docker image and pushing it to Artifact Registry..."
+    _log-info "🔹 Building the Docker image and pushing it to Artifact Registry..."
 
     # Construct the full image path
     GCP_RUN_FULL_IMAGE_NAME="$GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY_NAME/$GCP_EXTENDED_IMAGE_NAME"
@@ -54,7 +54,7 @@ function gcloud-run-deploy-initial() {
 
     _confirm-or-abort "Are you sure you want to deploy the service to Cloud Run for the first time?" "$@" || return 1
 
-    _log_info "🔹 Deploying the service to Cloud Run for the first time..."
+    _log-info "🔹 Deploying the service to Cloud Run for the first time..."
 
     # Deploy the service to Cloud Run for the first time
     gcloud run deploy $GCP_RUN_NAME \
@@ -76,7 +76,7 @@ function gcloud-run-deploy-latest() {
 
     _confirm-or-abort "Are you sure you want to redeploy the service to Cloud Run?" "$@" || return 1
 
-    _log_info "🔹 Redeploying the service to Cloud Run..."
+    _log-info "🔹 Redeploying the service to Cloud Run..."
 
     # Redeploy the service to Cloud Run
     gcloud run deploy $GCP_RUN_NAME \
@@ -96,7 +96,7 @@ function gcloud-run-set-service-urls-env() {
 
     _confirm-or-abort "Are you sure you want to update the service URLs environment variable in Cloud Run?" "$@" || return 1
 
-    _log_info "🔹 Updating the service URLs environment variable in Cloud Run..."
+    _log-info "🔹 Updating the service URLs environment variable in Cloud Run..."
 
     # Get the service URL
     CLOUDRUN_SERVICE_URLS=$(gcloud run services describe $GCP_RUN_NAME \
@@ -119,7 +119,7 @@ function gcloud-run-build-and-deploy-initial() {
 
     _confirm-or-abort "Are you sure you want to build the Docker image and deploy the service to Cloud Run for the first time?" "$@" || return 1
 
-    _log_info "⚙️ Starting to build the Docker image and deploy the service to Cloud Run for the first time..."
+    _log-info "⚙️ Starting to build the Docker image and deploy the service to Cloud Run for the first time..."
     # Build the image, deploy the service for the first time, and update the service URL environment variable
     gcloud-run-build-image --quiet && gcloud-run-deploy-initial --quiet && gcloud-run-set-service-urls-env --quiet
 }
@@ -131,7 +131,7 @@ function gcloud-run-build-and-deploy-latest() {
 
     _confirm-or-abort "Are you sure you want to build the Docker image and redeploy the service to Cloud Run?" "$@" || return 1
 
-    _log_info "⚙️ Starting to build the Docker image and redeploy the service to Cloud Run..."
+    _log-info "⚙️ Starting to build the Docker image and redeploy the service to Cloud Run..."
 
     # Build the image, redeploy the service, and update the service URL environment variable
     gcloud-run-build-image --quiet && gcloud-run-deploy-latest --quiet && gcloud-run-set-service-urls-env --quiet
@@ -145,10 +145,10 @@ function gcloud-run-service-delete() {
     _confirm-or-abort "Are you sure you want to delete the Cloud Run service and job?" "$@" || return 1
 
     # Delete the service
-    _log_info "🔹 Deleting the Cloud Run service '$GCP_RUN_NAME'..."
+    _log-info "🔹 Deleting the Cloud Run service '$GCP_RUN_NAME'..."
     gcloud run services delete "$GCP_RUN_NAME" --region "$GCP_REGION" --quiet
 
     # Delete the Cloud Run job
-    _log_info "🔹 Deleting the Cloud Run job 'migrate-job'..."
+    _log-info "🔹 Deleting the Cloud Run job 'migrate-job'..."
     gcloud run jobs delete migrate-job --region="$GCP_REGION" --quiet
 }

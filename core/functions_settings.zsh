@@ -1,34 +1,34 @@
-# ------------------------------------------------------------------------------
-# 🧩 Devkit Settings
-# ------------------------------------------------------------------------------
-
-# Initialize the settings file if it doesn't exist
-# Usage: settings init
-function devkit-settings-init() {
+# 🧩 Initializes the DevKit CLI settings file if it doesn't exist
+# 💡 Usage: _devkit-settings-init
+function _devkit-settings-init() {
     CLI_SETTINGS_FILE="$DEVKIT_ROOT/settings.json"
 
     if [[ ! -f "$CLI_SETTINGS_FILE" ]]; then
-        _log_info "🛠️  Initializing settings file at $CLI_SETTINGS_FILE"
+        _log-info "🛠️  Initializing settings file at $CLI_SETTINGS_FILE"
         echo '{}' >"$CLI_SETTINGS_FILE"
-        _log_success "✅ Created new settings file."
+        _log-success "✅ Created new settings file."
     fi
 }
 
-function devkit-settings-reset() {
+# 🔁 Resets the DevKit CLI settings by deleting and reinitializing the file
+# 💡 Usage: _devkit-settings-reset
+function _devkit-settings-reset() {
     CLI_SETTINGS_FILE="$DEVKIT_ROOT/settings.json"
     # Delete the settings file if it exists
     if [[ -f "$CLI_SETTINGS_FILE" ]]; then
         rm "$CLI_SETTINGS_FILE"
-        _log_success "✓ Deleted settings file: $CLI_SETTINGS_FILE"
+        _log-success "✓ Deleted settings file: $CLI_SETTINGS_FILE"
     else
-        _log_info "ℹ️  No settings file to delete."
+        _log-info "ℹ️  No settings file to delete."
     fi
 
     # Reinitialize the settings file
-    devkit-settings-init
+    _devkit-settings-init
 }
 
-function devkit-settings() {
+# ⚙️  Gets or sets values in the DevKit CLI settings file
+# 💡 Usage: _devkit-settings [get|set] <type> <key> [value...] [--v]
+function _devkit-settings() {
     local verbose=0
 
     # Check if --v is present anywhere in the args
@@ -44,7 +44,7 @@ function devkit-settings() {
 
     local cmd="$1"
 
-    devkit-settings-init
+    _devkit-settings-init
 
     case "$cmd" in
     get)
@@ -58,16 +58,17 @@ function devkit-settings() {
 
         case "$type" in
         string)
-            _settings_parser_get_string "$key"
+            _settings-parser-get-string "$key"
             ;;
         bool)
-            _settings_parser_get_bool "$key"
+            _settings-parser-get-bool "$key"
+            return $? # ← propagate bool result
             ;;
         array)
-            _settings_parser_get_array "$key"
+            _settings-parser-get-array "$key"
             ;;
         json)
-            _settings_parser_get_json "$key"
+            _settings-parser-get-json "$key"
             ;;
         *)
             echo "Error: Unsupported type '$type'. Use string, bool, array, or json."
@@ -90,16 +91,16 @@ function devkit-settings() {
 
         case "$type" in
         string)
-            _settings_parser_set_string "$key" "$1"
+            _settings-parser-set-string "$key" "$1"
             ;;
         bool)
-            _settings_parser_set_bool "$key" "$1"
+            _settings-parser-set-bool "$key" "$1"
             ;;
         array)
-            _settings_parser_set_array "$key" "$@"
+            _settings-parser-set-array "$key" "$@"
             ;;
         json)
-            _settings_parser_set_json "$key" "$1"
+            _settings-parser-set-json "$key" "$1"
             ;;
         *)
             echo "Error: Unsupported type '$type'. Use string, bool, array, or json."
@@ -115,12 +116,11 @@ function devkit-settings() {
     esac
 }
 
-# 🧰 Initializes your CLI by asking user for name, email, and app selections (multi-select)
-# - Stores results in ~/devkit/settings.json
+# ⚙️  Interactive setup wizard for DevKit settings and optional apps
 # 💡 Usage: devkit-settings-setup
 function devkit-settings-setup() {
     # Get user inputs for settings
-    _log_info "🔧 Please provide your details and select the apps you want to install."
+    _log-info "🔧 Please provide your details and select the apps you want to install."
 
     # Set up user details
     _devkit-settings-user-setup
@@ -131,24 +131,29 @@ function devkit-settings-setup() {
     _devkit-settings-select-optional-apps formula optional_brew_formulas.txt
 
     if gum confirm "🌙 Would you like to use the cool night theme for your terminal?"; then
-        terminal-theme-setup
+        _devkit-settings set bool use_cool_night_theme true
     else
+        _devkit-settings set bool use_cool_night_theme false
         echo "👍 Keeping your current theme."
     fi
 
-    _log_success "✓ Settings saved successfully."
+    _log-success "✓ Settings saved successfully."
     echo
 }
 
+# 👤 Prompts the user for full name and email, then saves them to settings
+# 💡 Usage: _devkit-settings-user-setup
 function _devkit-settings-user-setup() {
     # Load basic user info
-    full_name=$(gum input --header "👤 Full Name" --value "$(devkit-settings get string full_name)")
-    email=$(gum input --header "📧 Email Address" --value "$(devkit-settings get string email)")
+    full_name=$(gum input --header "👤 Full Name" --value "$(_devkit-settings get string full_name)")
+    email=$(gum input --header "📧 Email Address" --value "$(_devkit-settings get string email)")
 
-    devkit-settings set string full_name "$full_name"
-    devkit-settings set string email "$email"
+    _devkit-settings set string full_name "$full_name"
+    _devkit-settings set string email "$email"
 }
 
+# 📦 Displays selection menu for optional apps of a given type (mas, cask, formula)
+# 💡 Usage: _devkit-settings-select-optional-apps <type> <file_name>
 function _devkit-settings-select-optional-apps() {
     local type="$1"
     local file_name="$2"
@@ -158,16 +163,18 @@ function _devkit-settings-select-optional-apps() {
     local selected_var="selected_${type}_apps"
 
     # Dynamically create the array variable (mas_apps, cask_apps, etc.)
-    _load_array_from_file "$file_path" "$array_var"
+    _load-array-from-file "$file_path" "$array_var"
 
     # Show selection menu using dynamic array
-    eval "_show_app_selection_menu \"$type\" \"\${${array_var}[@]}\""
+    eval "_show-app-selection-menu \"$type\" \"\${${array_var}[@]}\""
 
     # Save the selected apps (also dynamic)
-    eval "devkit-settings set array \"$array_var\" \"\${${selected_var}[@]}\""
+    eval "_devkit-settings set array \"$array_var\" \"\${${selected_var}[@]}\""
 }
 
-function _show_app_selection_menu() {
+# 🧾 Displays an interactive checklist of apps to install, preserving prior selections
+# 💡 Usage: _show-app-selection-menu <type> <apps...>
+function _show-app-selection-menu() {
     local type=$1
     shift
     local apps=("$@")
@@ -176,7 +183,7 @@ function _show_app_selection_menu() {
     local selected=()
 
     local selected_key="${type}_apps"
-    local previously_selected=($(devkit-settings get array "$selected_key"))
+    local previously_selected=($(_devkit-settings get array "$selected_key"))
 
     for app in "${apps[@]}"; do
         local display="$app"
@@ -188,7 +195,7 @@ function _show_app_selection_menu() {
 
         choices+=("$display")
 
-        if _array_contains "$display" "${previously_selected[@]}"; then
+        if _array-contains "$display" "${previously_selected[@]}"; then
             selected+=("$display")
         fi
     done

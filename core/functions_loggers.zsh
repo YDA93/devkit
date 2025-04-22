@@ -12,8 +12,8 @@ LIGHT_GRAY='\033[0;37m'
 NO_COLOR='\033[0m'
 
 # ✅ Prints a success message
-# 💡 Usage: _log_success "Message"
-function _log_success() {
+# 💡 Usage: _log-success "Message"
+function _log-success() {
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
         gum style --bold --foreground 42 "$@"
     else
@@ -22,8 +22,8 @@ function _log_success() {
 }
 
 # ❌ Prints an error message
-# 💡 Usage: _log_error "Message"
-function _log_error() {
+# 💡 Usage: _log-error "Message"
+function _log-error() {
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
         gum style --bold --foreground 196 "$@"
     else
@@ -32,8 +32,8 @@ function _log_error() {
 }
 
 # ⚠️ Prints a warning message
-# 💡 Usage: _log_warning "Message"
-function _log_warning() {
+# 💡 Usage: _log-warning "Message"
+function _log-warning() {
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
         gum style --bold --foreground 220 "$@"
     else
@@ -42,8 +42,8 @@ function _log_warning() {
 }
 
 # ℹ️ Prints an informational message
-# 💡 Usage: _log_info "Message"
-function _log_info() {
+# 💡 Usage: _log-info "Message"
+function _log-info() {
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
         gum style --foreground 33 "$@"
     else
@@ -52,8 +52,8 @@ function _log_info() {
 }
 
 # 💡 Prints a hint or tip message
-# 💡 Usage: _log_hint "Message"
-function _log_hint() {
+# 💡 Usage: _log-hint "Message"
+function _log-hint() {
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
         gum style --foreground 245 "$@"
     else
@@ -62,13 +62,13 @@ function _log_hint() {
 }
 
 # 🧩 Prints a section separator
-# 💡 Usage: _log_separator [style...] [color]
+# 💡 Usage: _log-separator [style...] [color]
 # Styles:
 #   - double   : uses double line character
 #   - divided  : adds spacing between characters
 # Color:
 #   - Pass any number (e.g., 196) to set foreground color
-function _log_separator() {
+function _log-separator() {
     local styles=("$@")
     local char="─"
     local separator=""
@@ -117,12 +117,12 @@ function _log_separator() {
 }
 
 # 🖨️ Prints a section title (without a box)
-# 💡 Usage: _log_title "Title"
-function _log_title() {
+# 💡 Usage: _log-title "Title"
+function _log-title() {
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
-        _log_separator
+        _log-separator
         gum style --bold --foreground 51 "$@"
-        _log_separator
+        _log-separator
     else
         echo -e "${CYAN}────────────────────────────────────────${NO_COLOR}"
         echo -e "${PURPLE}$@${NO_COLOR}"
@@ -131,8 +131,8 @@ function _log_title() {
 }
 
 # 🖨️ Prints a stylized section title to terminal (Gum version)
-# 💡 Usage: _log_section_title "Title"
-function _log_section_title() {
+# 💡 Usage: _log-section_title "Title"
+function _log-section_title() {
     local title="$1"
 
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
@@ -149,8 +149,8 @@ function _log_section_title() {
 }
 
 # 🎉 Prints a final summary banner
-# 💡 Usage: _log_summary "Summary text"
-function _log_summary() {
+# 💡 Usage: _log-summary "Summary text"
+function _log-summary() {
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
         gum style --border double --padding "1 3" --margin "2 0" --bold --foreground 42 "$@"
     else
@@ -159,8 +159,8 @@ function _log_summary() {
 }
 
 # ❓ Prints a question or prompt message
-# 💡 Usage: _log_question "Question text"
-function _log_question() {
+# 💡 Usage: _log-question "Question text"
+function _log-question() {
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
         gum style --bold --foreground 45 "❓ $@"
     else
@@ -189,19 +189,19 @@ function _log-step() {
 
     # Start step: show starting message
     echo
-    _log_heading info "$prefix 🔧 $action $name"
+    _log-heading info "$prefix 🔧 $action $name"
 
     # Run the command
     if ! "$@"; then
-        _log_heading error "$prefix ✗ $action failed: $name"
+        _log-heading error "$prefix ✗ $action failed: $name"
         return 1
     fi
-    _log_separator 245 # double + divided, gray
+    _log-separator 245 # double + divided, gray
 }
 
 # 🧩 Prints an inline title with light dividers
-# 💡 Usage: _log_inline_title "Your title"
-function _log_inline_title() {
+# 💡 Usage: _log-inline_title "Your title"
+function _log-inline_title() {
     local title="$1"
     local divider="➖"
     local side_length=3
@@ -215,8 +215,8 @@ function _log_inline_title() {
 }
 
 # 🖨️ Prints a heading with a border (Gum version)
-# 💡 Usage: _log_heading <type: info|error> "Heading text"
-function _log_heading() {
+# 💡 Usage: _log-heading <type: info|error> "Heading text"
+function _log-heading() {
     local type="$1"
     local title="$2"
 
@@ -256,11 +256,11 @@ function _run-or-abort() {
     "$@"
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
-        _log_error "✗ Failed: $description"
+        _log-error "✗ Failed: $description"
         return $exit_code
     fi
     if [ -n "$success_msg" ]; then
-        _log_success "$success_msg"
+        _log-success "$success_msg"
         echo ""
     fi
 }
@@ -282,7 +282,7 @@ function _confirm-or-abort() {
         if gum confirm "$message"; then
             return 0
         else
-            _log_info "Aborting action."
+            _log-info "Aborting action."
             echo
             return 1
         fi

@@ -6,26 +6,26 @@
 function postgres-setup() {
     # 🐘 Initialize PostgreSQL only if not already running or user missing
     if ! psql -U postgres -c '\q' &>/dev/null; then
-        _log_info "⚙️  Setting up PostgreSQL for the first time..."
+        _log-info "⚙️  Setting up PostgreSQL for the first time..."
 
         # Start PostgreSQL if not already running
         if ! brew services list | grep -q "^$LATEST_PG.*started"; then
-            _log_info "🔄 Starting PostgreSQL service..."
+            _log-info "🔄 Starting PostgreSQL service..."
             brew services start "$LATEST_PG"
         else
-            _log_success "✓ PostgreSQL service is already running."
+            _log-success "✓ PostgreSQL service is already running."
         fi
 
         # Create postgres superuser if missing
         if ! psql postgres -c '\du' | cut -d \| -f 1 | grep -qw postgres; then
-            _log_info "➕ Creating default 'postgres' superuser..."
+            _log-info "➕ Creating default 'postgres' superuser..."
             createuser -s postgres
         else
-            _log_success "✓ 'postgres' user already exists."
+            _log-success "✓ 'postgres' user already exists."
             echo
         fi
     else
-        _log_success "✓ PostgreSQL is already set up and ready."
+        _log-success "✓ PostgreSQL is already set up and ready."
         echo
     fi
 }
@@ -41,7 +41,7 @@ function postgres-setup() {
 function postgres-password-validation() {
     # Attempt to connect to PostgreSQL using the set PGPASSWORD
     if ! psql -U postgres -h localhost -c "\q" &>/dev/null; then
-        _log_error "✗ Error: Unable to connect to PostgreSQL. Please check your password or server status."
+        _log-error "✗ Error: Unable to connect to PostgreSQL. Please check your password or server status."
         unset PGPASSWORD
         return 1
     fi
@@ -58,7 +58,7 @@ function postgres-connect() {
         if postgres-password-validation; then
             return 0
         else
-            _log_warning "⚠️  Existing PGPASSWORD is invalid. Trying fallback..."
+            _log-warning "⚠️  Existing PGPASSWORD is invalid. Trying fallback..."
             unset PGPASSWORD
         fi
     fi
@@ -71,7 +71,7 @@ function postgres-connect() {
             if postgres-password-validation; then
                 return 0
             else
-                _log_warning "⚠️  LOCAL_DB_PASSWORD is set but invalid. Falling back to manual entry..."
+                _log-warning "⚠️  LOCAL_DB_PASSWORD is set but invalid. Falling back to manual entry..."
                 unset PGPASSWORD
             fi
         fi
@@ -95,42 +95,42 @@ function postgres-connect() {
 # 💡 Usage: postgres-doctor
 function postgres-doctor() {
 
-    _log_info "🔧 Checking PostgreSQL installation..."
+    _log-info "🔧 Checking PostgreSQL installation..."
     if ! command -v psql &>/dev/null; then
-        _log_warning "⚠️  psql command not found. PostgreSQL might not be installed."
-        _log_hint "💡 Install with: brew install postgresql"
+        _log-warning "⚠️  psql command not found. PostgreSQL might not be installed."
+        _log-hint "💡 Install with: brew install postgresql"
         echo
         return 1
     fi
-    _log_success "✓ PostgreSQL is installed"
+    _log-success "✓ PostgreSQL is installed"
     echo
 
-    _log_info "🛠 Checking if PostgreSQL service is running..."
+    _log-info "🛠 Checking if PostgreSQL service is running..."
     if pg_ctl status &>/dev/null || brew services list | grep -E 'postgresql(@[0-9]+)?' &>/dev/null; then
-        _log_success "✓ PostgreSQL service appears to be running"
+        _log-success "✓ PostgreSQL service appears to be running"
         echo
     else
-        _log_warning "⚠️  PostgreSQL service not running or not installed"
-        _log_hint "💡 Start with: brew services start $LATEST_PG"
+        _log-warning "⚠️  PostgreSQL service not running or not installed"
+        _log-hint "💡 Start with: brew services start $LATEST_PG"
         echo
     fi
 
-    _log_info "🔑 Checking connection as 'postgres' user..."
+    _log-info "🔑 Checking connection as 'postgres' user..."
     if psql -U postgres -c '\q' &>/dev/null; then
-        _log_success "✓ Able to connect as 'postgres'"
+        _log-success "✓ Able to connect as 'postgres'"
         echo
     else
-        _log_warning "⚠️  Cannot connect as 'postgres'"
-        _log_hint "💡 Try creating the user with:"
-        _log_hint "   createuser -s postgres"
-        _log_hint ""
-        _log_hint "🔐 To create a password for the user (optional but recommended):"
-        _log_hint "   psql -U postgres"
-        _log_hint "   Then inside psql, run:"
-        _log_hint "     \\password postgres"
-        _log_hint ""
-        _log_hint "⚙️  Also ensure the PostgreSQL service is running:"
-        _log_hint "   brew services start $LATEST_PG     "
+        _log-warning "⚠️  Cannot connect as 'postgres'"
+        _log-hint "💡 Try creating the user with:"
+        _log-hint "   createuser -s postgres"
+        _log-hint ""
+        _log-hint "🔐 To create a password for the user (optional but recommended):"
+        _log-hint "   psql -U postgres"
+        _log-hint "   Then inside psql, run:"
+        _log-hint "     \\password postgres"
+        _log-hint ""
+        _log-hint "⚙️  Also ensure the PostgreSQL service is running:"
+        _log-hint "   brew services start $LATEST_PG     "
         echo
     fi
 
@@ -151,7 +151,7 @@ function postgres-database-list() {
 
     # ✅ Explicitly fetch the list of databases now
     db_output=$(psql -U postgres -h localhost -lqt 2>/dev/null) || {
-        _log_error "✗ Failed to retrieve database list."
+        _log-error "✗ Failed to retrieve database list."
         unset PGPASSWORD
         return 1
     }
@@ -218,7 +218,7 @@ function postgres-database-create() {
 
     # Optional: Validate input
     if [[ -z "$db_name" ]]; then
-        _log_error "✗ Database name cannot be empty."
+        _log-error "✗ Database name cannot be empty."
         unset PGPASSWORD
         return 1
     fi
@@ -229,37 +229,37 @@ function postgres-database-create() {
 
     if [[ -n "$db_exists" ]]; then
         _confirm-or-abort "⚠️  Database '$db_name' already exists. Do you want to drop it?" || {
-            _log_error "🚫 Operation canceled. Exiting..."
+            _log-error "🚫 Operation canceled. Exiting..."
             unset PGPASSWORD
             return 1
         }
 
-        _log_info "🔄 Terminating active sessions for '$db_name'..."
+        _log-info "🔄 Terminating active sessions for '$db_name'..."
         if ! psql -U postgres -h 127.0.0.1 -c \
             "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" 2>/dev/null; then
-            _log_error "✗ Error: Failed to terminate active sessions."
+            _log-error "✗ Error: Failed to terminate active sessions."
             unset PGPASSWORD
             return 1
         fi
 
-        _log_info "💣 Dropping database '$db_name'..."
+        _log-info "💣 Dropping database '$db_name'..."
         if ! dropdb -U postgres -h 127.0.0.1 "$db_name"; then
-            _log_error "✗ Error: Failed to drop database."
+            _log-error "✗ Error: Failed to drop database."
             unset PGPASSWORD
             return 1
         fi
 
-        _log_success "✓ Database '$db_name' dropped."
+        _log-success "✓ Database '$db_name' dropped."
     fi
 
-    _log_info "🚧 Creating new database '$db_name'..."
+    _log-info "🚧 Creating new database '$db_name'..."
     if ! createdb -U postgres -h 127.0.0.1 "$db_name"; then
-        _log_error "✗ Error: Failed to create database."
+        _log-error "✗ Error: Failed to create database."
         unset PGPASSWORD
         return 1
     fi
 
-    _log_success "✓ New database '$db_name' created successfully."
+    _log-success "✓ New database '$db_name' created successfully."
     echo
     unset PGPASSWORD
 }
@@ -277,7 +277,7 @@ function postgres-database-delete() {
     db_name=$(gum input --placeholder "database_name" --prompt "🎯 Enter the name of the database to delete: ")
 
     if [[ -z "$db_name" ]]; then
-        _log_error "✗ Database name cannot be empty."
+        _log-error "✗ Database name cannot be empty."
         unset PGPASSWORD
         return 1
     fi
@@ -286,22 +286,22 @@ function postgres-database-delete() {
         echo
 
         _confirm-or-abort "⚠️  Are you sure you want to delete '$db_name'? This action is irreversible." || {
-            _log_error "🚫 Database '$db_name' was not dropped."
+            _log-error "🚫 Database '$db_name' was not dropped."
             exit 1
         }
 
-        _log_info "🔄 Terminating active sessions for '$db_name'..."
+        _log-info "🔄 Terminating active sessions for '$db_name'..."
         psql -U postgres -h localhost -c \
             "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" >/dev/null
 
-        _log_info "💣 Dropping database '$db_name'..."
+        _log-info "💣 Dropping database '$db_name'..."
         if dropdb -U postgres -h localhost "$db_name"; then
-            _log_success "✓ Database '$db_name' has been dropped."
+            _log-success "✓ Database '$db_name' has been dropped."
         else
-            _log_error "✗ Failed to drop database '$db_name'."
+            _log-error "✗ Failed to drop database '$db_name'."
         fi
     else
-        _log_error "✗ Database '$db_name' does not exist."
+        _log-error "✗ Database '$db_name' does not exist."
     fi
 
     unset PGPASSWORD

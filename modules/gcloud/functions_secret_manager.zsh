@@ -10,7 +10,7 @@ function gcloud-secret-manager-env-create() {
 
     _confirm-or-abort "Are you sure you want to create a new secret in Secret Manager?" "$@" || return 1
 
-    _log_info "🔹 Creating a new secret '$GCP_SECRET_NAME' in Secret Manager..."
+    _log-info "🔹 Creating a new secret '$GCP_SECRET_NAME' in Secret Manager..."
 
     # Create .env file in Secret Manager with the contents of the local .env file and specified region
     gcloud secrets create $GCP_SECRET_NAME \
@@ -32,7 +32,7 @@ function gcloud-secret-manager-env-update() {
 
     _confirm-or-abort "Are you sure you want to update the secret in Secret Manager?" "$@" || return 1
 
-    _log_info "🔹 Updating the secret '$GCP_SECRET_NAME' in Secret Manager..."
+    _log-info "🔹 Updating the secret '$GCP_SECRET_NAME' in Secret Manager..."
 
     # Add a new version of the secret in Secret Manager with the updated .env file
     gcloud secrets versions add $GCP_SECRET_NAME --data-file=".env" --quiet
@@ -64,7 +64,7 @@ function gcloud-secret-manager-env-delete() {
     _confirm-or-abort "Are you sure you want to delete the secret from Secret Manager
     This action is irreversible and will permanently delete the secret." "$@" || return 1
 
-    _log_info "🔹 Deleting the secret '$GCP_SECRET_NAME' from Secret Manager..."
+    _log-info "🔹 Deleting the secret '$GCP_SECRET_NAME' from Secret Manager..."
 
     # Delete the secret
     gcloud secrets delete $GCP_SECRET_NAME --quiet
@@ -74,7 +74,7 @@ function gcloud-secret-manager-env-delete() {
 # - Prompts user to select from available secrets
 # 💡 Usage: gcloud-secret-manager-env-download
 function gcloud-secret-manager-env-download() {
-    _log_info "📃 Fetching available secrets..."
+    _log-info "📃 Fetching available secrets..."
 
     local temp_file=$(mktemp)
     gcloud secrets list --format="value(name)" 2>/dev/null >"$temp_file"
@@ -86,33 +86,33 @@ function gcloud-secret-manager-env-download() {
     while IFS= read -r secret; do
         if [[ -n "$secret" ]]; then
             secrets_array+=("$secret")
-            _log_success "✓ Added to array: ${secret}"
+            _log-success "✓ Added to array: ${secret}"
         fi
         ((line_number++))
     done <"$temp_file"
     rm -f "$temp_file"
 
     if [[ ${#secrets_array[@]} -eq 0 ]]; then
-        _log_error "✗ No secrets found or failed to list secrets"
+        _log-error "✗ No secrets found or failed to list secrets"
         return 1
     fi
 
-    _log_info "🔐 Available secrets:"
+    _log-info "🔐 Available secrets:"
     i=0
     for secret in "${secrets_array[@]}"; do
-        _log_info "$((i + 1)). $secret"
+        _log-info "$((i + 1)). $secret"
         ((i++))
     done
 
     selection=$(gum input --placeholder "e.g., 1" --prompt "🔢 Select a secret number to download: ")
 
     if ! [[ "$selection" =~ ^[0-9]+$ ]]; then
-        _log_error "✗ Invalid input: Not a number"
+        _log-error "✗ Invalid input: Not a number"
         return 1
     fi
 
     if ((selection < 1 || selection > ${#secrets_array[@]})); then
-        _log_error "✗ Invalid input: Out of range"
+        _log-error "✗ Invalid input: Out of range"
         return 1
     fi
 
@@ -126,16 +126,16 @@ function gcloud-secret-manager-env-download() {
         ((counter++))
     done
 
-    _log_success "✓ Selected secret: '$selected_secret'"
+    _log-success "✓ Selected secret: '$selected_secret'"
     GCP_SECRET_NAME="$selected_secret"
 
     local output_file=".env"
-    _log_info "📥 Downloading '$GCP_SECRET_NAME' from Secret Manager..."
+    _log-info "📥 Downloading '$GCP_SECRET_NAME' from Secret Manager..."
 
     if gcloud secrets versions access latest --secret="$GCP_SECRET_NAME" --quiet >"$output_file"; then
-        _log_success "✓ .env downloaded and saved to: $output_file"
+        _log-success "✓ .env downloaded and saved to: $output_file"
     else
-        _log_error "✗ Failed to download .env — make sure the secret exists and has at least one version"
+        _log-error "✗ Failed to download .env — make sure the secret exists and has at least one version"
         return 1
     fi
 }

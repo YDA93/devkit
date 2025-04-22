@@ -1,5 +1,6 @@
-# Usage: _load_array_from_file "file_path" array_name
-function _load_array_from_file() {
+# 📂 Loads lines from a file into an array variable by reference
+# 💡 Usage: _load-array-from-file <file_path> <array_var_name>
+function _load-array-from-file() {
     local file="$1"
     local __resultvar="$2"
 
@@ -16,8 +17,9 @@ function _load_array_from_file() {
     eval "$__resultvar=(\"\${lines[@]}\")"
 }
 
-# Function to check if a value is in an array
-function _array_contains() {
+# 🔍 Checks if an array contains a specific item
+# 💡 Usage: _array-contains <item> <array...>
+function _array-contains() {
     local item="$1"
     shift
     for element in "$@"; do

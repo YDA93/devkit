@@ -9,7 +9,7 @@ function gcloud-compute-engine-ipv4-create {
 
     _confirm-or-abort "Are you sure you want to create a new static IPv4 address?" "$@" || return 1
 
-    _log_info "🔹 Creating a global static IPv4 address for the Load Balancer..."
+    _log-info "🔹 Creating a global static IPv4 address for the Load Balancer..."
 
     gcloud compute addresses create $GCP_PROJECT_ID-ipv4 \
         --global \
@@ -26,7 +26,7 @@ function gcloud-compute-engine-ipv4-delete() {
 
     _confirm-or-abort "Are you sure you want to delete the static IPv4 address?" "$@" || return 1
 
-    _log_info "🔹 Deleting the static IPv4 address..."
+    _log-info "🔹 Deleting the static IPv4 address..."
 
     gcloud compute addresses delete $GCP_PROJECT_ID-ipv4 --global --quiet
 }
@@ -38,7 +38,7 @@ function gcloud-compute-engine-ssl-certificate-create() {
 
     _confirm-or-abort "Are you sure you want to create a new SSL certificate?" "$@" || return 1
 
-    _log_info "🔹 Creating Google-managed SSL certificate..."
+    _log-info "🔹 Creating Google-managed SSL certificate..."
 
     gcloud compute ssl-certificates create $GCP_PROJECT_ID-ssl-certificate \
         --domains="$ADMIN_DOMAIN,www.$ADMIN_DOMAIN" \
@@ -54,7 +54,7 @@ function gcloud-compute-engine-ssl-certificate-delete() {
 
     _confirm-or-abort "Are you sure you want to delete the SSL certificate?" "$@" || return 1
 
-    _log_info "🔹 Deleting the SSL certificate..."
+    _log-info "🔹 Deleting the SSL certificate..."
 
     gcloud compute ssl-certificates delete $GCP_PROJECT_ID-ssl-certificate --global --quiet
 }
@@ -66,7 +66,7 @@ function gcloud-compute-engine-network-endpoint-group-create() {
 
     _confirm-or-abort "Are you sure you want to create a new Network Endpoint Group?" "$@" || return 1
 
-    _log_info "🔹 Creating Network Endpoint Group (NEG) for Cloud Run..."
+    _log-info "🔹 Creating Network Endpoint Group (NEG) for Cloud Run..."
 
     gcloud compute network-endpoint-groups create $GCP_PROJECT_ID-neg \
         --region=$GCP_REGION \
@@ -83,7 +83,7 @@ function gcloud-compute-engine-network-endpoint-group-delete() {
 
     _confirm-or-abort "Are you sure you want to delete the Network Endpoint Group?" "$@" || return 1
 
-    _log_info "🔹 Deleting Network Endpoint Group (NEG)..."
+    _log-info "🔹 Deleting Network Endpoint Group (NEG)..."
 
     gcloud compute network-endpoint-groups delete $GCP_PROJECT_ID-neg --region=$GCP_REGION --quiet
 }
@@ -95,7 +95,7 @@ function gcloud-compute-engine-backend-service-create() {
 
     _confirm-or-abort "Are you sure you want to create a new backend service and attach the Network Endpoint Group (NEG)?" "$@" || return 1
 
-    _log_info "🔹 Creating backend service and attaching Network Endpoint Group (NEG) to it..."
+    _log-info "🔹 Creating backend service and attaching Network Endpoint Group (NEG) to it..."
 
     gcloud compute backend-services create $GCP_PROJECT_ID-backend-service \
         --global \
@@ -116,7 +116,7 @@ function gcloud-compute-engine-backend-service-delete() {
 
     _confirm-or-abort "Are you sure you want to remove the Network Endpoint Group (NEG) from the backend service and delete the backend service?" "$@" || return 1
 
-    _log_info "🔹 Removing the Network Endpoint Group (NEG) from the backend service and deleting the backend service..."
+    _log-info "🔹 Removing the Network Endpoint Group (NEG) from the backend service and deleting the backend service..."
 
     gcloud compute backend-services remove-backend $GCP_PROJECT_ID-backend-service \
         --global \
@@ -133,7 +133,7 @@ function gcloud-compute-engine-url-map-create() {
 
     _confirm-or-abort "Are you sure you want to create a new URL map?" "$@" || return 1
 
-    _log_info "🔹 Creating URL map..."
+    _log-info "🔹 Creating URL map..."
 
     # Create the URL map
     gcloud compute url-maps create $GCP_PROJECT_ID-url-map \
@@ -150,7 +150,7 @@ function gcloud-compute-engine-url-map-delete() {
 
     _confirm-or-abort "Are you sure you want to delete the URL map?" "$@" || return 1
 
-    _log_info "🔹 Deleting URL map..."
+    _log-info "🔹 Deleting URL map..."
 
     gcloud compute url-maps delete $GCP_PROJECT_ID-url-map --global --quiet
 }
@@ -162,7 +162,7 @@ function gcloud-compute-engine-target-https-proxy-and-attach-ssl-certificate() {
 
     _confirm-or-abort "Are you sure you want to create a new HTTPS target proxy and attach the SSL certificate?" "$@" || return 1
 
-    _log_info "🔹 Creating HTTPS target proxy and attaching SSL certificate..."
+    _log-info "🔹 Creating HTTPS target proxy and attaching SSL certificate..."
 
     # Create HTTP Proxy for redirecting HTTP traffic to HTTPS (NO SSL required)
     gcloud compute target-http-proxies create $GCP_PROJECT_ID-target-http-proxy \
@@ -185,7 +185,7 @@ function gcloud-compute-engine-target-https-proxy-delete() {
 
     _confirm-or-abort "Are you sure you want to delete the Target HTTPS Proxy?" "$@" || return 1
 
-    _log_info "🔹 Deleting the Target HTTPS Proxy..."
+    _log-info "🔹 Deleting the Target HTTPS Proxy..."
 
     # Delete the Target HTTP Proxy
     gcloud compute target-http-proxies delete $GCP_PROJECT_ID-target-http-proxy --global --quiet
@@ -201,7 +201,7 @@ function gcloud-compute-engine-global-forwarding-rule-create() {
 
     _confirm-or-abort "Are you sure you want to create a new Global Forwarding Rule?" "$@" || return 1
 
-    _log_info "🔹 Creating global forwarding rule..."
+    _log-info "🔹 Creating global forwarding rule..."
 
     # Forward HTTP requests (port 80) to the HTTP proxy (which redirects to HTTPS)
     gcloud compute forwarding-rules create $GCP_PROJECT_ID-http-forwarding-rule \
@@ -232,7 +232,7 @@ function gcloud-compute-engine-global-forwarding-rule-delete() {
 
     _confirm-or-abort "Are you sure you want to delete the Global Forwarding Rule?" "$@" || return 1
 
-    _log_info "🔹 Deleting global forwarding rule..."
+    _log-info "🔹 Deleting global forwarding rule..."
 
     # Delete the HTTP Forwarding Rule
     gcloud compute forwarding-rules delete $GCP_PROJECT_ID-http-forwarding-rule --global --quiet
@@ -250,13 +250,13 @@ function gcloud-compute-engine-cloud-load-balancer-setup() {
 
     _confirm-or-abort "Are you sure you want to set up the Cloud Load Balancer?" "$@" || return 1
 
-    _log_info "⚙️ Starting to set up the Cloud Load Balancer..."
+    _log-info "⚙️ Starting to set up the Cloud Load Balancer..."
 
     gcloud services enable compute.googleapis.com networkservices.googleapis.com
 
     # Step 1: Create a static IPv4 address
     if ! gcloud-compute-engine-ipv4-create --quiet; then
-        _log_error "✗ Failed to create static IP."
+        _log-error "✗ Failed to create static IP."
         return 1
     fi
 
@@ -265,41 +265,41 @@ function gcloud-compute-engine-cloud-load-balancer-setup() {
 
     # Step 3: Create a Google-managed SSL certificate
     if ! gcloud-compute-engine-ssl-certificate-create --quiet; then
-        _log_error "✗ Failed to create SSL certificate."
+        _log-error "✗ Failed to create SSL certificate."
         return 1
     fi
 
     # Step 4: Create a Serverless Network Endpoint Group (NEG)
     if ! gcloud-compute-engine-network-endpoint-group-create --quiet; then
-        _log_error "✗ Failed to create Network Endpoint Group."
+        _log-error "✗ Failed to create Network Endpoint Group."
         return 1
     fi
 
     # Step 5: Create a Backend Service
     if ! gcloud-compute-engine-backend-service-create --quiet; then
-        _log_error "✗ Failed to create backend service and attach NEG."
+        _log-error "✗ Failed to create backend service and attach NEG."
         return 1
     fi
 
     # Step 6: Create URL Map for request routing
     if ! gcloud-compute-engine-url-map-create --quiet; then
-        _log_error "✗ Failed to create URL map."
+        _log-error "✗ Failed to create URL map."
         return 1
     fi
 
     # Step 7: Create HTTPS Proxy and Attach SSL Certificate
     if ! gcloud-compute-engine-target-https-proxy-and-attach-ssl-certificate --quiet; then
-        _log_error "✗ Failed to create HTTPS target proxy."
+        _log-error "✗ Failed to create HTTPS target proxy."
         return 1
     fi
 
     # Step 8: Create Global Forwarding Rule
     if ! gcloud-compute-engine-global-forwarding-rule-create --quiet; then
-        _log_error "✗ Failed to create global forwarding rule."
+        _log-error "✗ Failed to create global forwarding rule."
         return 1
     fi
 
-    _log_success "🎉 Cloud Load Balancer setup completed successfully!"
+    _log-success "🎉 Cloud Load Balancer setup completed successfully!"
 }
 
 # 🔄 Teardown of all Cloud Load Balancer components
@@ -310,29 +310,29 @@ function gcloud-compute-engine-cloud-load-balancer-teardown() {
 
     _confirm-or-abort "Are you sure you want to teardown the Cloud Load Balancer?" "$@" || return 1
 
-    _log_info "⚙️ Starting to teardown the Cloud Load Balancer..."
+    _log-info "⚙️ Starting to teardown the Cloud Load Balancer..."
 
     # Step 1: Delete Global Forwarding Rule
-    gcloud-compute-engine-global-forwarding-rule-delete --quiet || _log_error "✗ Failed to delete global forwarding rule."
+    gcloud-compute-engine-global-forwarding-rule-delete --quiet || _log-error "✗ Failed to delete global forwarding rule."
 
     # Step 2: Delete Target HTTPS Proxy
-    gcloud-compute-engine-target-https-proxy-delete --quiet || _log_error "✗ Failed to delete target HTTPS proxy."
+    gcloud-compute-engine-target-https-proxy-delete --quiet || _log-error "✗ Failed to delete target HTTPS proxy."
 
     # Step 3: Delete URL Map
-    gcloud-compute-engine-url-map-delete --quiet || _log_error "✗ Failed to delete URL map."
+    gcloud-compute-engine-url-map-delete --quiet || _log-error "✗ Failed to delete URL map."
 
     # Step 4: Detach NEG from the Backend Service
     # Attempt to delete the backend service, which also detaches the associated NEG.
-    gcloud-compute-engine-backend-service-delete --quiet || _log_error "✗ Error: Failed to remove the Network Endpoint Group (NEG) from the backend service and delete the backend service."
+    gcloud-compute-engine-backend-service-delete --quiet || _log-error "✗ Error: Failed to remove the Network Endpoint Group (NEG) from the backend service and delete the backend service."
 
     # Step 5: Delete NEG
-    gcloud-compute-engine-network-endpoint-group-delete --quiet || _log_error "✗ Failed to delete Network Endpoint Group."
+    gcloud-compute-engine-network-endpoint-group-delete --quiet || _log-error "✗ Failed to delete Network Endpoint Group."
 
     # Step 6: Delete SSL Certificate
-    gcloud-compute-engine-ssl-certificate-delete --quiet || _log_error "✗ Failed to delete SSL certificate."
+    gcloud-compute-engine-ssl-certificate-delete --quiet || _log-error "✗ Failed to delete SSL certificate."
 
     # Step 7: Delete Static IPv4 Address
-    gcloud-compute-engine-ipv4-delete --quiet || _log_error "✗ Failed to delete static IP."
+    gcloud-compute-engine-ipv4-delete --quiet || _log-error "✗ Failed to delete static IP."
 
-    _log_success "🎉 Cloud Load Balancer teardown completed successfully!"
+    _log-success "🎉 Cloud Load Balancer teardown completed successfully!"
 }

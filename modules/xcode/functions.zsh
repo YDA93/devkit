@@ -15,51 +15,51 @@ function xcode-setup() {
     _check-software-updates || return 1
 
     # 🔁 Installs Rosetta for Apple Silicon (to run Intel-based apps/tools)
-    _log_info "🔁 Checking for Rosetta installation..."
+    _log-info "🔁 Checking for Rosetta installation..."
     if /usr/bin/pgrep oahd >/dev/null 2>&1; then
-        _log_success "✓ Rosetta is already installed."
+        _log-success "✓ Rosetta is already installed."
     else
-        _log_info "🔁 Installing Rosetta..."
+        _log-info "🔁 Installing Rosetta..."
         softwareupdate --install-rosetta --agree-to-license || return 1
-        _log_success "✓ Rosetta installed successfully."
+        _log-success "✓ Rosetta installed successfully."
     fi
     echo
 
     # 📜 Accept Xcode license, must be before updating CocoaPods
-    _log_info "📜 Accepting Xcode license..."
+    _log-info "📜 Accepting Xcode license..."
     sudo xcodebuild -license accept || return 1
-    _log_success "✓ Xcode license accepted."
+    _log-success "✓ Xcode license accepted."
     echo
 
     # 🍎 Updates CocoaPods master specs repo (used for dependency resolution)
     if command -v pod >/dev/null 2>&1; then
-        _log_info "📦 Updating CocoaPods specs..."
+        _log-info "📦 Updating CocoaPods specs..."
         pod repo update || return 1
-        _log_success "✓ CocoaPods specs updated."
+        _log-success "✓ CocoaPods specs updated."
         echo
     else
-        _log_warning "⚠️ CocoaPods not found. Skipping pod repo update."
+        _log-warning "⚠️ CocoaPods not found. Skipping pod repo update."
     fi
 
     # 🔍 Check for Xcode installation
-    _log_info "🔍 Checking for Xcode installation..."
+    _log-info "🔍 Checking for Xcode installation..."
     if ! command -v xcodebuild &>/dev/null; then
-        _log_error "✗ Xcode not found. Please install it from the App Store manually or using mas:"
-        _log_error "   mas install 497799835  # Xcode"
+        _log-error "✗ Xcode not found. Please install it from the App Store manually or using mas:"
+        _log-error "   mas install 497799835  # Xcode"
         return 1
     else
-        _log_success "✓ Xcode is installed."
+        _log-success "✓ Xcode is installed."
         echo
     fi
 
     # 🔍 Check for Xcode Command Line Tools
-    _log_info "🔍 Checking for Xcode Command Line Tools..."
+    _log-info "🔍 Checking for Xcode Command Line Tools..."
     if ! xcode-select -p &>/dev/null; then
-        _log_info "🔧 Installing Xcode Command Line Tools..."
+        _log-info "🔧 Installing Xcode Command Line Tools..."
         xcode-select --install || return 1
-        _log_success "✓ Xcode Command Line Tools installed successfully."
+        _log-success "✓ Xcode Command Line Tools installed successfully."
     else
-        _log_success "✓ Xcode Command Line Tools are installed."
+        _log-success "✓ Xcode Command Line Tools are installed."
     fi
     echo
 
@@ -76,21 +76,21 @@ function xcode-setup() {
 # 💡 Usage: xcode-simulator-first-launch
 function xcode-simulator-first-launch() {
     # Set Xcode path (only if needed)
-    _log_info "🔧 Setting Xcode path..."
+    _log-info "🔧 Setting Xcode path..."
     sudo xcode-select -s /Applications/Xcode.app/Contents/Developer || return 1
-    _log_success "✓ Xcode path set to /Applications/Xcode.app/Contents/Developer."
+    _log-success "✓ Xcode path set to /Applications/Xcode.app/Contents/Developer."
     echo
 
     # Run Xcode's first launch tasks (installs tools, accepts licenses)
-    _log_info "🔧 Running Xcode first launch tasks..."
+    _log-info "🔧 Running Xcode first launch tasks..."
     sudo xcodebuild -runFirstLaunch || return 1
-    _log_success "✓ Xcode first launch tasks completed."
+    _log-success "✓ Xcode first launch tasks completed."
     echo
 
     # Pre-download the iOS platform support (optional but nice)
-    _log_info "📦 Pre-downloading iOS platform support..."
+    _log-info "📦 Pre-downloading iOS platform support..."
     xcodebuild -downloadPlatform iOS || return 1
-    _log_success "✓ iOS platform support pre-downloaded."
+    _log-success "✓ iOS platform support pre-downloaded."
     echo
 
 }
@@ -100,41 +100,41 @@ function xcode-simulator-first-launch() {
 # 💡 Usage: xcode-doctor
 function xcode-doctor() {
 
-    _log_info "🔧 Checking Xcode installation..."
+    _log-info "🔧 Checking Xcode installation..."
     if ! xcode-select -p &>/dev/null; then
-        _log_warning "⚠️  Xcode not properly installed or selected."
-        _log_hint "💡 Try: xcode-select --install"
+        _log-warning "⚠️  Xcode not properly installed or selected."
+        _log-hint "💡 Try: xcode-select --install"
         return 1
     fi
-    _log_success "✓ Xcode is properly installed."
+    _log-success "✓ Xcode is properly installed."
     echo
 
-    _log_info "🔧 Checking Xcode Command Line Tools..."
+    _log-info "🔧 Checking Xcode Command Line Tools..."
     if ! command -v xcrun &>/dev/null; then
-        _log_warning "⚠️  'xcrun' not found. Xcode CLI tools may not be fully installed."
+        _log-warning "⚠️  'xcrun' not found. Xcode CLI tools may not be fully installed."
         return 1
     fi
-    _log_success "✓ 'xcrun' found."
+    _log-success "✓ 'xcrun' found."
     echo
 
-    _log_info "📱 Checking iOS simulators..."
+    _log-info "📱 Checking iOS simulators..."
     if xcrun simctl list devices available | grep -qE "iPhone|iPad"; then
-        _log_success "✓ iOS simulators are available."
+        _log-success "✓ iOS simulators are available."
     else
-        _log_warning "⚠️  No available iOS simulators found."
-        _log_hint "💡 Open Xcode ➝ Preferences ➝ Components to install simulators."
+        _log-warning "⚠️  No available iOS simulators found."
+        _log-hint "💡 Open Xcode ➝ Preferences ➝ Components to install simulators."
     fi
     echo
 
-    _log_info "🔧 Checking Rosetta installation..."
+    _log-info "🔧 Checking Rosetta installation..."
     if [[ $(uname -m) == "arm64" ]]; then
         if ! /usr/bin/pgrep oahd &>/dev/null; then
-            _log_warning "⚠️  Rosetta is not installed."
-            _log_hint "💡 Run: softwareupdate --install-rosetta --agree-to-license"
+            _log-warning "⚠️  Rosetta is not installed."
+            _log-hint "💡 Run: softwareupdate --install-rosetta --agree-to-license"
             echo
             return 1
         else
-            _log_success "✓ Rosetta is installed."
+            _log-success "✓ Rosetta is installed."
             echo
         fi
     fi

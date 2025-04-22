@@ -7,7 +7,7 @@ source "$(cd "$(dirname "$0")" && pwd)/../config.zsh"
 core_files=(${DEVKIT_ROOT}/core/*.zsh)
 
 if ((${#core_files[@]} == 0)); then
-    _log_warning "⚠️  No core files found to load."
+    _log-warning "⚠️  No core files found to load."
 else
     for file in "${core_files[@]}"; do
         source "$file"
@@ -18,7 +18,7 @@ fi
 module_files=(${DEVKIT_MODULES_DIR}/**/*.zsh)
 
 if ((${#module_files[@]} == 0)); then
-    _log_warning "⚠️  No modules found to load."
+    _log-warning "⚠️  No modules found to load."
 else
     for file in "${module_files[@]}"; do
         source "$file"
