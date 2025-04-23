@@ -135,6 +135,8 @@ function devkit-pc-update() {
 
     We’ll keep things fast and make sure you're up to date."
 
+    _log-step update $step $total_steps "DevKit CLI" devkit-update || return
+    ((step++))
     _log-step update $step $total_steps "Homebrew and Packages" homebrew-maintain || return 1
     ((step++))
     _log-step update $step $total_steps "pip (Python)" bash -c 'pip3 install --upgrade pip setuptools wheel' || return 1
@@ -152,8 +154,6 @@ function devkit-pc-update() {
     _log-step update $step $total_steps "VS Code Extensions" code-extensions-update || return 1
     ((step++))
     _log-step update $step $total_steps "App Store Apps (via mas-cli)" mas-maintain || return 1
-    ((step++))
-    _log-step update $step $total_steps "DevKit CLI" devkit-update || return
 
     gum style --border rounded --margin "1 2" --padding "1 4" --bold --align center --foreground 42 "✓ DevKit Update Complete!
 

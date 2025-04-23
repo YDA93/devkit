@@ -1,12 +1,20 @@
 # 🧩 Initializes the DevKit CLI settings file if it doesn't exist
-# 💡 Usage: _devkit-settings-init
+# 💡 Usage: _devkit-settings-init [--quiet]
 function _devkit-settings-init() {
+    local quiet=false
     CLI_SETTINGS_FILE="$DEVKIT_ROOT/settings.json"
 
+    # Parse arguments
+    for arg in "$@"; do
+        if [[ "$arg" == "--quiet" ]]; then
+            quiet=true
+        fi
+    done
+
     if [[ ! -f "$CLI_SETTINGS_FILE" ]]; then
-        _log-info "🛠️  Initializing settings file at $CLI_SETTINGS_FILE"
+        [[ "$quiet" != true ]] && _log-info "🛠️  Initializing settings file at $CLI_SETTINGS_FILE"
         echo '{}' >"$CLI_SETTINGS_FILE"
-        _log-success "✅ Created new settings file."
+        [[ "$quiet" != true ]] && _log-success "✅ Created new settings file."
     fi
 }
 
@@ -29,6 +37,8 @@ function _devkit-settings-reset() {
 # ⚙️  Gets or sets values in the DevKit CLI settings file
 # 💡 Usage: _devkit-settings [get|set] <type> <key> [value...] [--v]
 function _devkit-settings() {
+    _devkit-settings-init --quiet
+
     local verbose=0
 
     # Check if --v is present anywhere in the args
@@ -43,8 +53,6 @@ function _devkit-settings() {
     set -- "${@/--v/}"
 
     local cmd="$1"
-
-    _devkit-settings-init
 
     case "$cmd" in
     get)
