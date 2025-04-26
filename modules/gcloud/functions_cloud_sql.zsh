@@ -238,11 +238,9 @@ function gcloud-sql-proxy-and-django-setup() {
     local cwd=$(pwd)
 
     # Open a new terminal window and run gcloud-sql-proxy-start in that directory
-    osascript <<EOF
-tell application "Terminal"
-    do script "cd '$cwd' && gcloud-sql-proxy-start"
-end tell
-EOF
+    osascript -e 'tell application "Terminal"' \
+        -e 'do script "cd '"$cwd"' && gcloud-sql-proxy-start"' \
+        -e 'end tell'
 
     _log-info "⏳ Waiting for Cloud SQL Proxy to start on port $GCP_SQL_PROXY_PORT..."
 

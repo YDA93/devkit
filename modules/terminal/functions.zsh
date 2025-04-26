@@ -1,7 +1,11 @@
 # 🖥️ Sets the Terminal theme and font to "MesloLGS NF" and applies the "Cool Night" theme
 # 💡 Usage: terminal-theme-setup
 function terminal-theme-setup() {
-    font-install-meslo-nerd || return 1
+    terminal-set-font-meslo-nerd || {
+        _log-error "❌ Failed to set Terminal font."
+        return 1
+    }
+
     _log-info "🖥️  Applying Terminal theme and font: 'MesloLGS NF'..."
     local THEME_FILE="$DEVKIT_MODULES_DIR/iterm2/cool-night.terminal"
 
@@ -25,12 +29,14 @@ function terminal-theme-setup() {
         return 1
     }
 
+    sleep 1
     # Close the current Terminal window quietly
     (osascript -e 'tell application "Terminal" to close first window' &>/dev/null &)
     sleep 1
+    _log-info "🔄 Applying theme to the current Terminal window..."
+    (osascript -e 'tell application "Terminal" to set current settings of front window to settings set "cool-night"' &>/dev/null &)
 
     _log-success "🎉 Terminal theme and font successfully applied!"
-    _log-hint "💡 Please restart macOS Terminal and iTerm2 to apply the full changes."
 }
 
 # 🧹 Reset terminal to factory defaults
@@ -52,6 +58,25 @@ function terminal-factory-reset() {
 # ------------------------------------------------------------------------------
 # 🧩 Font Integration for Powerlevel10k
 # ------------------------------------------------------------------------------
+
+# 🖥️ Set Terminal font to MesloLGS NF
+# 💡 Usage: terminal-set-font-meslo-nerd
+function terminal-set-font-meslo-nerd() {
+    if ! font-is-installed-meslo-nerd; then
+        font-install-meslo-nerd || {
+            _log-error "❌ Failed to install Meslo Nerd Font."
+            return 1
+        }
+    fi
+
+    osascript -e 'tell application "Terminal"' \
+        -e 'set theProfile to first settings set whose name is "Basic"' \
+        -e 'tell theProfile' \
+        -e 'set font name to "MesloLGS NF"' \
+        -e 'set font size to 12' \
+        -e 'end tell' \
+        -e 'end tell'
+}
 
 # 🖥️ Checks if Meslo Nerd Font is installed
 # 💡 Usage: font-is-installed-meslo-nerd

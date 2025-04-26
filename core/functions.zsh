@@ -89,6 +89,15 @@ function devkit-pc-setup() {
 
     _log-step setup $step $total_steps "DevKit Settings" devkit-settings-setup || return 1
     ((step++))
+
+    if _devkit-settings get bool use_cool_night_theme; then
+        _log-step setup $step $total_steps "Terminal Theme" terminal-theme-setup || return 1
+        ((step++))
+    else
+        _log-step setup $step $total_steps "Terminal Theme" _log-info "Skipping Terminal Theme setup." || return 1
+        ((step++))
+    fi
+
     _log-step setup $step $total_steps "Software Updates Check" _check-software-updates || return 1
     ((step++))
     _log-step setup $step $total_steps "Git Configuration" git-setup || return 1
@@ -96,7 +105,7 @@ function devkit-pc-setup() {
     _log-step setup $step $total_steps "Homebrew and Packages" homebrew-setup || return 1
     ((step++))
 
-    _confirm-or-abort "🧩 Configure your apps (e.g. VS Code, Android Studio), then press Enter to continue." "$@" || return 1
+    _confirm-or-abort "🧩 Configure apps like VS Code and press Enter to continue." "$@" || return 1
 
     _log-step setup $step $total_steps "NPM Setup" npm-setup || return 1
     ((step++))
@@ -106,14 +115,6 @@ function devkit-pc-setup() {
     ((step++))
     _log-step setup $step $total_steps "Flutter Android SDK Setup" flutter-android-sdk-setup || return 1
     ((step++))
-
-    if _devkit-settings get bool use_cool_night_theme; then
-        _log-step setup $step $total_steps "Terminal Theme" terminal-theme-setup || return 1
-        ((step++))
-    else
-        _log-step setup $step $total_steps "Terminal Theme" _log-info "Skipping Terminal Theme setup." || return 1
-        ((step++))
-    fi
 
     gum style --border double --padding "1 4" --margin "2 0" --foreground 42 --bold --align center "✓ DevKit environment setup complete!"
 
