@@ -3,15 +3,7 @@
 function terminal-theme-setup() {
     font-install-meslo-nerd || return 1
     _log-info "🖥️  Applying Terminal theme and font: 'MesloLGS NF'..."
-    local FONT_NAME="MesloLGS NF"
-    local PLIST="$HOME/Library/Preferences/com.apple.Terminal.plist"
     local THEME_FILE="$DEVKIT_MODULES_DIR/iterm2/cool-night.terminal"
-
-    _log-info "📄 Ensuring Terminal plist is in XML format..."
-    plutil -convert xml1 "$PLIST" 2>/dev/null || {
-        _log-error "❌ Failed to convert Terminal plist to XML format."
-        return 1
-    }
 
     _log-info "🎨 Importing Terminal theme \"$THEME_FILE\"..."
     open "$THEME_FILE" || {
@@ -23,32 +15,6 @@ function terminal-theme-setup() {
     local THEME_NAME
     THEME_NAME=$(basename "$THEME_FILE" .terminal)
 
-    _log-info "🎛️  Configuring 'Use Option as Meta key' for profile \"$THEME_NAME\"..."
-    local SAFE_THEME_NAME
-    SAFE_THEME_NAME=$(echo "$THEME_NAME" | sed "s/'/\\\\'/g")
-
-    if /usr/libexec/PlistBuddy -c "Print :'Window Settings':'$SAFE_THEME_NAME':useOptionAsMetaKey" "$PLIST" &>/dev/null; then
-        _log-info "🔁 Key 'useOptionAsMetaKey' found. Updating to 'true'..."
-        /usr/libexec/PlistBuddy -c "Set :'Window Settings':'$SAFE_THEME_NAME':useOptionAsMetaKey true" "$PLIST" || {
-            _log-error "❌ Failed to update 'useOptionAsMetaKey'."
-            return 1
-        }
-    else
-        _log-info "➕ Key 'useOptionAsMetaKey' not found. Adding it..."
-        /usr/libexec/PlistBuddy -c "Add :'Window Settings':'$SAFE_THEME_NAME':useOptionAsMetaKey bool true" "$PLIST" || {
-            _log-error "❌ Failed to add 'useOptionAsMetaKey'."
-            return 1
-        }
-    fi
-
-    _log-info "🔠 Applying font \"$FONT_NAME\" to \"$THEME_NAME\"..."
-    osascript <<EOF
-tell application "Terminal"
-    set profileSettings to settings set "$THEME_NAME"
-    set font name of profileSettings to "$FONT_NAME"
-end tell
-EOF
-
     _log-info "📌 Setting \"$THEME_NAME\" as default and startup profile..."
     defaults write com.apple.Terminal "Default Window Settings" -string "$THEME_NAME" || {
         _log-error "❌ Failed to set Default Window Settings."
@@ -58,7 +24,11 @@ EOF
         _log-error "❌ Failed to set Startup Window Settings."
         return 1
     }
+
+    # Close the current Terminal window quietly
+    (osascript -e 'tell application "Terminal" to close first window' &>/dev/null &)
     sleep 1
+
     _log-success "🎉 Terminal theme and font successfully applied!"
     _log-hint "💡 Please restart macOS Terminal and iTerm2 to apply the full changes."
 }
@@ -83,6 +53,26 @@ function terminal-factory-reset() {
 # 🧩 Font Integration for Powerlevel10k
 # ------------------------------------------------------------------------------
 
+# 🖥️ Checks if Meslo Nerd Font is installed
+# 💡 Usage: font-is-installed-meslo-nerd
+function font-is-installed-meslo-nerd() {
+    local FONT_DIR="$HOME/Library/Fonts"
+    local FILES=(
+        "MesloLGS NF Regular.ttf"
+        "MesloLGS NF Bold.ttf"
+        "MesloLGS NF Italic.ttf"
+        "MesloLGS NF Bold Italic.ttf"
+    )
+
+    for FILE in "${FILES[@]}"; do
+        if [[ ! -f "$FONT_DIR/$FILE" ]]; then
+            return 1 # Returns 1 if any file is missing
+        fi
+    done
+
+    return 0 # Returns 0 if all files are found
+}
+
 # 🖥️ Installs the Meslo Nerd Font for Powerlevel10k
 # 💡 Usage: font-install-meslo-nerd
 function font-install-meslo-nerd() {
@@ -96,16 +86,8 @@ function font-install-meslo-nerd() {
         "MesloLGS NF Bold Italic.ttf"
     )
 
-    # Early return if all fonts already exist
-    local all_exist=true
-    for FILE in "${FILES[@]}"; do
-        if [[ ! -f "$FONT_DIR/$FILE" ]]; then
-            all_exist=false
-            break
-        fi
-    done
-
-    if [[ "$all_exist" == true ]]; then
+    # Early return if all fonts already exist by using the is_font_installed function
+    if font-is-installed-meslo-nerd; then
         _log-success "✓ Meslo Nerd Font is already fully installed. Skipping download."
         echo
         return 0

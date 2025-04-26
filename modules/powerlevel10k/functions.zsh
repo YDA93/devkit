@@ -2,6 +2,28 @@
 # 🎨 Powerlevel10k Installation & Setup
 # ------------------------------------------------------------------------------
 
+# Case powerlevel10k is installed, check if the required fonts are installed
+if [[ -f "$p10k_theme_path" ]] && [[ "$TERM_PROGRAM" == "Apple_Terminal" ]]; then
+    sched +1 powerlevel10k-terminal-font-setup
+fi
+
+function powerlevel10k-terminal-font-setup() {
+    if ! font-is-installed-meslo-nerd; then
+        font-install-meslo-nerd || {
+            _log-error "❌ Failed to install Meslo Nerd Font."
+            return 1
+        }
+    fi
+
+    osascript -e 'tell application "Terminal"' \
+        -e 'set theProfile to first settings set whose name is "Basic"' \
+        -e 'tell theProfile' \
+        -e 'set font name to "MesloLGS NF"' \
+        -e 'set font size to 12' \
+        -e 'end tell' \
+        -e 'end tell'
+}
+
 # 🖥️ Sets up Powerlevel10k with a custom configuration
 # 💡 Usage: powerlevel10k-setup
 function powerlevel10k-setup() {
