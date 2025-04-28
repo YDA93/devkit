@@ -2,6 +2,7 @@ cloudflare-warp
 discord
 firefox
 iterm2
+chatgpt
 microsoft-auto-update
 microsoft-edge
 microsoft-excel
