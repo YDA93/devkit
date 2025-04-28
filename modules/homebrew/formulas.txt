@@ -1,5 +1,4 @@
 zsh
-powerlevel10k
 expect
 git
 gh

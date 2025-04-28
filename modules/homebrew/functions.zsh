@@ -44,9 +44,9 @@ function homebrew-install() {
 # 💡 Usage: homebrew-setup
 function homebrew-setup() {
     homebrew-install || return 1
-    homebrew-prune-packages || return 1
     homebrew-install-packages || return 1
-    homebrew-install-from-settings || return 1
+    homebrew-install-packages-from-settings || return 1
+    homebrew-prune-packages || return 1
     homebrew-maintain || return 1
 }
 
@@ -111,10 +111,21 @@ function homebrew-install-packages() {
 
     if [[ -f "$casks_input" ]]; then
         _log-info "🧴 Installing Homebrew casks from $casks_input"
-        xargs brew install --cask <"$casks_input" || {
-            _log-error "✗ Failed to install casks. Please check the list."
-            return 1
-        }
+
+        while IFS= read -r cask || [[ -n "$cask" ]]; do
+            if [[ -n "$cask" ]]; then # skip empty lines
+                if ! brew install --cask "$cask"; then
+                    _log-error "✗ Failed to install $cask, attempting to fix..."
+                    brew uninstall --cask --force "$cask"
+                    if brew install --cask "$cask"; then
+                        _log-success "✓ Successfully installed $cask after fix"
+                    else
+                        _log-error "✗ Failed to install $cask even after fix."
+                        return 1
+                    fi
+                fi
+            fi
+        done <"$casks_input"
     fi
 
     _log-success "✓ Finished installing Homebrew packages"
@@ -123,7 +134,57 @@ function homebrew-install-packages() {
     _log-inline_title "End of Homebrew Package Installation"
     echo
 
-    homebrew-clean || return 1
+}
+
+# 📦 Installs Homebrew formula and casks based on user settings
+# - Reads $DEVKIT_ROOT/settings.json
+# - Only installs entries marked "y"
+# 💡 Usage: homebrew-install-packages-from-settings
+function homebrew-install-packages-from-settings() {
+    _log-inline_title "Homebrew Package Installation from Settings"
+    local settings_file="$DEVKIT_ROOT/settings.json"
+
+    if [[ ! -f "$settings_file" ]]; then
+        _log-error "✗ Settings file not found at $settings_file"
+        _log-hint "💡 Run: devkit-settings-setup"
+        return 1
+    fi
+
+    _log-info "🔧 Installing Homebrew packages based on your saved settings..."
+    echo ""
+
+    _log-info "🍺 Installing the selected optional Homebrew formula..."
+    formulas=($(_devkit-settings get array formula_apps))
+    local installed_formula=0
+    for formula in "${formulas[@]}"; do
+        if brew install "$formula"; then
+            ((installed_formula++))
+        fi
+    done
+
+    echo ""
+    _log-info "🧴 Installing the selected optional Homebrew casks..."
+    casks=($(_devkit-settings get array cask_apps))
+    local installed_casks=0
+    for cask in "${casks[@]}"; do
+        if brew install --cask "$cask"; then
+            ((installed_casks++))
+        else
+            _log-error "Install failed for $cask, trying to fix..."
+            brew uninstall --cask --force "$cask"
+            if brew install --cask "$cask"; then
+                ((installed_casks++))
+                _log-success "✓ Successfully installed $cask after retry"
+            else
+                _log-error "Failed to install $cask after retry."
+            fi
+        fi
+    done
+    _log-success "✓ Done! Installed $installed_formula formula and $installed_casks casks from saved settings."
+    echo
+
+    _log-inline_title "End of Homebrew Package Installation from Settings"
+    echo
 
 }
 
@@ -201,8 +262,6 @@ function homebrew-prune-packages() {
     _log-inline_title "End of Homebrew Package Pruning"
     echo
 
-    homebrew-clean || return 1
-
 }
 
 # 📋 Lists all currently installed Homebrew packages
@@ -215,53 +274,6 @@ function homebrew-list-packages() {
     brew list --cask
     _log-inline_title "End of Homebrew Package List"
     echo
-}
-
-# 📦 Installs Homebrew formula and casks based on user settings
-# - Reads $DEVKIT_ROOT/settings.json
-# - Only installs entries marked "y"
-# 💡 Usage: homebrew-install-from-settings
-function homebrew-install-from-settings() {
-    _log-inline_title "Homebrew Package Installation from Settings"
-    local settings_file="$DEVKIT_ROOT/settings.json"
-
-    if [[ ! -f "$settings_file" ]]; then
-        _log-error "✗ Settings file not found at $settings_file"
-        _log-hint "💡 Run: devkit-settings-setup"
-        return 1
-    fi
-
-    _log-info "🔧 Installing Homebrew packages based on your saved settings..."
-    echo ""
-
-    _log-info "🍺 Installing selected Homebrew formula..."
-    formulas=($(_devkit-settings get array formula_apps))
-    local installed_formula=0
-    for formula in "${formulas[@]}"; do
-        _log-info "🔧 Installing formula: $formula"
-        if brew install "$formula"; then
-            ((installed_formula++))
-        fi
-    done
-
-    echo ""
-    _log-info "🧴 Installing selected Homebrew casks..."
-    casks=($(_devkit-settings get array cask_apps))
-    local installed_casks=0
-    for cask in "${casks[@]}"; do
-        _log-info "🔧 Installing cask: $cask"
-        if brew install --cask "$cask"; then
-            ((installed_casks++))
-        fi
-    done
-    _log-success "✓ Done! Installed $installed_formula formula and $installed_casks casks from saved settings."
-    echo
-
-    _log-inline_title "End of Homebrew Package Installation from Settings"
-    echo
-
-    homebrew-clean || return 1
-
 }
 
 # ------------------------------------------------------------------------------

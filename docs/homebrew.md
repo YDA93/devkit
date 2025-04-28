@@ -24,7 +24,7 @@ Install, prune, back up, and restore your Homebrew environment with simple, stre
 
 - **`homebrew-save-packages`** — Save current formulae and casks to files for backup or sharing.
 - **`homebrew-install-packages`** — Install formulae and casks from saved lists.
-- **`homebrew-install-from-settings`** — Install packages based on your `settings.json` file.
+- **`homebrew-install-packages-from-settings`** — Install packages based on your `settings.json` file.
 - **`homebrew-prune-packages`** — Uninstall packages not in saved lists or settings (with confirmation).
 - **`homebrew-list-packages`** — List all currently installed formulae and casks.
 

@@ -1,8 +1,9 @@
+chatgpt
 cloudflare-warp
 discord
 firefox
+google-chrome
 iterm2
-chatgpt
 microsoft-auto-update
 microsoft-edge
 microsoft-excel
@@ -11,5 +12,6 @@ microsoft-powerpoint
 microsoft-teams
 microsoft-word
 onedrive
+postman
 whatsapp
 zoom

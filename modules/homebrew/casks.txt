@@ -1,6 +1,3 @@
-iterm2
-chatgpt
-google-chrome
 visual-studio-code
 android-studio
 android-platform-tools
@@ -9,4 +6,3 @@ flutter
 ngrok
 pgadmin4
 google-cloud-sdk
-postman
