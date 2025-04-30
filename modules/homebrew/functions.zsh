@@ -6,7 +6,7 @@
 # - Ensures brew is functional afterward
 # 💡 Usage: homebrew-install
 function homebrew-install() {
-    _log-inline_title "Homebrew Installation"
+    _log-inline-title "Homebrew Installation"
 
     _log-info "🍺 Checking Homebrew installation..."
     # Check if Homebrew is installed
@@ -19,6 +19,7 @@ function homebrew-install() {
         }
     else
         _log-success "✓ Homebrew is already installed."
+        _log-inline-title "End of Homebrew Installation"
         echo
         return 0
     fi
@@ -26,14 +27,14 @@ function homebrew-install() {
     # Verify Homebrew is working
     if ! brew --version &>/dev/null; then
         _log-error "Homebrew seems to be installed but not working properly."
+        _log-inline-title "End of Homebrew Installation"
         echo
         return 1
     fi
 
     _log-success "✓ Homebrew is installed and working."
-    echo
 
-    _log-inline_title "End of Homebrew Installation"
+    _log-inline-title "End of Homebrew Installation"
     echo
 }
 
@@ -46,6 +47,16 @@ function homebrew-setup() {
     homebrew-install || return 1
     homebrew-install-packages || return 1
     homebrew-install-packages-from-settings || return 1
+
+    # Check if powerlevel10k is installed via Homebrew
+    if brew list powerlevel10k &>/dev/null; then
+        _log-inline-title "Powerlevel10k Font Setup"
+        powerlevel10k-set-font-meslo-nerd || return 1
+        _log-success "✓ Powerlevel10k font set to MesloLGS Nerd Font across all terminals."
+        _log-inline-title "End of Powerlevel10k Font Setup"
+        echo
+    fi
+
     homebrew-prune-packages || return 1
     homebrew-maintain || return 1
 }
@@ -58,7 +69,7 @@ function homebrew-setup() {
 # 📄 Output: $DEVKIT_MODULES_DIR/homebrew/formulas.txt and casks.txt
 # 💡 Usage: homebrew-save-packages
 function homebrew-save-packages() {
-    _log-inline_title "Homebrew Package Backup"
+    _log-inline-title "Homebrew Package Backup"
 
     local base_dir="$DEVKIT_MODULES_DIR/homebrew"
     local formula_output="$base_dir/formulas.txt"
@@ -76,7 +87,7 @@ function homebrew-save-packages() {
     _log-info "   📄 Casks:    $casks_output"
     echo
 
-    _log-inline_title "End of Homebrew Package Backup"
+    _log-inline-title "End of Homebrew Package Backup"
     echo
 }
 
@@ -84,7 +95,7 @@ function homebrew-save-packages() {
 # 📄 Input: $DEVKIT_MODULES_DIR/homebrew/formulas.txt and casks.txt
 # 💡 Usage: homebrew-install-packages
 function homebrew-install-packages() {
-    _log-inline_title "Homebrew Package Installation"
+    _log-inline-title "Homebrew Package Installation"
     local base_dir="$DEVKIT_MODULES_DIR/homebrew"
     local formula_input="$base_dir/formulas.txt"
     local casks_input="$base_dir/casks.txt"
@@ -129,9 +140,8 @@ function homebrew-install-packages() {
     fi
 
     _log-success "✓ Finished installing Homebrew packages"
-    echo
 
-    _log-inline_title "End of Homebrew Package Installation"
+    _log-inline-title "End of Homebrew Package Installation"
     echo
 
 }
@@ -141,7 +151,7 @@ function homebrew-install-packages() {
 # - Only installs entries marked "y"
 # 💡 Usage: homebrew-install-packages-from-settings
 function homebrew-install-packages-from-settings() {
-    _log-inline_title "Homebrew Package Installation from Settings"
+    _log-inline-title "Homebrew Package Installation from Settings"
     local settings_file="$DEVKIT_ROOT/settings.json"
 
     if [[ ! -f "$settings_file" ]]; then
@@ -181,9 +191,8 @@ function homebrew-install-packages-from-settings() {
         fi
     done
     _log-success "✓ Done! Installed $installed_formula formula and $installed_casks casks from saved settings."
-    echo
 
-    _log-inline_title "End of Homebrew Package Installation from Settings"
+    _log-inline-title "End of Homebrew Package Installation from Settings"
     echo
 
 }
@@ -193,7 +202,7 @@ function homebrew-install-packages-from-settings() {
 # - Prompts before each uninstall
 # 💡 Usage: homebrew-prune-packages
 function homebrew-prune-packages() {
-    _log-inline_title "Homebrew Package Pruning"
+    _log-inline-title "Homebrew Package Pruning"
     local base_dir="$DEVKIT_MODULES_DIR/homebrew"
     local formula_file="$base_dir/formulas.txt"
     local casks_file="$base_dir/casks.txt"
@@ -257,9 +266,8 @@ function homebrew-prune-packages() {
     done
 
     _log-success "✓ Finished pruning Homebrew packages."
-    echo
 
-    _log-inline_title "End of Homebrew Package Pruning"
+    _log-inline-title "End of Homebrew Package Pruning"
     echo
 
 }
@@ -267,12 +275,12 @@ function homebrew-prune-packages() {
 # 📋 Lists all currently installed Homebrew packages
 # 💡 Usage: homebrew-list-packages
 function homebrew-list-packages() {
-    _log-inline_title "Homebrew Package List"
+    _log-inline-title "Homebrew Package List"
     _log-info "🍺 Installed Homebrew formula:"
     brew list --formula --installed-on-request
     _log-info "🧴 Installed Homebrew casks:"
     brew list --cask
-    _log-inline_title "End of Homebrew Package List"
+    _log-inline-title "End of Homebrew Package List"
     echo
 }
 
@@ -286,7 +294,7 @@ function homebrew-list-packages() {
 # - Cleans unused dependencies
 # 💡 Usage: homebrew-maintain
 function homebrew-maintain() {
-    _log-inline_title "Homebrew Maintenance"
+    _log-inline-title "Homebrew Maintenance"
 
     _log-info "🩺 Checking brew system health..."
     brew doctor || _log-warning "⚠️ brew doctor reported issues."
@@ -306,9 +314,8 @@ function homebrew-maintain() {
     _log-info "🧴 Upgrading casks..."
     brew upgrade --cask || return 1
     _log-success "✓ Upgraded casks."
-    echo
 
-    _log-inline_title "End of Homebrew Maintenance"
+    _log-inline-title "End of Homebrew Maintenance"
     echo
 
     homebrew-clean || return 1
@@ -321,7 +328,7 @@ function homebrew-maintain() {
 # - Verifies installed packages
 # 💡 Usage: homebrew-clean
 function homebrew-clean() {
-    _log-inline_title "Homebrew Cleanup"
+    _log-inline-title "Homebrew Cleanup"
 
     _log-info "🧹 Autoremoving unused dependencies..."
     brew autoremove || return 1
@@ -336,9 +343,8 @@ function homebrew-clean() {
     _log-info "📦 Verifying installed packages..."
     brew missing || return 1
     _log-success "✓ Verified installed packages."
-    echo
 
-    _log-inline_title "End of Homebrew Cleanup"
+    _log-inline-title "End of Homebrew Cleanup"
     echo
 }
 
@@ -349,7 +355,7 @@ function homebrew-clean() {
 # 💡 Usage: homebrew-doctor
 function homebrew-doctor() {
 
-    _log-inline_title "Homebrew Doctor"
+    _log-inline-title "Homebrew Doctor"
 
     _log-info "🔧 Checking Homebrew installation..."
 
@@ -380,10 +386,9 @@ function homebrew-doctor() {
         echo
     else
         _log-success "✓ All packages are up to date."
-        echo
     fi
 
-    _log-inline_title "End of Homebrew Doctor"
+    _log-inline-title "End of Homebrew Doctor"
     echo
     return 0
 }

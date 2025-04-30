@@ -153,7 +153,6 @@ function code-font-set() {
     CURRENT_FONT=$(jq -r '."terminal.integrated.fontFamily"' "$SETTINGS_FILE")
     if [[ "$CURRENT_FONT" == "$DESIRED_FONT" ]]; then
         _log-success "✓ Font already set to \"$DESIRED_FONT\". No changes made."
-        echo
         return 0
     fi
 

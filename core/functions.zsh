@@ -81,7 +81,7 @@ function devkit-pc-setup() {
     🚀 We’ll prepare your system and guide you step by step.
     Sit tight while we set everything up for you."
 
-    local total_steps=10
+    local total_steps=11
     local step=1
 
     _log-step update $step $total_steps "DevKit CLI" devkit-update || return 1
@@ -89,14 +89,6 @@ function devkit-pc-setup() {
 
     _log-step setup $step $total_steps "DevKit Settings" devkit-settings-setup || return 1
     ((step++))
-
-    if _devkit-settings get bool use_cool_night_theme; then
-        _log-step setup $step $total_steps "Terminal Theme" terminal-theme-setup || return 1
-        ((step++))
-    else
-        _log-step setup $step $total_steps "Terminal Theme" _log-info "Skipping Terminal Theme setup." || return 1
-        ((step++))
-    fi
 
     _log-step setup $step $total_steps "Software Updates Check" _check-software-updates || return 1
     ((step++))
@@ -106,6 +98,18 @@ function devkit-pc-setup() {
     ((step++))
 
     _confirm-or-abort "🧩 Configure apps like VS Code and press Enter to continue." "$@" || return 1
+
+    if _devkit-settings get bool use_cool_night_theme; then
+        _log-step setup $step $total_steps "Terminal Theme" terminal-theme-setup || return 1
+        ((step++))
+        _log-step setup $step $total_steps "iTerm2 Theme" iterm2-theme-setup || return 1
+        ((step++))
+    else
+        _log-step setup $step $total_steps "Terminal Theme" _log-info "Skipping Terminal Theme setup." || return 1
+        ((step++))
+        _log-step setup $step $total_steps "iTerm2 Theme" _log-info "Skipping iTerm2 Theme setup." || return 1
+        ((step++))
+    fi
 
     _log-step setup $step $total_steps "NPM Setup" npm-setup || return 1
     ((step++))

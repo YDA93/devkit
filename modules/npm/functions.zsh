@@ -6,7 +6,7 @@
 # 📄 Output: $DEVKIT_MODULES_DIR/npm/packages.txt
 # 💡 Usage: npm-save-packages
 function npm-save-packages() {
-    _log-inline_title "npm Packages Saving"
+    _log-inline-title "npm Packages Saving"
     local output="$DEVKIT_MODULES_DIR/npm/packages.txt"
     _log-info "📦 Saving global npm packages to $output"
     mkdir -p "$(dirname "$output")"
@@ -19,8 +19,8 @@ function npm-save-packages() {
     }
 
     _log-success "✓ Saved npm packages to $output"
-    echo
-    _log-inline_title "End of npm Packages Saving"
+
+    _log-inline-title "End of npm Packages Saving"
     echo
 }
 
@@ -28,7 +28,7 @@ function npm-save-packages() {
 # 📄 Input: $DEVKIT_MODULES_DIR/npm/packages.txt
 # 💡 Usage: npm-install-packages
 function npm-install-packages() {
-    _log-inline_title "npm Packages Installation"
+    _log-inline-title "npm Packages Installation"
     local input="$DEVKIT_MODULES_DIR/npm/packages.txt"
 
     if [[ ! -f "$input" ]]; then
@@ -54,10 +54,9 @@ function npm-install-packages() {
     }
 
     _log-success "✓ Installed global npm packages"
-    echo
 
     source "$DEVKIT_ROOT/bin/devkit.zsh"
-    _log-inline_title "End of npm Packages Installation"
+    _log-inline-title "End of npm Packages Installation"
     echo
 }
 
@@ -65,7 +64,7 @@ function npm-install-packages() {
 # 📄 Input: $DEVKIT_MODULES_DIR/npm/packages.txt
 # 💡 Usage: npm-uninstall-packages
 function npm-uninstall-packages() {
-    _log-inline_title "npm Packages Uninstallation"
+    _log-inline-title "npm Packages Uninstallation"
     local input="$DEVKIT_MODULES_DIR/npm/packages.txt"
 
     if [[ ! -f "$input" ]]; then
@@ -91,15 +90,15 @@ function npm-uninstall-packages() {
     }
 
     _log-success "✓ Uninstalled global npm packages"
-    echo
-    _log-inline_title "End of npm Packages Uninstallation"
+
+    _log-inline-title "End of npm Packages Uninstallation"
     echo
 }
 
 # ♻️ Repairs npm environment by reinstalling Node, uninstalling, and restoring global packages
 # 💡 Usage: npm-repair
 function npm-repair() {
-    _log-inline_title "npm Environment Repair"
+    _log-inline-title "npm Environment Repair"
     LATEST_NODE=$(echo "$DEVKIT_REQUIRED_FORMULA" | grep '^node@' | sort -V | tail -n 1) || {
         _log-error "✗ Failed to find the latest Node.js version."
         return 1
@@ -116,8 +115,8 @@ function npm-repair() {
     _log-info "♻️ Reinstalling global packages..."
     npm-install-packages || return 1
     _log-success "✓ Reinstalled global npm packages"
-    echo
-    _log-inline_title "End of npm Environment Repair"
+
+    _log-inline-title "End of npm Environment Repair"
     echo
 }
 
@@ -125,7 +124,7 @@ function npm-repair() {
 # 📄 Input: $DEVKIT_MODULES_DIR/npm/packages.txt
 # 💡 Usage: npm-prune-packages
 function npm-prune-packages() {
-    _log-inline_title "npm Packages Pruning"
+    _log-inline-title "npm Packages Pruning"
     local file="$DEVKIT_MODULES_DIR/npm/packages.txt"
 
     if [[ ! -f "$file" ]]; then
@@ -153,8 +152,7 @@ function npm-prune-packages() {
     done
 
     _log-success "✓ npm cleanup complete."
-    echo
-    _log-inline_title "End of npm Packages Pruning"
+    _log-inline-title "End of npm Packages Pruning"
     echo
 }
 
@@ -182,7 +180,7 @@ function npm-list-packages() {
 # - Runs `npm doctor`
 # 💡 Usage: npm-doctor
 function npm-doctor() {
-    _log-inline_title "npm Doctor"
+    _log-inline-title "npm Doctor"
 
     _log-info "🔧 Checking Node installation..."
     if ! command -v node &>/dev/null; then
@@ -235,7 +233,7 @@ function npm-doctor() {
     npm doctor || _log-warning "⚠️  npm doctor found some issues (see above)"
     echo
 
-    _log-inline_title "End of npm Doctor"
+    _log-inline-title "End of npm Doctor"
     echo
 
     return 0

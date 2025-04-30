@@ -200,8 +200,8 @@ function _log-step() {
 }
 
 # 🧩 Prints an inline title with light dividers
-# 💡 Usage: _log-inline_title "Your title"
-function _log-inline_title() {
+# 💡 Usage: _log-inline-title "Your title"
+function _log-inline-title() {
     local title="$1"
     local divider="➖"
     local side_length=3

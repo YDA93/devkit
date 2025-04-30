@@ -6,7 +6,7 @@
 # 📄 Output: $DEVKIT_MODULES_DIR/mas/apps.txt
 # 💡 Usage: mas-save-apps
 function mas-save-apps() {
-    _log-inline_title "App Store Apps Saving"
+    _log-inline-title "App Store Apps Saving"
     local output="$DEVKIT_MODULES_DIR/mas/apps.txt"
     mkdir -p "$(dirname "$output")"
 
@@ -34,8 +34,7 @@ function mas-save-apps() {
     done >"$output"
 
     _log-success "✓ Saved App Store apps to $output"
-    echo
-    _log-inline_title "End of App Store Apps Saving"
+    _log-inline-title "End of App Store Apps Saving"
     echo
 }
 
@@ -44,7 +43,7 @@ function mas-save-apps() {
 # - Format: <app_id> <app_name> (separated by spaces or tabs)
 # 💡 Usage: mas-install-apps
 function mas-install-apps() {
-    _log-inline_title "App Store Installation"
+    _log-inline-title "App Store Installation"
     local input="$DEVKIT_MODULES_DIR/mas/apps.txt"
 
     if [[ ! -f "$input" ]]; then
@@ -65,8 +64,7 @@ function mas-install-apps() {
     done <"$input"
 
     _log-success "✓ App Store app installation complete."
-    echo
-    _log-inline_title "End of App Store Installation"
+    _log-inline-title "End of App Store Installation"
     echo
 }
 
@@ -83,7 +81,7 @@ function _get-app-name-from-id() {
 # 💡 Usage: mas-install-from-settings
 function mas-install-from-settings() {
 
-    _log-inline_title "App Store Installation from Settings"
+    _log-inline-title "App Store Installation from Settings"
 
     local settings_file="$DEVKIT_ROOT/settings.json"
 
@@ -119,15 +117,14 @@ function mas-install-from-settings() {
 
     echo ""
     _log-success "✓ App Store app installation (from settings) complete."
-    echo
-    _log-inline_title "End of App Store Installation from Settings"
+    _log-inline-title "End of App Store Installation from Settings"
     echo
 }
 
 # 🔄 Updates installed App Store apps via mas
 # 💡 Usage: mas-maintain
 function mas-maintain() {
-    _log-inline_title "App Store Maintenance"
+    _log-inline-title "App Store Maintenance"
 
     _log-info "🔍 Checking for App Store updates..."
     mas outdated || return 1
@@ -136,9 +133,8 @@ function mas-maintain() {
     _log-info "⬆️  Upgrading App Store apps..."
     mas upgrade || return 1
     _log-success "✓ App Store apps updated."
-    echo
 
-    _log-inline_title "End of App Store Maintenance"
+    _log-inline-title "End of App Store Maintenance"
     echo
 }
 

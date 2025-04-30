@@ -62,6 +62,7 @@ function terminal-factory-reset() {
 # 🖥️ Set Terminal font to MesloLGS NF
 # 💡 Usage: terminal-set-font-meslo-nerd
 function terminal-set-font-meslo-nerd() {
+    _log-info "🖥️  Setting Terminal font to 'MesloLGS NF'..."
     if ! font-is-installed-meslo-nerd; then
         font-install-meslo-nerd || {
             _log-error "❌ Failed to install Meslo Nerd Font."
@@ -74,6 +75,19 @@ function terminal-set-font-meslo-nerd() {
         -e 'tell theProfile' \
         -e 'set font name to "MesloLGS NF"' \
         -e 'set font size to 12' \
+        -e 'end tell' \
+        -e 'end tell'
+    _log-success "🎉 Terminal font set to 'MesloLGS NF'."
+}
+
+# 🖥️ Reset Terminal font to SF Mono Regular 11pt
+# 💡 Usage: terminal-set-font-default
+function terminal-set-font-default() {
+    osascript -e 'tell application "Terminal"' \
+        -e 'set theProfile to first settings set whose name is "Basic"' \
+        -e 'tell theProfile' \
+        -e 'set font name to "SF Mono Regular"' \
+        -e 'set font size to 11' \
         -e 'end tell' \
         -e 'end tell'
 }
