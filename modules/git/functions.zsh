@@ -13,7 +13,7 @@ function git-setup() {
     email=$(_devkit-settings get string email)
 
     if [[ -z "$full_name" || -z "$email" ]]; then
-        _log-error "✗ Name or email missing from settings file. Aborting."
+        _log-error "✗ Name or email missing from settings file. Aborting"
         return 1
     fi
 
@@ -37,7 +37,7 @@ function git-setup() {
     git config --global color.ui auto
     git config --global pull.ff only
 
-    _log-success "✓ Git global config has been updated."
+    _log-success "✓ Git global config has been updated"
     echo
 }
 
@@ -50,11 +50,11 @@ function git-doctor() {
     _log-info "🔧 Checking Git..."
 
     if ! command -v git &>/dev/null; then
-        _log-warning "⚠️  Git is not installed."
+        _log-warning "⚠️  Git is not installed"
         _log-hint "💡 Install with: brew install git"
         return 1
     fi
-    _log-success "✓ Git is installed."
+    _log-success "✓ Git is installed"
     echo
 
     _log-info "🔧 Checking Git configuration..."

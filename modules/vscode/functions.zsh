@@ -22,7 +22,7 @@ function code-extensions() {
 function code-extensions-update() {
     _log-info "♻️  Updating all VS Code extensions..."
     code --update-extensions || {
-        _log-error "✗ Failed to update extensions. Please check your VS Code installation."
+        _log-error "✗ Failed to update extensions. Please check your VS Code installation"
         return 1
     }
     _log-success "✓ Extensions updated successfully!"
@@ -49,7 +49,7 @@ function code-extensions-backup() {
 
     # Confirm before proceeding
     if ! gum confirm "💾 Confirm backup to: $BACKUP_PATH ?"; then
-        _log-error "✗ Backup cancelled."
+        _log-error "✗ Backup cancelled"
         return 1
     fi
 
@@ -142,7 +142,7 @@ function code-font-set() {
 
     # Check if the file exists and is valid JSON
     if ! jq empty "$SETTINGS_FILE" 2>/dev/null; then
-        _log-error "✗ settings.json contains invalid JSON (e.g., trailing commas or syntax errors)."
+        _log-error "✗ settings.json contains invalid JSON (e.g., trailing commas or syntax errors)"
         _log-hint "👉 Open it in VS Code to fix:"
         _log-hint "   code \"$SETTINGS_FILE\""
         echo
@@ -152,7 +152,7 @@ function code-font-set() {
     # Only update if the value differs
     CURRENT_FONT=$(jq -r '."terminal.integrated.fontFamily"' "$SETTINGS_FILE")
     if [[ "$CURRENT_FONT" == "$DESIRED_FONT" ]]; then
-        _log-success "✓ Font already set to \"$DESIRED_FONT\". No changes made."
+        _log-success "✓ Font already set to \"$DESIRED_FONT\". No changes made"
         return 0
     fi
 
@@ -174,7 +174,7 @@ function code-font-unset() {
 
     # Check if the file exists and is valid JSON
     if ! jq empty "$SETTINGS_FILE" 2>/dev/null; then
-        _log-error "✗ settings.json contains invalid JSON (e.g., trailing commas or syntax errors)."
+        _log-error "✗ settings.json contains invalid JSON (e.g., trailing commas or syntax errors)"
         _log-hint "👉 Open it in VS Code to fix:"
         _log-hint "   code \"$SETTINGS_FILE\""
         echo
@@ -188,7 +188,7 @@ function code-font-unset() {
             mv "$TMP_FILE" "$SETTINGS_FILE" &&
             _log-success "✓ terminal.integrated.fontFamily removed"
     else
-        _log-success "✓ Font already unset. No changes made."
+        _log-success "✓ Font already unset. No changes made"
     fi
     echo
 }

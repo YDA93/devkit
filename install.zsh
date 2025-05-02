@@ -6,7 +6,7 @@ DEVKIT_DIR="${DEVKIT_DIR:-$HOME/devkit}" # Allow overriding target install direc
 
 # Check if Git is installed
 if ! command -v git >/dev/null 2>&1; then
-    echo "⛔ Git is required to install DevKit. Please install Git and try again."
+    echo "⛔ Git is required to install DevKit. Please install Git and try again"
     exit 1
 fi
 
@@ -20,13 +20,13 @@ if ! command -v brew >/dev/null 2>&1; then
 
     # Verify brew is now available
     if ! command -v brew >/dev/null 2>&1; then
-        echo "✗ Homebrew installation failed. Please install it manually and re-run the installer."
+        echo "✗ Homebrew installation failed. Please install it manually and re-run the installer"
         exit 1
     fi
 
-    echo "✓ Homebrew installed successfully."
+    echo "✓ Homebrew installed successfully"
 else
-    echo "✓ Homebrew already installed."
+    echo "✓ Homebrew already installed"
 fi
 
 # Check if Gum is installed
@@ -36,13 +36,13 @@ if ! command -v gum >/dev/null 2>&1; then
 
     # Verify gum is now available
     if ! command -v gum >/dev/null 2>&1; then
-        echo "✗ Gum installation failed. Please install it manually and re-run the installer."
+        echo "✗ Gum installation failed. Please install it manually and re-run the installer"
         exit 1
     fi
 
-    echo "✓ Gum installed successfully."
+    echo "✓ Gum installed successfully"
 else
-    echo "✓ Gum already installed."
+    echo "✓ Gum already installed"
 fi
 
 # Determine the directory of this script
@@ -52,12 +52,12 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 if [[ "$SCRIPT_DIR" != "$DEVKIT_DIR" ]]; then
     # If DevKit directory exists and is not empty, prompt user before overwriting
     if [[ -d "$DEVKIT_DIR" && "$(ls -A "$DEVKIT_DIR")" ]]; then
-        echo "⚠️  DevKit directory '$DEVKIT_DIR' already exists and is not empty."
+        echo "⚠️  DevKit directory '$DEVKIT_DIR' already exists and is not empty"
         echo ""
         printf "❓ Do you want to overwrite it? (y/n): "
         read confirm
         if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-            echo "🚫 Installation cancelled by user."
+            echo "🚫 Installation cancelled by user"
             exit 1
         fi
 
@@ -81,11 +81,11 @@ source "$DEVKIT_ROOT/config.zsh"
 # Ensure Oh My Zsh is installed (required dependency)
 echo "🚀 Checking for Oh My Zsh..."
 if [ -d "$HOME/.oh-my-zsh" ]; then
-    echo "✓ Oh My Zsh already installed."
+    echo "✓ Oh My Zsh already installed"
 else
     echo "🧩 Installing Oh My Zsh..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    echo "✓ Oh My Zsh installed."
+    echo "✓ Oh My Zsh installed"
 fi
 
 # Prepare the line to source DevKit in .zshrc
@@ -100,7 +100,7 @@ if ! grep -Fxq "$DEVKIT_LINE" "$HOME/.zshrc"; then
         echo "$DEVKIT_LINE"
     } >>"$HOME/.zshrc"
 else
-    echo "ℹ️  DevKit already sourced in ~/.zshrc. Skipping."
+    echo "ℹ️  DevKit already sourced in ~/.zshrc. Skipping"
 fi
 
 # Final success message

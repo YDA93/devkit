@@ -44,7 +44,7 @@ function environment-variable-set() {
 
     # Ensure .env file exists
     if [ ! -f "$env_file" ]; then
-        _log-error "✗ Error: .env file not found."
+        _log-error "✗ Error: .env file not found"
         return 1
     fi
 
@@ -62,7 +62,7 @@ function environment-variable-set() {
         echo "$key=\"$value\"" >>"$env_file"
     fi
 
-    _log-success "✓ $key successfully set."
+    _log-success "✓ $key successfully set"
 }
 
 # 🔍 Retrieves the value of a variable from a .env file
@@ -106,7 +106,7 @@ function environment-variable-get() {
     done
 
     if [[ -z "$key" ]]; then
-        _log-error "✗ Error: No key provided."
+        _log-error "✗ Error: No key provided"
         return 1
     fi
 

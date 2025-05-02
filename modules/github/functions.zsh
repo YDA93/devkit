@@ -40,7 +40,7 @@ function github-ssh-setup() {
     github_email=$(gum input --placeholder "you@example.com" --prompt "📧 Enter your GitHub email: ")
 
     if [[ ! "$github_email" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
-        _log-error "✗ Invalid email format."
+        _log-error "✗ Invalid email format"
         return 1
     fi
 
@@ -70,18 +70,18 @@ function github-ssh-setup() {
             echo "  Port 443"
             echo "  User git"
         } >>~/.ssh/config
-        _log-success "✓ SSH config updated."
+        _log-success "✓ SSH config updated"
     else
-        _log-warning "⚠️  SSH config already contains a block for github.com. Skipping."
+        _log-warning "⚠️  SSH config already contains a block for github.com. Skipping"
     fi
 
     _log-info "🔐 Starting ssh-agent and adding your key..."
     eval "$(ssh-agent -s)"
     if ! ssh-add -l | grep -q "$key_path"; then
         ssh-add "$key_path"
-        _log-success "✓ SSH key added to agent."
+        _log-success "✓ SSH key added to agent"
     else
-        _log-info "ℹ️  SSH key already added to agent. Skipping."
+        _log-info "ℹ️  SSH key already added to agent. Skipping"
     fi
 
     echo
@@ -108,7 +108,7 @@ function github-ssh-setup() {
 
     echo
     gum confirm "📌 Press Enter after you've added the key to GitHub to continue." || {
-        _log-error "✗ Operation cancelled by user."
+        _log-error "✗ Operation cancelled by user"
         return 1
     }
 
@@ -140,7 +140,7 @@ function github-ssh-delete() {
     done
 
     if [[ ${#keys[@]} -eq 0 ]]; then
-        _log-error "✗ No SSH key pairs found."
+        _log-error "✗ No SSH key pairs found"
         return
     fi
 
@@ -148,12 +148,12 @@ function github-ssh-delete() {
     choice=$(gum input --placeholder "Enter number (or leave empty to cancel)" --prompt "🗑️  Enter the number of the key you want to delete:")
 
     if [[ -z "$choice" ]]; then
-        _log-error "✗ Cancelled. No key deleted."
+        _log-error "✗ Cancelled. No key deleted"
         return
     fi
 
     if ! [[ "$choice" =~ ^[0-9]+$ ]] || ((choice < 1 || choice > ${#keys[@]})); then
-        _log-error "✗ Invalid selection."
+        _log-error "✗ Invalid selection"
         return
     fi
 
@@ -166,7 +166,7 @@ function github-ssh-delete() {
         [[ -f "$key_path" ]] && rm "$key_path" && echo "🗑️  Deleted: $key_path"
         [[ -f "${key_path}.pub" ]] && rm "${key_path}.pub" && echo "🗑️  Deleted: ${key_path}.pub"
     else
-        _log-error "✗ Cancelled. No key deleted."
+        _log-error "✗ Cancelled. No key deleted"
     fi
 }
 
@@ -202,7 +202,7 @@ function github-commit-and-push() {
 
     # Push the committed changes to the remote repository
     git push
-    _log-success "✓ Changes committed and pushed to remote."
+    _log-success "✓ Changes committed and pushed to remote"
 }
 
 # 🔄 Clears Git cache and recommits all files
@@ -224,7 +224,7 @@ function github-clear-cache-and-recommit-all-files() {
     # Step 4: Push the changes to the remote repository on the main branch.
     git push origin main
 
-    _log-success "✓ Git cache cleared and all files recommitted."
+    _log-success "✓ Git cache cleared and all files recommitted"
 }
 
 # ⏪ Reverts the last commit from the remote repository only
@@ -239,7 +239,7 @@ function github-undo-last-commit() {
     git push --force origin HEAD~1:main
 
     # Step 2: Confirm the action with a message to the user.
-    _log-success "✓ The last commit has been reverted on GitHub only. Your local repository remains unchanged."
+    _log-success "✓ The last commit has been reverted on GitHub only. Your local repository remains unchanged"
 }
 
 # 🚀 Creates a new version tag based on user input (major, minor, patch, or custom)
@@ -248,7 +248,7 @@ function github-version-bump() {
 
     # 🧩 Check for uncommitted changes
     if ! git diff --quiet || ! git diff --cached --quiet; then
-        _log-warning "⚠️  You have uncommitted changes."
+        _log-warning "⚠️  You have uncommitted changes"
 
         if gum confirm "❓ Do you want to commit all changes before tagging?"; then
             commit_message=$(gum input --placeholder "Commit message" --prompt "📝 Enter commit message: ")
@@ -257,44 +257,44 @@ function github-version-bump() {
             commit_message=${commit_message:-"Auto commit before tagging $new_version"}
 
             git add -A || {
-                _log-error "✗ Failed to add files to staging area."
+                _log-error "✗ Failed to add files to staging area"
                 return 1
             }
 
             git commit -m "$commit_message" || {
-                _log-error "✗ Failed to commit changes."
+                _log-error "✗ Failed to commit changes"
                 return 1
             }
 
             gum spin --spinner dot --title "🚀 Pushing commit..." -- git push || {
-                _log-error "✗ Failed to push changes."
+                _log-error "✗ Failed to push changes"
                 return 1
             }
 
         else
-            _log-error "✗ Operation cancelled to avoid inconsistent tag."
+            _log-error "✗ Operation cancelled to avoid inconsistent tag"
             return 1
         fi
     fi
 
     # 🧩 Check for unpushed commits
     if [[ $(git log --branches --not --remotes) ]]; then
-        _log-warning "⚠️  You have unpushed commits."
+        _log-warning "⚠️  You have unpushed commits"
 
         if gum confirm "❓ Do you want to push them before tagging?"; then
             git push || {
-                _log-error "✗ Failed to push changes."
+                _log-error "✗ Failed to push changes"
                 return 1
             }
         else
-            _log-error "✗ Operation cancelled to avoid inconsistent tag."
+            _log-error "✗ Operation cancelled to avoid inconsistent tag"
             return 1
         fi
     fi
 
     _log-info "🔍 Fetching the latest tags from origin..."
     git fetch --tags || {
-        _log-error "✗ Failed to fetch tags."
+        _log-error "✗ Failed to fetch tags"
         return 1
     }
 
@@ -333,12 +333,12 @@ function github-version-bump() {
     *"Custom version"*)
         new_version=$(gum input --placeholder "e.g., 2.5.0" --prompt "✍️  Enter the custom version: ")
         if ! [[ "$new_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            _log-error "✗ Invalid version format."
+            _log-error "✗ Invalid version format"
             return 1
         fi
         ;;
     *)
-        _log-error "✗ Invalid choice."
+        _log-error "✗ Invalid choice"
         return 1
         ;;
     esac
@@ -350,21 +350,21 @@ function github-version-bump() {
     if gum confirm "❓ Do you want to proceed with creating and pushing this tag?"; then
         _log-info "✓ Proceeding with version $new_version..."
     else
-        _log-error "✗ Operation cancelled."
+        _log-error "✗ Operation cancelled"
         return 1
     fi
 
     # Create and push the new tag
     git tag -a "$new_version" -m "Release version $new_version" || {
-        _log-error "✗ Failed to create tag."
+        _log-error "✗ Failed to create tag"
         return 1
     }
     git push origin "$new_version" || {
-        _log-error "✗ Failed to push tag."
+        _log-error "✗ Failed to push tag"
         return 1
     }
 
-    _log-success "✓ Version $new_version has been tagged and pushed to origin (previous: $latest_tag)."
+    _log-success "✓ Version $new_version has been tagged and pushed to origin (previous: $latest_tag)"
 }
 
 # ------------------------------------------------------------------------------
@@ -439,7 +439,7 @@ function github-branches-clean() {
 
     git branch --merged main | grep -v '^\*' | grep -v 'main' | xargs -n 1 git branch -d
 
-    _log-success "✓ Cleaned up merged branches."
+    _log-success "✓ Cleaned up merged branches"
 }
 
 # 🔄 Resets local branch to match the remote (destructive)
@@ -450,7 +450,7 @@ function github-reset-to-remote() {
     git fetch origin
     git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
 
-    _log-success "✓ Local branch reset to match remote."
+    _log-success "✓ Local branch reset to match remote"
 }
 
 # ------------------------------------------------------------------------------
@@ -469,7 +469,7 @@ function github-stash-and-pull() {
     _log-info "📤 Reapplying stashed changes..."
     git stash pop
 
-    _log-success "✓ Stashed changes reapplied after pull."
+    _log-success "✓ Stashed changes reapplied after pull"
 }
 
 # 🏷️ Creates a Git tag and pushes it to origin
@@ -488,7 +488,7 @@ function github-push-tag() {
     git tag -a "$tag" -m "$message"
     git push origin "$tag"
 
-    _log-success "✓ Tag '$tag' pushed to origin."
+    _log-success "✓ Tag '$tag' pushed to origin"
 }
 
 # 🔁 Rebases current branch onto another (default: main)
@@ -501,7 +501,7 @@ function github-rebase-current() {
     git fetch origin
     git rebase origin/"$target"
 
-    _log-success "✓ Rebasing completed."
+    _log-success "✓ Rebasing completed"
 }
 
 # 🔄 Syncs your forked repo with upstream/main
@@ -521,7 +521,7 @@ function github-sync-fork() {
     git reset --hard upstream/main
     git push origin main --force
 
-    _log-success "✓ Fork synced with upstream."
+    _log-success "✓ Fork synced with upstream"
 }
 
 # ------------------------------------------------------------------------------
@@ -540,7 +540,7 @@ function github-status-short() {
 function github-open() {
     # Check if inside a Git repository
     if ! git rev-parse --is-inside-work-tree &>/dev/null; then
-        _log-error "✗ Not inside a Git repository."
+        _log-error "✗ Not inside a Git repository"
         return 1
     fi
 
@@ -549,14 +549,14 @@ function github-open() {
     # Get remote URL
     remote_url=$(git config --get remote.origin.url)
     if [[ -z "$remote_url" ]]; then
-        _log-error "✗ No remote origin URL found."
+        _log-error "✗ No remote origin URL found"
         return 1
     fi
 
     # Get current branch
     branch=$(git rev-parse --abbrev-ref HEAD)
     if [[ -z "$branch" ]]; then
-        _log-error "✗ Could not determine current branch."
+        _log-error "✗ Could not determine current branch"
         return 1
     fi
 

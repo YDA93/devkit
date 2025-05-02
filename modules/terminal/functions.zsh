@@ -2,7 +2,7 @@
 # 💡 Usage: terminal-theme-setup
 function terminal-theme-setup() {
     terminal-set-font-meslo-nerd || {
-        _log-error "❌ Failed to set Terminal font."
+        _log-error "❌ Failed to set Terminal font"
         return 1
     }
 
@@ -21,11 +21,11 @@ function terminal-theme-setup() {
 
     _log-info "📌 Setting \"$THEME_NAME\" as default and startup profile..."
     defaults write com.apple.Terminal "Default Window Settings" -string "$THEME_NAME" || {
-        _log-error "❌ Failed to set Default Window Settings."
+        _log-error "❌ Failed to set Default Window Settings"
         return 1
     }
     defaults write com.apple.Terminal "Startup Window Settings" -string "$THEME_NAME" || {
-        _log-error "❌ Failed to set Startup Window Settings."
+        _log-error "❌ Failed to set Startup Window Settings"
         return 1
     }
 
@@ -51,8 +51,8 @@ function terminal-factory-reset() {
     _log-info "🧼 Removing saved Terminal window state..."
     rm -rf "$SAVED_STATE"
 
-    _log-success "✅ Terminal has been reset to factory defaults."
-    _log-hint "💡 Please restart macOS Terminal to apply the full changes."
+    _log-success "✓ Terminal has been reset to factory defaults"
+    _log-hint "💡 Please restart macOS Terminal to apply the full changes"
 }
 
 # ------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ function terminal-set-font-meslo-nerd() {
     _log-info "🖥️  Setting Terminal font to 'MesloLGS NF'..."
     if ! font-is-installed-meslo-nerd; then
         font-install-meslo-nerd || {
-            _log-error "❌ Failed to install Meslo Nerd Font."
+            _log-error "❌ Failed to install Meslo Nerd Font"
             return 1
         }
     fi
@@ -77,7 +77,7 @@ function terminal-set-font-meslo-nerd() {
         -e 'set font size to 12' \
         -e 'end tell' \
         -e 'end tell'
-    _log-success "🎉 Terminal font set to 'MesloLGS NF'."
+    _log-success "🎉 Terminal font set to 'MesloLGS NF'"
 }
 
 # 🖥️ Reset Terminal font to SF Mono Regular 11pt
@@ -127,7 +127,7 @@ function font-install-meslo-nerd() {
 
     # Early return if all fonts already exist by using the is_font_installed function
     if font-is-installed-meslo-nerd; then
-        _log-success "✓ Meslo Nerd Font is already fully installed. Skipping download."
+        _log-success "✓ Meslo Nerd Font is already fully installed. Skipping download"
         echo
         return 0
     fi
@@ -152,7 +152,7 @@ function font-install-meslo-nerd() {
         fi
     done
 
-    _log-success "✓ Meslo Nerd Font installed successfully."
+    _log-success "✓ Meslo Nerd Font installed successfully"
     echo
 }
 
@@ -179,6 +179,6 @@ function font-uninstall-meslo-nerd() {
         fi
     done
 
-    _log-success "✓ Meslo Nerd Font uninstalled successfully."
+    _log-success "✓ Meslo Nerd Font uninstalled successfully"
     echo
 }

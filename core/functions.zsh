@@ -49,7 +49,7 @@ function devkit-is-setup() {
 
     if ((${#missing[@]} > 0)); then
         if [[ "$quiet" == false ]]; then
-            _log-warning "⚠️  DevKit is not fully set up."
+            _log-warning "⚠️  DevKit is not fully set up"
             _log-error "🚫 Missing tools: ${missing[*]}"
             _log-hint "👉 Run: devkit-pc-setup"
         fi
@@ -105,9 +105,9 @@ function devkit-pc-setup() {
         _log-step setup $step $total_steps "iTerm2 Theme" iterm2-theme-setup || return 1
         ((step++))
     else
-        _log-step setup $step $total_steps "Terminal Theme" _log-info "Skipping Terminal Theme setup." || return 1
+        _log-step setup $step $total_steps "Terminal Theme" _log-info "Skipping Terminal Theme setup" || return 1
         ((step++))
-        _log-step setup $step $total_steps "iTerm2 Theme" _log-info "Skipping iTerm2 Theme setup." || return 1
+        _log-step setup $step $total_steps "iTerm2 Theme" _log-info "Skipping iTerm2 Theme setup" || return 1
         ((step++))
     fi
 
@@ -245,7 +245,7 @@ function devkit-check-tools() {
 
     if ((${#missing_tools[@]} > 0)); then
         _log-warning "⚠️  Missing tools: ${missing_tools[*]}"
-        _log-hint "👉 Run: devkit-pc-setup to install and configure required packages."
+        _log-hint "👉 Run: devkit-pc-setup to install and configure required packages"
         echo
         return 1
     else
@@ -314,10 +314,10 @@ function devkit-update() {
     if [[ ! -d "$DEVKIT_ROOT" ]]; then
         _log-info "📦 devkit not found. Cloning into $DEVKIT_ROOT..."
         git clone "$repo_url" "$DEVKIT_ROOT" || {
-            _log-error "✗ Failed to clone devkit."
+            _log-error "✗ Failed to clone devkit"
             return 1
         }
-        _log-success "✓ devkit installed for the first time."
+        _log-success "✓ devkit installed for the first time"
         echo
         source "$DEVKIT_ROOT/bin/devkit.zsh"
         return 0
@@ -326,14 +326,14 @@ function devkit-update() {
     # Fetch latest tags and branches
     _log-info "🔄 Fetching latest tags and branches from remote repository..."
     git -C "$DEVKIT_ROOT" fetch --tags --quiet || {
-        _log-warning "⚠️  Failed to fetch tags from remote repository."
-        _log-hint "💡 Please check your internet connection or try again later."
+        _log-warning "⚠️  Failed to fetch tags from remote repository"
+        _log-hint "💡 Please check your internet connection or try again later"
         echo
         return 1
     }
     git -C "$DEVKIT_ROOT" fetch origin --prune --quiet || {
-        _log-warning "⚠️  Failed to fetch branches from remote repository."
-        _log-hint "💡 Please check your internet connection or try again later."
+        _log-warning "⚠️  Failed to fetch branches from remote repository"
+        _log-hint "💡 Please check your internet connection or try again later"
         echo
         return 1
     }
@@ -346,7 +346,7 @@ function devkit-update() {
     remote_version=$(git -C "$DEVKIT_ROOT" ls-remote --tags --sort='v:refname' "$repo_url" | grep -o 'refs/tags/[^\^{}]*' | awk -F/ '{print $3}' | tail -n 1)
 
     if [[ -z "$remote_version" ]]; then
-        _log-warning "⚠️  No remote version tags found."
+        _log-warning "⚠️  No remote version tags found"
         echo
         return 1
     fi
@@ -366,7 +366,7 @@ function devkit-update() {
     echo
 
     if ! gum confirm "👉 Do you want to update devkit to version $remote_version now?"; then
-        _log-error "✗ Update canceled."
+        _log-error "✗ Update canceled"
         echo
         return 0
     fi
@@ -378,13 +378,13 @@ function devkit-update() {
     default_branch=$(git -C "$DEVKIT_ROOT" remote show origin | grep 'HEAD branch' | awk '{print $NF}')
 
     git -C "$DEVKIT_ROOT" checkout "$default_branch" -f || {
-        _log-error "✗ Failed to checkout branch $default_branch."
+        _log-error "✗ Failed to checkout branch $default_branch"
         echo
         return 1
     }
 
     git -C "$DEVKIT_ROOT" pull origin "$default_branch" || {
-        _log-error "✗ Failed to pull latest changes from $default_branch."
+        _log-error "✗ Failed to pull latest changes from $default_branch"
         echo
         return 1
     }
@@ -396,7 +396,7 @@ function devkit-update() {
     if [[ -f "$DEVKIT_ROOT/bin/devkit.zsh" ]]; then
         _log-info "🔁 Reloading devkit..."
         source "$DEVKIT_ROOT/bin/devkit.zsh"
-        _log-success "✓ devkit reloaded."
+        _log-success "✓ devkit reloaded"
         echo
     fi
 }
@@ -406,7 +406,7 @@ function devkit-update() {
 function devkit-version() {
 
     if [[ ! -d "$DEVKIT_ROOT" ]]; then
-        _log-error "✗ devkit is not installed."
+        _log-error "✗ devkit is not installed"
         return 1
     fi
 
@@ -414,7 +414,7 @@ function devkit-version() {
     current_version=$(git -C "$DEVKIT_ROOT" describe --tags --abbrev=0 2>/dev/null)
 
     if [[ -z "$current_version" ]]; then
-        _log-error "✗ No version tag found in devkit."
+        _log-error "✗ No version tag found in devkit"
         return 1
     fi
 

@@ -259,7 +259,7 @@ function gcloud-sql-proxy-and-django-setup() {
         fi
 
         if ((retries-- <= 0)); then
-            _log-error "✗ Cloud SQL Proxy failed to start within the expected time (30s)."
+            _log-error "✗ Cloud SQL Proxy failed to start within the expected time (30s)"
             return 1
         fi
 
@@ -270,7 +270,7 @@ function gcloud-sql-proxy-and-django-setup() {
     if django-settings dev && python manage.py migrate && python manage.py populate_database; then
         _log-success "✓ Django setup completed successfully!"
     else
-        _log-error "✗ Django setup failed."
+        _log-error "✗ Django setup failed"
         return 1
     fi
 }

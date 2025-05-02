@@ -14,7 +14,7 @@ function npm-save-packages() {
     npm list -g --depth=0 --parseable |
         tail -n +2 |
         awk -F/ '{print $NF}' >"$output" || {
-        _log-error "✗ Failed to save npm packages. Please check your npm installation."
+        _log-error "✗ Failed to save npm packages. Please check your npm installation"
         return 1
     }
 
@@ -38,7 +38,7 @@ function npm-install-packages() {
 
     local npm_prefix
     npm_prefix=$(npm config get prefix) || {
-        _log-error "✗ Failed to get npm prefix. Please check your npm installation."
+        _log-error "✗ Failed to get npm prefix. Please check your npm installation"
         return 1
     }
 
@@ -49,7 +49,7 @@ function npm-install-packages() {
     echo ""
 
     NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm install -g <"$input" || {
-        _log-error "✗ Failed to install npm packages. Please check the list."
+        _log-error "✗ Failed to install npm packages. Please check the list"
         return 1
     }
 
@@ -74,7 +74,7 @@ function npm-uninstall-packages() {
 
     local npm_prefix
     npm_prefix=$(npm config get prefix) || {
-        _log-error "✗ Failed to get npm prefix. Please check your npm installation."
+        _log-error "✗ Failed to get npm prefix. Please check your npm installation"
         return 1
     }
 
@@ -85,7 +85,7 @@ function npm-uninstall-packages() {
     echo ""
 
     NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm uninstall -g <"$input" || {
-        _log-error "✗ Failed to uninstall npm packages. Please check the list."
+        _log-error "✗ Failed to uninstall npm packages. Please check the list"
         return 1
     }
 
@@ -100,7 +100,7 @@ function npm-uninstall-packages() {
 function npm-repair() {
     _log-inline-title "npm Environment Repair"
     LATEST_NODE=$(echo "$DEVKIT_REQUIRED_FORMULA" | grep '^node@' | sort -V | tail -n 1) || {
-        _log-error "✗ Failed to find the latest Node.js version."
+        _log-error "✗ Failed to find the latest Node.js version"
         return 1
     }
 
@@ -135,7 +135,7 @@ function npm-prune-packages() {
     _log-info "🧹 Checking for npm packages to uninstall..."
 
     local current_pkgs=($(npm list -g --depth=0 --parseable | tail -n +2 | awk -F/ '{print $NF}')) || {
-        _log-error "✗ Failed to list npm packages. Please check your npm installation."
+        _log-error "✗ Failed to list npm packages. Please check your npm installation"
         return 1
     }
     local saved_pkgs=($(cat "$file"))
@@ -151,7 +151,7 @@ function npm-prune-packages() {
         fi
     done
 
-    _log-success "✓ npm cleanup complete."
+    _log-success "✓ npm cleanup complete"
     _log-inline-title "End of npm Packages Pruning"
     echo
 }
@@ -168,7 +168,7 @@ function npm-setup() {
 function npm-list-packages() {
     _log-info "📦 Installed global npm packages:"
     npm list -g || {
-        _log-error "✗ Failed to list npm packages. Please check your npm installation."
+        _log-error "✗ Failed to list npm packages. Please check your npm installation"
         return 1
     }
     echo
@@ -184,7 +184,7 @@ function npm-doctor() {
 
     _log-info "🔧 Checking Node installation..."
     if ! command -v node &>/dev/null; then
-        _log-warning "⚠️  Node.js is not installed or not in PATH."
+        _log-warning "⚠️  Node.js is not installed or not in PATH"
         _log-hint "💡 Install with: brew install node"
         echo
         return 1
@@ -194,7 +194,7 @@ function npm-doctor() {
 
     _log-info "🔧 Checking npm installation..."
     if ! command -v npm &>/dev/null; then
-        _log-warning "⚠️  npm is not installed."
+        _log-warning "⚠️  npm is not installed"
         echo
         return 1
     fi
@@ -202,7 +202,7 @@ function npm-doctor() {
     echo
 
     npm_root=$(npm config get prefix 2>/dev/null) || {
-        _log-warning "⚠️  Failed to get npm prefix. Please check your npm installation."
+        _log-warning "⚠️  Failed to get npm prefix. Please check your npm installation"
         return 1
     }
     _log-info "📁 npm global prefix: ${npm_root:-⚠️ Not set}"

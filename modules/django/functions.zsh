@@ -146,7 +146,7 @@ function django-migrate-initial() {
     # 6. Restore original URLs
     _log-info "Restoring original project URLs..."
     echo "$original_content" >./project/urls.py
-    _log-success "✓ Initial migration cycle complete."
+    _log-success "✓ Initial migration cycle complete"
 }
 
 # 🧼 Deletes all Django migration files and `__pycache__` folders (excluding venv)
@@ -168,7 +168,7 @@ function django-migrate-and-cache-delete() {
     _log-info "Deleting all Django __pycache__ folders..."
     find . -type d -name "__pycache__" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); [ "$app_name" != "." ] && _log-success "Deleted $app_name -> $(basename "$(dirname "{}")")/__pycache__" || _log-success "Deleted $(basename "$(dirname "{}")")/__pycache__"; rm -r "{}"' \; 2>/dev/null || true
 
-    _log-success "Deleted all Django migration files and __pycache__ folders (excluding venv)."
+    _log-success "Deleted all Django migration files and __pycache__ folders (excluding venv)"
 
     # Return to the original directory
     cd "$OLDPWD"
@@ -216,7 +216,7 @@ function django-database-init() {
     # 7. Restoration of data
     django-data-restore
 
-    _log-success "✓ Database initialization complete."
+    _log-success "✓ Database initialization complete"
 
     # } 2>&1 | tee -a "$log_file"
 
@@ -241,7 +241,7 @@ function django-data-backup() {
     python "$PWD/manage.py" dumpdata \
         --natural-foreign --natural-primary --indent 2 >data.json || return 1
 
-    _log-success "✓ Data backup completed and saved to data.json."
+    _log-success "✓ Data backup completed and saved to data.json"
     backup_performed=true
     sleep 1
 }
@@ -266,19 +266,19 @@ function django-data-restore() {
         backup_file=$(gum input --placeholder "/path/to/backup.sql" --prompt "📂 Enter the path to the backup file: ")
 
         if [[ -z "$backup_file" ]]; then
-            _log-error "✗ No file path entered. Aborting restore."
+            _log-error "✗ No file path entered. Aborting restore"
             return 1
         fi
 
         if [[ ! -f "$backup_file" ]]; then
-            _log-error "✗ File '$backup_file' does not exist. Aborting restore."
+            _log-error "✗ File '$backup_file' does not exist. Aborting restore"
             return 1
         fi
     fi
 
     _log-info "📥 Restoring Django data from '$backup_file'..."
     python "$PWD/manage.py" loaddata "$backup_file" --traceback || return 1
-    _log-success "✓ Data restoration complete."
+    _log-success "✓ Data restoration complete"
 
     _log-info "🔁 Resetting database sequences..."
     apps=$(python "$PWD/manage.py" shell -c \
@@ -290,7 +290,7 @@ function django-data-restore() {
             python "$PWD/manage.py" dbshell
     done
 
-    _log-success "✓ Database sequences reset."
+    _log-success "✓ Database sequences reset"
 }
 
 # ------------------------------------------------------------------------------
@@ -316,7 +316,7 @@ function django-translations-make() {
 
         cd ..
     done
-    _log-success "✓ .po files created for Arabic translations."
+    _log-success "✓ .po files created for Arabic translations"
 }
 
 # 🛠️ Compiles translation `.po` files into `.mo` format
@@ -336,7 +336,7 @@ function django-translations-compile() {
 
         cd ..
     done
-    _log-success "✓ .po files compiled into .mo format."
+    _log-success "✓ .po files compiled into .mo format"
 }
 # ------------------------------------------------------------------------------
 # 🚀 Development & Deployment Tools
@@ -417,7 +417,7 @@ function django-run-pytest() {
 
     coverage run -m pytest -v -n auto $modified_arg
     coverage report
-    _log-success "✓ Pytest with coverage completed."
+    _log-success "✓ Pytest with coverage completed"
 }
 
 # 🧪 Runs Django tests using manage.py and test settings
@@ -436,7 +436,7 @@ function django-run-test() {
     fi
 
     python manage.py test $modified_arg
-    _log-success "✓ Django tests completed."
+    _log-success "✓ Django tests completed"
 }
 # ------------------------------------------------------------------------------
 # 🔍 Introspection & Automation
@@ -489,7 +489,7 @@ function django-find-cron-urls() {
             _log-success "  ➤ $match"
         done
     else
-        _log-warning "⚠️  No cron paths found."
+        _log-warning "⚠️  No cron paths found"
     fi
 
     # 📤 Return the full URLs

@@ -13,12 +13,12 @@ function homebrew-install() {
     if ! command -v brew &>/dev/null; then
         _log-info "Homebrew not found. Installing..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-            _log-error "Homebrew installation failed."
+            _log-error "Homebrew installation failed"
             echo
             return 1
         }
     else
-        _log-success "✓ Homebrew is already installed."
+        _log-success "✓ Homebrew is already installed"
         _log-inline-title "End of Homebrew Installation"
         echo
         return 0
@@ -26,13 +26,13 @@ function homebrew-install() {
 
     # Verify Homebrew is working
     if ! brew --version &>/dev/null; then
-        _log-error "Homebrew seems to be installed but not working properly."
+        _log-error "Homebrew seems to be installed but not working properly"
         _log-inline-title "End of Homebrew Installation"
         echo
         return 1
     fi
 
-    _log-success "✓ Homebrew is installed and working."
+    _log-success "✓ Homebrew is installed and working"
 
     _log-inline-title "End of Homebrew Installation"
     echo
@@ -52,7 +52,7 @@ function homebrew-setup() {
     if brew list powerlevel10k &>/dev/null; then
         _log-inline-title "Powerlevel10k Font Setup"
         powerlevel10k-set-font-meslo-nerd || return 1
-        _log-success "✓ Powerlevel10k font set to MesloLGS Nerd Font across all terminals."
+        _log-success "✓ Powerlevel10k font set to MesloLGS Nerd Font across all terminals"
         _log-inline-title "End of Powerlevel10k Font Setup"
         echo
     fi
@@ -108,7 +108,7 @@ function homebrew-install-packages() {
     if [[ -f "$formula_input" ]]; then
         _log-info "🍺 Installing Homebrew formula from $formula_input"
         xargs brew install --formula <"$formula_input" || {
-            _log-error "✗ Failed to install formula. Please check the list."
+            _log-error "✗ Failed to install formula. Please check the list"
             return 1
         }
     fi
@@ -116,7 +116,7 @@ function homebrew-install-packages() {
     source "$DEVKIT_ROOT/bin/devkit.zsh"
 
     postgres-setup || {
-        _log-error "✗ Failed to set up PostgreSQL. Please check the setup."
+        _log-error "✗ Failed to set up PostgreSQL. Please check the setup"
         return 1
     }
 
@@ -131,7 +131,7 @@ function homebrew-install-packages() {
                     if brew install --cask "$cask"; then
                         _log-success "✓ Successfully installed $cask after fix"
                     else
-                        _log-error "✗ Failed to install $cask even after fix."
+                        _log-error "✗ Failed to install $cask even after fix"
                         return 1
                     fi
                 fi
@@ -186,11 +186,11 @@ function homebrew-install-packages-from-settings() {
                 ((installed_casks++))
                 _log-success "✓ Successfully installed $cask after retry"
             else
-                _log-error "Failed to install $cask after retry."
+                _log-error "Failed to install $cask after retry"
             fi
         fi
     done
-    _log-success "✓ Done! Installed $installed_formula formula and $installed_casks casks from saved settings."
+    _log-success "✓ Done! Installed $installed_formula formula and $installed_casks casks from saved settings"
 
     _log-inline-title "End of Homebrew Package Installation from Settings"
     echo
@@ -209,7 +209,7 @@ function homebrew-prune-packages() {
     local settings_file="$DEVKIT_ROOT/settings.json"
 
     if [[ ! -f "$formula_file" && ! -f "$casks_file" && ! -f "$settings_file" ]]; then
-        _log-error "✗ No package lists or settings file found."
+        _log-error "✗ No package lists or settings file found"
         return 1
     fi
 
@@ -265,7 +265,7 @@ function homebrew-prune-packages() {
         fi
     done
 
-    _log-success "✓ Finished pruning Homebrew packages."
+    _log-success "✓ Finished pruning Homebrew packages"
 
     _log-inline-title "End of Homebrew Package Pruning"
     echo
@@ -297,23 +297,23 @@ function homebrew-maintain() {
     _log-inline-title "Homebrew Maintenance"
 
     _log-info "🩺 Checking brew system health..."
-    brew doctor || _log-warning "⚠️ brew doctor reported issues."
-    _log-success "✓ brew doctor completed."
+    brew doctor || _log-warning "⚠️ brew doctor reported issues"
+    _log-success "✓ brew doctor completed"
     echo
 
     _log-info "⬆️  Updating Homebrew..."
     brew update || return 1
-    _log-success "✓ Homebrew updated."
+    _log-success "✓ Homebrew updated"
     echo
 
     _log-info "🔄 Upgrading formulas..."
     brew upgrade --formula || return 1
-    _log-success "✓ Upgraded formulas."
+    _log-success "✓ Upgraded formulas"
     echo
 
     _log-info "🧴 Upgrading casks..."
     brew upgrade --cask || return 1
-    _log-success "✓ Upgraded casks."
+    _log-success "✓ Upgraded casks"
 
     _log-inline-title "End of Homebrew Maintenance"
     echo
@@ -332,17 +332,17 @@ function homebrew-clean() {
 
     _log-info "🧹 Autoremoving unused dependencies..."
     brew autoremove || return 1
-    _log-success "✓ Removed unused dependencies."
+    _log-success "✓ Removed unused dependencies"
     echo
 
     _log-info "🗑️  Cleaning up old versions and cache..."
     brew cleanup || return 1
-    _log-success "✓ Cleaned up old versions and cache."
+    _log-success "✓ Cleaned up old versions and cache"
     echo
 
     _log-info "📦 Verifying installed packages..."
     brew missing || return 1
-    _log-success "✓ Verified installed packages."
+    _log-success "✓ Verified installed packages"
 
     _log-inline-title "End of Homebrew Cleanup"
     echo
@@ -360,32 +360,32 @@ function homebrew-doctor() {
     _log-info "🔧 Checking Homebrew installation..."
 
     if ! command -v brew &>/dev/null; then
-        _log-warning "⚠️  Homebrew is not installed."
+        _log-warning "⚠️  Homebrew is not installed"
         _log-hint "👉 You can install it with: homebrew-install"
         return 1
     fi
-    _log-success "✓ Homebrew is installed."
+    _log-success "✓ Homebrew is installed"
     echo
 
     _log-info "🩺 Running 'brew doctor'..."
     brew doctor
     if [[ $? -ne 0 ]]; then
-        _log-warning "⚠️  Homebrew reports issues. Run 'brew doctor' manually to review details."
+        _log-warning "⚠️  Homebrew reports issues. Run 'brew doctor' manually to review details"
         echo
         return 1
     else
-        _log-success "✓ No major issues reported by Homebrew."
+        _log-success "✓ No major issues reported by Homebrew"
         echo
     fi
 
     _log-info "📦 Checking for brew outdated packages..."
     if [[ -n "$(brew outdated)" ]]; then
-        _log-warning "⚠️  You have outdated packages."
-        _log-hint "👉 Consider running 'brew outdated' to see which ones."
+        _log-warning "⚠️  You have outdated packages"
+        _log-hint "👉 Consider running 'brew outdated' to see which ones"
         _log-hint "👉 To upgrade, use: 'homebrew-maintain'"
         echo
     else
-        _log-success "✓ All packages are up to date."
+        _log-success "✓ All packages are up to date"
     fi
 
     _log-inline-title "End of Homebrew Doctor"

@@ -63,7 +63,7 @@ function mas-install-apps() {
         install-if-missing "$app_name" "$app_id"
     done <"$input"
 
-    _log-success "✓ App Store app installation complete."
+    _log-success "✓ App Store app installation complete"
     _log-inline-title "End of App Store Installation"
     echo
 }
@@ -116,7 +116,7 @@ function mas-install-from-settings() {
     done
 
     echo ""
-    _log-success "✓ App Store app installation (from settings) complete."
+    _log-success "✓ App Store app installation (from settings) complete"
     _log-inline-title "End of App Store Installation from Settings"
     echo
 }
@@ -128,11 +128,11 @@ function mas-maintain() {
 
     _log-info "🔍 Checking for App Store updates..."
     mas outdated || return 1
-    _log-success "✓ App Store apps are up to date."
+    _log-success "✓ App Store apps are up to date"
     echo
     _log-info "⬆️  Upgrading App Store apps..."
     mas upgrade || return 1
-    _log-success "✓ App Store apps updated."
+    _log-success "✓ App Store apps updated"
 
     _log-inline-title "End of App Store Maintenance"
     echo
@@ -159,7 +159,7 @@ function install-if-missing() {
 
     if [[ ! -d "/Applications/$app_name.app" ]]; then
         mas install $app_id || {
-            _log-error "✗ Failed to install $app_name. Please check the App Store ID."
+            _log-error "✗ Failed to install $app_name. Please check the App Store ID"
             return 1
         }
         _log-success "✓ Installed $app_name"

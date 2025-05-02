@@ -14,7 +14,7 @@ function _devkit-settings-init() {
     if [[ ! -f "$CLI_SETTINGS_FILE" ]]; then
         [[ "$quiet" != true ]] && _log-info "🛠️  Initializing settings file at $CLI_SETTINGS_FILE"
         echo '{}' >"$CLI_SETTINGS_FILE"
-        [[ "$quiet" != true ]] && _log-success "✅ Created new settings file."
+        [[ "$quiet" != true ]] && _log-success "✓ Created new settings file"
     fi
 }
 
@@ -27,7 +27,7 @@ function _devkit-settings-reset() {
         rm "$CLI_SETTINGS_FILE"
         _log-success "✓ Deleted settings file: $CLI_SETTINGS_FILE"
     else
-        _log-info "ℹ️  No settings file to delete."
+        _log-info "ℹ️  No settings file to delete"
     fi
 
     # Reinitialize the settings file
@@ -79,7 +79,7 @@ function _devkit-settings() {
             _settings-parser-get-json "$key"
             ;;
         *)
-            echo "Error: Unsupported type '$type'. Use string, bool, array, or json."
+            echo "Error: Unsupported type '$type'. Use string, bool, array, or json"
             return 1
             ;;
         esac
@@ -111,7 +111,7 @@ function _devkit-settings() {
             _settings-parser-set-json "$key" "$1"
             ;;
         *)
-            echo "Error: Unsupported type '$type'. Use string, bool, array, or json."
+            echo "Error: Unsupported type '$type'. Use string, bool, array, or json"
             return 1
             ;;
         esac
@@ -128,7 +128,7 @@ function _devkit-settings() {
 # 💡 Usage: devkit-settings-setup
 function devkit-settings-setup() {
     # Get user inputs for settings
-    _log-info "🔧 Please provide your details and select the apps you want to install."
+    _log-info "🔧 Please provide your details and select the apps you want to install"
 
     # Set up user details
     _devkit-settings-user-setup
@@ -142,10 +142,10 @@ function devkit-settings-setup() {
         _devkit-settings set bool use_cool_night_theme true
     else
         _devkit-settings set bool use_cool_night_theme false
-        echo "👍 Keeping your current theme."
+        echo "👍 Keeping your current theme"
     fi
 
-    _log-success "✓ Settings saved successfully."
+    _log-success "✓ Settings saved successfully"
     echo
 }
 

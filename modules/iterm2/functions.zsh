@@ -24,7 +24,7 @@ function iterm2-theme-setup() {
     fi
 
     mkdir -p "$target_dir" || {
-        _log-error "✗ Failed to create iTerm2 DynamicProfiles directory."
+        _log-error "✗ Failed to create iTerm2 DynamicProfiles directory"
         echo
         return 1
     }
@@ -36,12 +36,12 @@ function iterm2-theme-setup() {
     }
 
     defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "natural-text-editing" || {
-        _log-error "✗ Failed to set default iTerm2 profile."
+        _log-error "✗ Failed to set default iTerm2 profile"
         echo
         return 1
     }
 
-    _log-success "✓ iTerm2 theme installed successfully. Please close and reopen iTerm2 to apply the changes."
+    _log-success "✓ iTerm2 theme installed successfully. Please close and reopen iTerm2 to apply the changes"
     echo
 }
 
@@ -59,13 +59,13 @@ function iterm2-theme-uninstall() {
             return 1
         }
     else
-        _log-info "✓ No iTerm2 profile found to remove."
+        _log-info "✓ No iTerm2 profile found to remove"
         return 0
     fi
 
     defaults delete com.googlecode.iterm2 "Default Bookmark Guid"
 
-    _log-success "✓ iTerm2 theme uninstalled successfully."
+    _log-success "✓ iTerm2 theme uninstalled successfully"
     echo
 }
 
@@ -115,7 +115,7 @@ function iterm2-set-font-meslo-nerd() {
         }
     done
     [[ $idx =~ ^[0-9]+$ ]] || {
-        _log-warning "⚠️  Default profile not found."
+        _log-warning "⚠️  Default profile not found"
         return 1
     }
 

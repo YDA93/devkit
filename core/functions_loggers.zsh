@@ -282,7 +282,7 @@ function _confirm-or-abort() {
         if gum confirm "$message"; then
             return 0
         else
-            _log-info "Aborting action."
+            _log-info "Aborting action"
             echo
             return 1
         fi

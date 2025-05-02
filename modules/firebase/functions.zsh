@@ -10,7 +10,7 @@ function firebase-doctor() {
     _log-info "🔥 Checking Firebase CLI installation..."
 
     if ! command -v firebase &>/dev/null; then
-        _log-warning "⚠️  Firebase CLI not found."
+        _log-warning "⚠️  Firebase CLI not found"
         _log-hint "💡 Install it globally with: npm install -g firebase-tools"
         echo
         return 1
@@ -21,8 +21,8 @@ function firebase-doctor() {
     # Check if Node.js is available (since Firebase CLI depends on it)
     _log-info "🔍 Checking Node.js installation..."
     if ! command -v node &>/dev/null; then
-        _log-warning "⚠️  Node.js is not installed or not in PATH."
-        _log-hint "💡 Firebase CLI requires Node.js to work properly."
+        _log-warning "⚠️  Node.js is not installed or not in PATH"
+        _log-hint "💡 Firebase CLI requires Node.js to work properly"
         echo
         return 1
     fi
@@ -80,10 +80,10 @@ function firebase-login-check() {
 
     # Second, test token validity with a safe command
     if firebase projects:list >/dev/null 2>&1; then
-        _log-success "✓ Firebase token is valid."
+        _log-success "✓ Firebase token is valid"
         echo
     else
-        _log-warning "⚠️ Firebase token expired or invalid."
+        _log-warning "⚠️ Firebase token expired or invalid"
         _log-hint "➡️ Run: firebase login --reauth"
         echo
         return 1
@@ -100,7 +100,7 @@ function firebase-deploy-all() {
     _confirm-or-abort "This will deploy all Firebase services (hosting, functions, etc.). Continue?" "$@" || return 1
 
     firebase deploy
-    _log-success "✓ Firebase deployment complete."
+    _log-success "✓ Firebase deployment complete"
     echo
 }
 
@@ -110,7 +110,7 @@ function firebase-deploy-hosting() {
     _confirm-or-abort "Deploy Firebase hosting only?" "$@" || return 1
 
     firebase deploy --only hosting
-    _log-success "✓ Firebase hosting deployed."
+    _log-success "✓ Firebase hosting deployed"
     echo
 }
 
@@ -120,7 +120,7 @@ function firebase-deploy-functions() {
     _confirm-or-abort "Deploy Firebase Cloud Functions only?" "$@" || return 1
 
     firebase deploy --only functions
-    _log-success "✓ Firebase functions deployed."
+    _log-success "✓ Firebase functions deployed"
     echo
 }
 
@@ -130,7 +130,7 @@ function firebase-deploy-storage() {
     _confirm-or-abort "Deploy Firebase Storage rules only?" "$@" || return 1
 
     firebase deploy --only storage
-    _log-success "✓ Firebase Storage rules deployed."
+    _log-success "✓ Firebase Storage rules deployed"
     echo
 }
 
@@ -140,7 +140,7 @@ function firebase-deploy-firestore() {
     _confirm-or-abort "Deploy Firebase Firestore rules only?" "$@" || return 1
 
     firebase deploy --only firestore:rules
-    _log-success "✓ Firebase Firestore rules deployed."
+    _log-success "✓ Firebase Firestore rules deployed"
     echo
 }
 
@@ -150,7 +150,7 @@ function firebase-deploy-realtime() {
     _confirm-or-abort "Deploy Firebase Realtime Database rules only?" "$@" || return 1
 
     firebase deploy --only database:rules
-    _log-success "✓ Firebase Realtime Database rules deployed."
+    _log-success "✓ Firebase Realtime Database rules deployed"
     echo
 }
 
@@ -160,7 +160,7 @@ function firebase-deploy-auth() {
     _confirm-or-abort "Deploy Firebase Authentication rules only?" "$@" || return 1
 
     firebase deploy --only auth
-    _log-success "✓ Firebase Authentication rules deployed."
+    _log-success "✓ Firebase Authentication rules deployed"
     echo
 }
 
@@ -175,14 +175,14 @@ function firebase-open-console() {
     project_id=$(firebase projects:list --format json | jq -r '.[0].projectId')
 
     if [[ -z "$project_id" || "$project_id" == "null" ]]; then
-        _log-error "✗ Could not determine default Firebase project."
+        _log-error "✗ Could not determine default Firebase project"
         return 1
     fi
 
     local url="https://console.firebase.google.com/project/$project_id/overview"
     _log-info "🌐 Opening Firebase console: $url"
     open "$url"
-    _log-success "✓ Firebase console opened."
+    _log-success "✓ Firebase console opened"
     echo
 }
 
@@ -191,7 +191,7 @@ function firebase-open-console() {
 function firebase-logs() {
     _log-info "📜 Tailing Firebase Functions logs..."
     firebase functions:log
-    _log-success "✓ Firebase Functions logs displayed."
+    _log-success "✓ Firebase Functions logs displayed"
     echo
 }
 
@@ -205,7 +205,7 @@ function firebase-emulator-start() {
     _confirm-or-abort "Start Firebase emulator suite locally?" "$@" || return 1
 
     firebase emulators:start
-    _log-success "✓ Firebase emulator suite started."
+    _log-success "✓ Firebase emulator suite started"
     echo
 }
 
@@ -215,6 +215,6 @@ function firebase-clear-emulator-data() {
     _confirm-or-abort "This will clear all Firebase emulator data. Continue?" "$@" || return 1
 
     rm -rf ~/.firebase/emulatorhub
-    _log-success "✓ Emulator data cleared."
+    _log-success "✓ Emulator data cleared"
     echo
 }

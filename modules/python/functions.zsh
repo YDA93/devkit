@@ -47,7 +47,7 @@ function python-environment-is-active() {
 function python-environment-create() {
     _log-info "🔄 Creating virtual environment in ./venv..."
     python -m venv venv || {
-        _log-error "✗ Failed to create virtual environment."
+        _log-error "✗ Failed to create virtual environment"
         return 1
     }
     _log-success "✓ Virtual environment created"
@@ -60,15 +60,15 @@ function python-environment-create() {
 function python-environment-delete() {
     if python-environment-is-active --quiet; then
         deactivate
-        _log-success "📴 Deactivated virtual environment."
+        _log-success "📴 Deactivated virtual environment"
     fi
 
     if [[ -d venv ]]; then
         _log-info "🗑️  Deleting existing virtual environment..."
         rm -rf venv
-        _log-success "🗑️  Environment deleted."
+        _log-success "🗑️  Environment deleted"
     else
-        _log-info "ℹ️  No virtual environment found to delete."
+        _log-info "ℹ️  No virtual environment found to delete"
     fi
 }
 
@@ -135,7 +135,7 @@ function pip-install() {
     if $install_test; then
         _log-info "🧪 Installing test/dev dependencies from requirements-test.txt..."
         pip install -r requirements-test.txt || {
-            _log-error "✗ Failed to install test dependencies."
+            _log-error "✗ Failed to install test dependencies"
             return 1
         }
         _log-success "✓ Test dependencies installed"
@@ -144,7 +144,7 @@ function pip-install() {
     if $install_main; then
         _log-info "📦 Installing main dependencies from requirements.txt..."
         pip install -r requirements.txt || {
-            _log-error "✗ Failed to install main dependencies."
+            _log-error "✗ Failed to install main dependencies"
             return 1
         }
         _log-success "✓ Main dependencies installed"
