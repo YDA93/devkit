@@ -5,14 +5,21 @@
 # 🔥 Initializes Firebase and FlutterFire CLI for the project
 # 💡 Usage: flutter-flutterfire-init
 function flutter-flutterfire-init() {
+    _log-info "Logging into Firebase CLI..."
     firebase login || {
         _log-error "✗ Firebase login failed. Please log in to Firebase CLI."
         return 1
     }
+    echo
+
+    _log-info "Initializing Firebase in the project..."
     flutter-flutterfire-activate || {
         _log-error "✗ FlutterFire CLI activation failed."
         return 1
     }
+    echo
+
+    _log-info "Configuring Firebase for the project..."
     flutterfire configure || {
         _log-error "✗ FlutterFire configuration failed."
         return 1
@@ -126,6 +133,7 @@ function flutter-firebase-upload-crashlytics-symbols() {
 # 🔍 Gets the latest available Android build-tools version
 # 💡 Usage: _android-latest-build-tools
 function _android-latest-build-tools() {
+    _log-info "🔍 Fetching latest Android build-tools version..."
     sdkmanager --list 2>/dev/null |
         awk '/^ +build-tools;[0-9]/ { gsub(/^ +| +$/, "", $1); split($1, parts, ";"); print parts[2] }' |
         grep -Ev 'rc|beta|alpha' |
@@ -135,6 +143,7 @@ function _android-latest-build-tools() {
 # ☕️ Symlinks Homebrew-installed OpenJDK to macOS Java VirtualMachines
 # 💡 Usage: java-symlink-latest
 function java-symlink-latest() {
+    _log-info "☕️ Checking for Homebrew OpenJDK installation..."
     local brew_jdk_path="$HOMEBREW_OPT_PREFIX/openjdk/libexec/openjdk.jdk"
 
     if [[ ! -d "$brew_jdk_path" ]]; then
@@ -156,6 +165,7 @@ function java-symlink-latest() {
             echo
             return 1
         }
+        _log-success "✓ Symlinked OpenJDK to $target"
     fi
 }
 
@@ -204,10 +214,14 @@ function flutter-android-sdk-setup() {
 # 🌊 Updates splash screen assets using flutter_native_splash
 # 💡 Usage: flutter-update-splash
 function flutter-update-splash() {
+    _log-info "Removing existing splash screen..."
     dart run flutter_native_splash:remove || {
         _log-error "✗ Failed to remove existing splash screen."
         return 1
     }
+    echo
+
+    _log-info "Creating new splash screen..."
     dart run flutter_native_splash:create || {
         _log-error "✗ Failed to create new splash screen."
         return 1
@@ -269,18 +283,21 @@ function flutter-adb-connect() {
     PORT=$2
 
     # Step 1: List the devices
+    _log-info "Listing connected devices..."
     adb devices || {
         _log-error "✗ Failed to list devices. Ensure adb is installed and running."
         return 1
     }
 
     # Step 2: Connect to the device using adb
+    _log-info "Connecting to device at $IP_ADDRESS:$PORT..."
     adb connect "$IP_ADDRESS:$PORT" || {
         _log-error "✗ Failed to connect to $IP_ADDRESS:$PORT. Ensure the device is reachable."
         return 1
     }
 
     # Step 3: Verify the connection
+    _log-info "Verifying connection..."
     adb devices || {
         _log-error "✗ Failed to verify connection. Ensure adb is installed and running."
         return 1
@@ -295,6 +312,7 @@ function flutter-adb-connect() {
     REPLACE_PATTERN="$IP_ADDRESS:$PORT"
 
     # Update launch.json in place with the new port
+    _log-info "Updating .vscode/launch.json with new port..."
     sed -i '' -E "s/$SEARCH_PATTERN/$REPLACE_PATTERN/g" .vscode/launch.json || {
         _log-error "✗ Failed to update .vscode/launch.json. Ensure the file exists and is writable."
         return 1
@@ -362,7 +380,7 @@ function flutter-delete-unused-strings() {
 # 🧹 Clears Pod, Flutter, and Ccache caches
 # 💡 Usage: flutter-cache-reset
 function flutter-cache-reset() {
-    _log-info "Clearing cache of Pod, Flutter, and Ccache..."
+    _log-info "Clearing cache of Pod..."
     cd ios || {
         _log-error "✗ Failed to change directory to ios."
         return 1
@@ -375,10 +393,13 @@ function flutter-cache-reset() {
         _log-error "✗ Failed to change directory back to root."
         return 1
     }
+    _log-info "Clearing cache of Flutter..."
     flutter pub cache repair || {
         _log-error "✗ Failed to repair Flutter pub cache."
         return 1
     }
+
+    _log-info "Clearing cache of Ccache..."
     ccache -z || {
         _log-error "✗ Failed to Resets the cache statistics."
         return 1
@@ -387,6 +408,8 @@ function flutter-cache-reset() {
         _log-error "✗ Failed to Clears the cache contents."
         return 1
     }
+
+    _log-success "✓ Cache cleared successfully."
 }
 
 # 🔧 Reinstalls iOS Podfile dependencies from scratch
@@ -396,10 +419,12 @@ function flutter-ios-reinstall-podfile() {
         _log-error "✗ Failed to change directory to ios."
         return 1
     }
+    _log-info "Removing existing Podfile.lock..."
     rm Podfile.lock || {
         _log-error "✗ Failed to remove Podfile.lock."
         return 1
     }
+    _log-info "Reinstalling pods..."
     pod install --repo-update || {
         _log-error "✗ Failed to install pods."
         return 1
@@ -408,27 +433,40 @@ function flutter-ios-reinstall-podfile() {
         _log-error "✗ Failed to change directory back to root."
         return 1
     }
+    _log-success "✓ Podfile dependencies reinstalled successfully."
 }
 
 # 🧽 Runs a full Flutter clean and updates dependencies
 # 💡 Usage: flutter-clean
 function flutter-clean() {
+    _log-info "Cleaning Flutter project..."
     flutter clean || {
         _log-error "✗ Failed to clean Flutter project."
         return 1
     }
+    echo
+
+    _log-info "Updating Flutter dependencies..."
     flutter pub upgrade || {
         _log-error "✗ Failed to upgrade Flutter packages."
         return 1
     }
+    echo
+
+    _log-info "Checking for outdated packages..."
     flutter pub outdated || {
         _log-error "✗ Failed to check for outdated packages."
         return 1
     }
+    echo
+
+    _log-info "Upgrading major versions of packages..."
     flutter pub upgrade --major-versions || {
         _log-error "✗ Failed to upgrade major versions of packages."
         return 1
     }
+    echo
+
     flutter-dart-fix || {
         _log-error "✗ Failed to apply Dart fixes."
         return 1

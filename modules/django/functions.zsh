@@ -14,6 +14,7 @@ function django-project-start() {
     local projectname=$1
 
     # Create project directory
+    _log-info "Creating project directory '$projectname'..."
     mkdir "$projectname" && cd "$projectname" || return
 
     # Create the Python environment
@@ -23,9 +24,11 @@ function django-project-start() {
     python-environment-activate || return 1
 
     # Install Django
+    _log-info "Installing Django..."
     pip install django || return 1
 
     # Start Django project
+    _log-info "Starting Django project '$projectname'..."
     django-admin startproject "$projectname" . || return 1
 
     _log-success "✓ Django project '$projectname' created and ready!"
@@ -39,8 +42,10 @@ function django-app-start() {
         return 1
     fi
 
+    _log-info "Creating Django app '$1'..."
     app_name=$1 # First Aurgment
     python manage.py startapp $app_name
+    _log-success "✓ Django app '$app_name' created successfully!"
 }
 
 # ⚙️ Sets the DJANGO_SETTINGS_MODULE environment variable based on the selected environment
@@ -87,6 +92,7 @@ function django-secret-key-generate() {
     print(''.join(secrets.choice(safe_chars) for _ in range(50)))
     ")
 
+    _log-info "🔑 Generating new Django SECRET_KEY..."
     environment-variable-set "DJANGO_SECRET_KEY" "$raw_key"
 }
 
@@ -97,12 +103,14 @@ function django-secret-key-generate() {
 # 🛠️ Wrapper for makemigrations (passes through args)
 # 💡 Usage: django-migrate-make [args]
 function django-migrate-make() {
+    _log-info "🛠️ Running makemigrations..."
     python manage.py makemigrations $@
 }
 
 # 🧱 Wrapper for migrate (passes through args)
 # 💡 Usage: django-migrate [args]
 function django-migrate() {
+    _log-info "🧱 Running migrate..."
     python manage.py migrate $@
 }
 
@@ -118,7 +126,7 @@ function django-migrate-initial() {
 
     # 2. Handle URLs
     # Store the original content of the urls.py
-    _log-info "Updating project URLs..."
+    _log-info "Commenting out URLs temporarily to avoid import issues while running migrations..."
     local original_content=$(cat ./project/urls.py)
     # Comment out the entire content of the file
     sed -i '' 's/^/# /' ./project/urls.py
@@ -126,15 +134,19 @@ function django-migrate-initial() {
     echo "urlpatterns = []" >>./project/urls.py
 
     # 3. Run makemigrations
+    _log-info "Running makemigrations..."
     python "$PWD"/manage.py makemigrations || return 1
     # 4. Create cache table
+    _log-info "Creating cache table..."
     python "$PWD"/manage.py createcachetable || return 1
     # 5. Run migrate
+    _log-info "Running migrations..."
     python "$PWD"/manage.py migrate || return 1
 
     # 6. Restore original URLs
     _log-info "Restoring original project URLs..."
     echo "$original_content" >./project/urls.py
+    _log-success "✓ Initial migration cycle complete."
 }
 
 # 🧼 Deletes all Django migration files and `__pycache__` folders (excluding venv)
@@ -149,9 +161,11 @@ function django-migrate-and-cache-delete() {
     cd "$project_directory"
 
     # Delete migration files in Django apps (excluding venv)
+    _log-info "Deleting all Django migration files..."
     find . -path "*/migrations/*.py" -not -name "__init__.py" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); _log-success "Deleted $app_name -> $(basename "{}")"; rm "{}"' \; 2>/dev/null || true
 
     # Delete migration cache in Django apps (excluding venv)
+    _log-info "Deleting all Django __pycache__ folders..."
     find . -type d -name "__pycache__" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); [ "$app_name" != "." ] && _log-success "Deleted $app_name -> $(basename "$(dirname "{}")")/__pycache__" || _log-success "Deleted $(basename "$(dirname "{}")")/__pycache__"; rm -r "{}"' \; 2>/dev/null || true
 
     _log-success "Deleted all Django migration files and __pycache__ folders (excluding venv)."
@@ -288,6 +302,7 @@ function django-data-restore() {
 # - Skips venv and static files
 # 💡 Usage: django-translations-make
 function django-translations-make() {
+    _log-info "🌐 Creating .po files for Arabic translations..."
     echo -e $(django-admin makemessages -l ar --ignore="venv/*" --ignore="static/*")" in main directory"
     # Loop through directories
     for d in */; do
@@ -301,12 +316,14 @@ function django-translations-make() {
 
         cd ..
     done
+    _log-success "✓ .po files created for Arabic translations."
 }
 
 # 🛠️ Compiles translation `.po` files into `.mo` format
 # - Recursively processes all subdirectories with a `locale/`
 # 💡 Usage: django-translations-compile
 function django-translations-compile() {
+    _log-info "🛠️ Compiling translation .po files into .mo format..."
     # Loop through directories
     for d in */; do
         # Go to directory
@@ -319,6 +336,7 @@ function django-translations-compile() {
 
         cd ..
     done
+    _log-success "✓ .po files compiled into .mo format."
 }
 # ------------------------------------------------------------------------------
 # 🚀 Development & Deployment Tools
@@ -329,10 +347,11 @@ function django-translations-compile() {
 # 💡 Usage: django-run-server [port]
 function django-run-server() {
     if [ $# -eq 0 ]; then
+        _log-info "Starting Django server on port 8000..."
         python manage.py runserver 0.0.0.0:8000
     else
+        _log-info "Starting Django server on port $1..."
         python manage.py runserver 0.0.0.0:$@
-
     fi
 }
 
@@ -385,6 +404,7 @@ function django-upload-env-to-github-secrets() {
 # - Accepts optional test path (e.g., app/tests/test_views.py::TestView::test_get)
 # 💡 Usage: django-run-pytest [path/to/test.py::TestClass::test_method]
 function django-run-pytest() {
+    _log-info "🧪 Running pytest with coverage..."
     django-settings test
 
     # Replace '/' with '.', remove '.py::', and replace '::' with '.'
@@ -397,12 +417,14 @@ function django-run-pytest() {
 
     coverage run -m pytest -v -n auto $modified_arg
     coverage report
+    _log-success "✓ Pytest with coverage completed."
 }
 
 # 🧪 Runs Django tests using manage.py and test settings
 # - Accepts optional test path in pytest-like format
 # 💡 Usage: django-run-test [path/to/test.py::TestClass::test_method]
 function django-run-test() {
+    _log-info "🧪 Running Django tests..."
     django-settings test
 
     # Replace '/' with '.', remove '.py::', and replace '::' with '.'
@@ -414,6 +436,7 @@ function django-run-test() {
     fi
 
     python manage.py test $modified_arg
+    _log-success "✓ Django tests completed."
 }
 # ------------------------------------------------------------------------------
 # 🔍 Introspection & Automation

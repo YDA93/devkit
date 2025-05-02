@@ -187,7 +187,6 @@ function github-ssh-connection-test() {
 # - Prompts before pushing
 # 💡 Usage: github-commit-and-push ["Your commit message"]
 function github-commit-and-push() {
-
     _confirm-or-abort "This action will commit all changes and push them to the remote repository. Continue?" "$@" || return 1
 
     # Check if a commit message is provided
@@ -203,6 +202,7 @@ function github-commit-and-push() {
 
     # Push the committed changes to the remote repository
     git push
+    _log-success "✓ Changes committed and pushed to remote."
 }
 
 # 🔄 Clears Git cache and recommits all files
@@ -210,7 +210,6 @@ function github-commit-and-push() {
 # - Prompts for confirmation
 # 💡 Usage: github-clear-cache-and-recommit-all-files
 function github-clear-cache-and-recommit-all-files() {
-
     _confirm-or-abort "This action will reset the Git cache and recommit all files. Continue?" "$@" || return 1
 
     # Step 1: Remove all files from the Git index (cache) without deleting them from the working directory.
@@ -224,6 +223,8 @@ function github-clear-cache-and-recommit-all-files() {
 
     # Step 4: Push the changes to the remote repository on the main branch.
     git push origin main
+
+    _log-success "✓ Git cache cleared and all files recommitted."
 }
 
 # ⏪ Reverts the last commit from the remote repository only
@@ -231,7 +232,6 @@ function github-clear-cache-and-recommit-all-files() {
 # - Force-pushes to main
 # 💡 Usage: github-undo-last-commit
 function github-undo-last-commit() {
-
     _confirm-or-abort "This action will revert the last commit on GitHub only. Continue?" "$@" || return 1
 
     # Step 1: Force push the current branch, resetting it to the previous commit on GitHub.
@@ -239,7 +239,7 @@ function github-undo-last-commit() {
     git push --force origin HEAD~1:main
 
     # Step 2: Confirm the action with a message to the user.
-    _log-success "The last commit has been reverted on GitHub only. Your local repository remains unchanged."
+    _log-success "✓ The last commit has been reverted on GitHub only. Your local repository remains unchanged."
 }
 
 # 🚀 Creates a new version tag based on user input (major, minor, patch, or custom)
@@ -388,6 +388,7 @@ function github-branch-rename() {
     git branch -m "$new_branch"
     git push origin :"$old_branch" "$new_branch"
     git push --set-upstream origin "$new_branch"
+
     _log-success "✓ Renamed branch '$old_branch' to '$new_branch'"
 }
 
@@ -402,6 +403,7 @@ function github-branch-create() {
     _confirm-or-abort "Create a new branch '$1' and switch to it?" "$@" || return 1
 
     git checkout -b "$1"
+
     _log-success "✓ Created and switched to branch: $1"
 }
 
@@ -436,6 +438,7 @@ function github-branches-clean() {
     _confirm-or-abort "This will delete all branches already merged into 'main'. Continue?" "$@" || return 1
 
     git branch --merged main | grep -v '^\*' | grep -v 'main' | xargs -n 1 git branch -d
+
     _log-success "✓ Cleaned up merged branches."
 }
 
@@ -446,6 +449,7 @@ function github-reset-to-remote() {
 
     git fetch origin
     git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
+
     _log-success "✓ Local branch reset to match remote."
 }
 
@@ -464,6 +468,8 @@ function github-stash-and-pull() {
     git pull
     _log-info "📤 Reapplying stashed changes..."
     git stash pop
+
+    _log-success "✓ Stashed changes reapplied after pull."
 }
 
 # 🏷️ Creates a Git tag and pushes it to origin
@@ -481,6 +487,7 @@ function github-push-tag() {
 
     git tag -a "$tag" -m "$message"
     git push origin "$tag"
+
     _log-success "✓ Tag '$tag' pushed to origin."
 }
 
@@ -493,6 +500,8 @@ function github-rebase-current() {
 
     git fetch origin
     git rebase origin/"$target"
+
+    _log-success "✓ Rebasing completed."
 }
 
 # 🔄 Syncs your forked repo with upstream/main
@@ -511,6 +520,7 @@ function github-sync-fork() {
     git checkout main
     git reset --hard upstream/main
     git push origin main --force
+
     _log-success "✓ Fork synced with upstream."
 }
 
