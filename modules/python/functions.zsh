@@ -12,6 +12,7 @@ function python-environment-activate() {
 
     # Activate if available
     if [[ -f "venv/bin/activate" ]]; then
+        _log-info "🔄 Activating virtual environment..."
         source venv/bin/activate && _log-success "✓ Environment activated: venv"
     else
         _log-error "✗ No virtual environment found at ./venv"
@@ -36,7 +37,7 @@ function python-environment-is-active() {
         $quiet || _log-success "✓ Virtual environment is active: venv"
         return 0
     else
-        $quiet || _log-error "✗ Virtual environment is not activated."
+        $quiet || _log-error "✗ Virtual environment is not activated"
         return 1
     fi
 }
@@ -44,10 +45,12 @@ function python-environment-is-active() {
 # 🐍 Creates a Python virtual environment in ./venv and activates it
 # 💡 Usage: python-environment-create
 function python-environment-create() {
+    _log-info "🔄 Creating virtual environment in ./venv..."
     python -m venv venv || {
         _log-error "✗ Failed to create virtual environment."
         return 1
     }
+    _log-success "✓ Virtual environment created"
 
     python-environment-activate || return 1
 }
@@ -61,10 +64,11 @@ function python-environment-delete() {
     fi
 
     if [[ -d venv ]]; then
+        _log-info "🗑️  Deleting existing virtual environment..."
         rm -rf venv
-        _log-success "🗑️ Environment deleted."
+        _log-success "🗑️  Environment deleted."
     else
-        _log-info "ℹ️ No virtual environment found to delete."
+        _log-info "ℹ️  No virtual environment found to delete."
     fi
 }
 
@@ -90,6 +94,7 @@ function python-shell() {
         django-settings "$env" || return 1
     fi
 
+    _log-info "🔄 Opening Django shell..."
     python manage.py shell
 }
 
@@ -127,15 +132,24 @@ function pip-install() {
         install_test=true
     fi
 
-    if $install_main; then
-        _log-info "📦 Installing main dependencies from requirements.txt..."
-        pip install -r requirements.txt || return 1
-    fi
-
     if $install_test; then
         _log-info "🧪 Installing test/dev dependencies from requirements-test.txt..."
-        pip install -r requirements-test.txt || return 1
+        pip install -r requirements-test.txt || {
+            _log-error "✗ Failed to install test dependencies."
+            return 1
+        }
+        _log-success "✓ Test dependencies installed"
     fi
+
+    if $install_main; then
+        _log-info "📦 Installing main dependencies from requirements.txt..."
+        pip install -r requirements.txt || {
+            _log-error "✗ Failed to install main dependencies."
+            return 1
+        }
+        _log-success "✓ Main dependencies installed"
+    fi
+
 }
 
 # 🔄 Updates dependencies and regenerates requirements files
@@ -144,11 +158,6 @@ function pip-install() {
 # - With no flags: updates both
 # 💡 Usage: pip-update [--main|--test]
 function pip-update() {
-    # Ensure pip-upgrade is installed
-    if ! command -v pip-upgrade >/dev/null 2>&1; then
-        _log-error "✗ 'pip-upgrader' is not installed. Please install it with: pip install pip-upgrader"
-        return 1
-    fi
 
     local update_main=false
     local update_test=false
@@ -166,22 +175,37 @@ function pip-update() {
         shift
     done
 
-    # Default to updating both if no flags
+    # Default to updating both if no flags provided
     if ! $update_main && ! $update_test; then
         update_main=true
         update_test=true
     fi
 
-    # Install and update
+    # Run pip-install first
     if $update_main; then
         pip-install --main || return 1
-        _log-info "🔄 Updating main dependencies in requirements.txt..."
-        pip-upgrade requirements.txt || return 1
     fi
 
     if $update_test; then
         pip-install --test || return 1
+    fi
+
+    # Ensure pip-upgrade is installed
+    if ! command -v pip-upgrade >/dev/null 2>&1; then
+        _log-error "✗ 'pip-upgrader' is not installed. Please install it with: pip install pip-upgrader"
+        return 1
+    fi
+
+    # Run pip-upgrade last
+    if $update_main; then
+        _log-info "🔄 Updating main dependencies in requirements.txt..."
+        pip-upgrade requirements.txt || return 1
+        _log-success "✓ Main dependencies updated"
+    fi
+
+    if $update_test; then
         _log-info "🔄 Updating test dependencies in requirements-test.txt..."
         pip-upgrade requirements-test.txt || return 1
+        _log-success "✓ Test dependencies updated"
     fi
 }
