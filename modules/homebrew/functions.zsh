@@ -13,7 +13,7 @@ function homebrew-install() {
     if ! command -v brew &>/dev/null; then
         _log-info "Homebrew not found. Installing..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-            _log-error "Homebrew installation failed"
+            _log-error "✗ Homebrew installation failed"
             echo
             return 1
         }
@@ -26,7 +26,7 @@ function homebrew-install() {
 
     # Verify Homebrew is working
     if ! brew --version &>/dev/null; then
-        _log-error "Homebrew seems to be installed but not working properly"
+        _log-error "✗ Homebrew seems to be installed but not working properly"
         _log-inline-title "End of Homebrew Installation"
         echo
         return 1
@@ -180,13 +180,13 @@ function homebrew-install-packages-from-settings() {
         if brew install --cask "$cask"; then
             ((installed_casks++))
         else
-            _log-error "Install failed for $cask, trying to fix..."
+            _log-error "✗ Install failed for $cask, trying to fix..."
             brew uninstall --cask --force "$cask"
             if brew install --cask "$cask"; then
                 ((installed_casks++))
                 _log-success "✓ Successfully installed $cask after retry"
             else
-                _log-error "Failed to install $cask after retry"
+                _log-error "✗ Failed to install $cask after retry"
             fi
         fi
     done

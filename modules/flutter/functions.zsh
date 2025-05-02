@@ -318,7 +318,7 @@ function flutter-adb-connect() {
         return 1
     }
 
-    _log-success "Updated .vscode/launch.json with new port for IP $IP_ADDRESS"
+    _log-success "✓ Updated .vscode/launch.json with new port for IP $IP_ADDRESS"
 }
 
 # ------------------------------------------------------------------------------
@@ -367,14 +367,14 @@ function flutter-delete-unused-strings() {
                 # Use sed to delete the lines containing the keys
                 # This command now modifies the file in-place without creating a backup
                 sed -i '' "/\"$key\":/d" "$full_path"
-                _log-success "Removed $key from $file"
+                _log-success "✓ Removed $key from $file"
             else
-                _log-error "File $full_path not found"
+                _log-error "✗ File $full_path not found"
             fi
         done
     done <"$temp_file"
 
-    _log-success "Cleanup completed"
+    _log-success "✓ Cleanup completed"
 }
 
 # 🧹 Clears Pod, Flutter, and Ccache caches

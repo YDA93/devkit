@@ -229,7 +229,7 @@ function postgres-database-create() {
 
     if [[ -n "$db_exists" ]]; then
         _confirm-or-abort "⚠️  Database '$db_name' already exists. Do you want to drop it?" || {
-            _log-error "🚫 Operation canceled. Exiting..."
+            _log-error "✗ Operation canceled. Exiting..."
             unset PGPASSWORD
             return 1
         }
@@ -286,7 +286,7 @@ function postgres-database-delete() {
         echo
 
         _confirm-or-abort "⚠️  Are you sure you want to delete '$db_name'? This action is irreversible." || {
-            _log-error "🚫 Database '$db_name' was not dropped"
+            _log-error "✗ Database '$db_name' was not dropped"
             exit 1
         }
 

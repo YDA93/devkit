@@ -50,7 +50,7 @@ function devkit-is-setup() {
     if ((${#missing[@]} > 0)); then
         if [[ "$quiet" == false ]]; then
             _log-warning "⚠️  DevKit is not fully set up"
-            _log-error "🚫 Missing tools: ${missing[*]}"
+            _log-error "✗ Missing tools: ${missing[*]}"
             _log-hint "👉 Run: devkit-pc-setup"
         fi
         return 1

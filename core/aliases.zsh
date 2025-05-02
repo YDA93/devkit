@@ -35,10 +35,10 @@ alias devkit-pc-disk="df -h"
 alias devkit-pc-stats="top -l 1 | head -n 10"
 
 # 🧼 Clear system and user cache folders
-alias devkit-pc-clear-cache="rm -rf ~/Library/Caches/* /Library/Caches/* && _log-success '🧹 Caches cleared.'"
+alias devkit-pc-clear-cache="rm -rf ~/Library/Caches/* /Library/Caches/* && _log-success '✓ Caches cleared.'"
 
 # 🗑️ Empty the trash folder
-alias devkit-pc-empty-trash="sudo rm -rf ~/.Trash/* && _log-success '🗑️ Trash emptied.'"
+alias devkit-pc-empty-trash="sudo rm -rf ~/.Trash/* && _log-success '✓ Trash emptied.'"
 
 # 🐚 Show shell, interpreter, and version info
 alias devkit-shell-info="echo \$SHELL && echo \$0 && echo \$ZSH_VERSION"

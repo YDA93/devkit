@@ -2,7 +2,7 @@
 # 💡 Usage: terminal-theme-setup
 function terminal-theme-setup() {
     terminal-set-font-meslo-nerd || {
-        _log-error "❌ Failed to set Terminal font"
+        _log-error "✗ Failed to set Terminal font"
         return 1
     }
 
@@ -11,7 +11,7 @@ function terminal-theme-setup() {
 
     _log-info "🎨 Importing Terminal theme \"$THEME_FILE\"..."
     open "$THEME_FILE" || {
-        _log-error "❌ Failed to open Terminal theme file: $THEME_FILE"
+        _log-error "✗ Failed to open Terminal theme file: $THEME_FILE"
         return 1
     }
     sleep 1 # Give Terminal time to register the new theme
@@ -21,11 +21,11 @@ function terminal-theme-setup() {
 
     _log-info "📌 Setting \"$THEME_NAME\" as default and startup profile..."
     defaults write com.apple.Terminal "Default Window Settings" -string "$THEME_NAME" || {
-        _log-error "❌ Failed to set Default Window Settings"
+        _log-error "✗ Failed to set Default Window Settings"
         return 1
     }
     defaults write com.apple.Terminal "Startup Window Settings" -string "$THEME_NAME" || {
-        _log-error "❌ Failed to set Startup Window Settings"
+        _log-error "✗ Failed to set Startup Window Settings"
         return 1
     }
 
@@ -36,7 +36,7 @@ function terminal-theme-setup() {
     _log-info "🔄 Applying theme to the current Terminal window..."
     (osascript -e 'tell application "Terminal" to set current settings of front window to settings set "cool-night"' &>/dev/null &)
 
-    _log-success "🎉 Terminal theme and font successfully applied!"
+    _log-success "✓ Terminal theme and font successfully applied!"
 }
 
 # 🧹 Reset terminal to factory defaults
@@ -65,7 +65,7 @@ function terminal-set-font-meslo-nerd() {
     _log-info "🖥️  Setting Terminal font to 'MesloLGS NF'..."
     if ! font-is-installed-meslo-nerd; then
         font-install-meslo-nerd || {
-            _log-error "❌ Failed to install Meslo Nerd Font"
+            _log-error "✗ Failed to install Meslo Nerd Font"
             return 1
         }
     fi
@@ -77,7 +77,7 @@ function terminal-set-font-meslo-nerd() {
         -e 'set font size to 12' \
         -e 'end tell' \
         -e 'end tell'
-    _log-success "🎉 Terminal font set to 'MesloLGS NF'"
+    _log-success "✓ Terminal font set to 'MesloLGS NF'"
 }
 
 # 🖥️ Reset Terminal font to SF Mono Regular 11pt

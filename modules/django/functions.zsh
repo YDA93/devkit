@@ -162,13 +162,13 @@ function django-migrate-and-cache-delete() {
 
     # Delete migration files in Django apps (excluding venv)
     _log-info "Deleting all Django migration files..."
-    find . -path "*/migrations/*.py" -not -name "__init__.py" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); _log-success "Deleted $app_name -> $(basename "{}")"; rm "{}"' \; 2>/dev/null || true
+    find . -path "*/migrations/*.py" -not -name "__init__.py" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); _log-success "✓ Deleted $app_name -> $(basename "{}")"; rm "{}"' \; 2>/dev/null || true
 
     # Delete migration cache in Django apps (excluding venv)
     _log-info "Deleting all Django __pycache__ folders..."
-    find . -type d -name "__pycache__" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); [ "$app_name" != "." ] && _log-success "Deleted $app_name -> $(basename "$(dirname "{}")")/__pycache__" || _log-success "Deleted $(basename "$(dirname "{}")")/__pycache__"; rm -r "{}"' \; 2>/dev/null || true
+    find . -type d -name "__pycache__" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); [ "$app_name" != "." ] && _log-success "✓ Deleted $app_name -> $(basename "$(dirname "{}")")/__pycache__" || _log-success "Deleted $(basename "$(dirname "{}")")/__pycache__"; rm -r "{}"' \; 2>/dev/null || true
 
-    _log-success "Deleted all Django migration files and __pycache__ folders (excluding venv)"
+    _log-success "✓ Deleted all Django migration files and __pycache__ folders (excluding venv)"
 
     # Return to the original directory
     cd "$OLDPWD"
