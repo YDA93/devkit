@@ -55,7 +55,7 @@ function _gcloud-scheduler-jobs-prompt() {
 function gcloud-scheduler-jobs-delete() {
     gcloud-config-load-and-validate || return 1
 
-    _log-info "📡 Fetching all Cloud Scheduler jobs in project '$GCP_PROJECT_ID'..."
+    _log-info "🔹 Fetching all Cloud Scheduler jobs in project '$GCP_PROJECT_ID'..."
     local urls=($(gcloud scheduler jobs list \
         --project="$GCP_PROJECT_ID" \
         --location="$GCP_REGION" \
@@ -73,7 +73,7 @@ function gcloud-scheduler-jobs-delete() {
 
     for url in "${urls[@]}"; do
         local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
-        _log-info "🔧 Deleting job: $job_name"
+        _log-info "🔹 Deleting job: $job_name"
         gcloud scheduler jobs delete "$job_name" \
             --project="$GCP_PROJECT_ID" \
             --location="$GCP_REGION" \
@@ -90,14 +90,14 @@ function gcloud-scheduler-jobs-sync() {
 
     _log-info "🔹 Syncing Cloud Scheduler with Django cron URLs..."
 
-    _log-info "🔍 Fetching cron URLs from Django..."
+    _log-info "🔹 Fetching cron URLs from Django..."
     local local_urls=($(django-find-cron-urls | grep '^https://'))
     declare -A local_jobs
 
     if [[ ${#local_urls[@]} -eq 0 ]]; then
         _log-warning "⚠️  No local cron URLs found. Will only check for deletions..."
     else
-        _log-info "🔍 Found ${#local_urls[@]} local cron job(s):"
+        _log-info-2 "🔸 Found ${#local_urls[@]} local cron job(s):"
         for url in "${local_urls[@]}"; do
             local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
             local_jobs[$job_name]="$url"
@@ -106,7 +106,7 @@ function gcloud-scheduler-jobs-sync() {
     fi
     echo ""
 
-    _log-info "📡 Fetching existing Cloud Scheduler jobs..."
+    _log-info "🔹 Fetching existing Cloud Scheduler jobs..."
     local remote_jobs=($(gcloud scheduler jobs list \
         --project="$GCP_PROJECT_ID" \
         --location="$GCP_REGION" \
@@ -115,7 +115,7 @@ function gcloud-scheduler-jobs-sync() {
     if [[ ${#remote_jobs[@]} -eq 0 ]]; then
         _log-warning "⚠️  No Cloud Scheduler jobs found. Will only check for creations..."
     else
-        _log-info "📡 Found ${#remote_jobs[@]} Cloud Scheduler job(s):"
+        _log-info-2 "🔸 Found ${#remote_jobs[@]} Cloud Scheduler job(s):"
         for url in "${remote_jobs[@]}"; do
             local description=$(_gcloud-scheduler-jobs-generate-description "$url")
             _log-info "  • $description"
@@ -154,7 +154,7 @@ function gcloud-scheduler-jobs-sync() {
     # 🔧 Delete jobs
     for url in "${to_delete_urls[@]}"; do
         local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
-        _log-info "🗑️  Deleting job: $job_name"
+        _log-info "🔹 Deleting job: $job_name"
         gcloud scheduler jobs delete "$job_name" \
             --project="$GCP_PROJECT_ID" \
             --location="$GCP_REGION" \
@@ -167,7 +167,7 @@ function gcloud-scheduler-jobs-sync() {
         local job_name=$(_gcloud-scheduler-jobs-generate-name "$url")
         local description=$(_gcloud-scheduler-jobs-generate-description "$url")
 
-        _log-info "➕ Creating job: $job_name"
+        _log-info "🔹 Creating job: $job_name"
 
         gcloud scheduler jobs create http "$job_name" \
             --description="$description" \
@@ -199,7 +199,7 @@ function gcloud-scheduler-jobs-sync() {
 function gcloud-scheduler-jobs-list() {
     gcloud-config-load-and-validate || return 1
 
-    _log-info "📡 Fetching all Cloud Scheduler jobs in project '$GCP_PROJECT_ID'..."
+    _log-info "🔹 Fetching all Cloud Scheduler jobs in project '$GCP_PROJECT_ID'..."
     gcloud scheduler jobs list \
         --project="$GCP_PROJECT_ID" \
         --location="$GCP_REGION"

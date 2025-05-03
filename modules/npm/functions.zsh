@@ -8,7 +8,7 @@
 function npm-save-packages() {
     _log-inline-title "npm Packages Saving"
     local output="$DEVKIT_MODULES_DIR/npm/packages.txt"
-    _log-info "📦 Saving global npm packages to $output"
+    _log-info "🔹 Saving global npm packages to $output"
     mkdir -p "$(dirname "$output")"
 
     npm list -g --depth=0 --parseable |
@@ -42,9 +42,9 @@ function npm-install-packages() {
         return 1
     }
 
-    _log-info "📦 Installing global npm packages from $input"
-    _log-info "📦 Using prefix: $npm_prefix"
-    _log-info "📦 Packages:"
+    _log-info "🔹 Installing global npm packages from $input"
+    _log-info "🔹 Using prefix: $npm_prefix"
+    _log-info-2 "🔸 Packages:"
     cat "$input"
     echo ""
 
@@ -78,9 +78,9 @@ function npm-uninstall-packages() {
         return 1
     }
 
-    _log-info "🧹 Uninstalling global npm packages from $input"
-    _log-info "🧹 Using prefix: $npm_prefix"
-    _log-info "🧹 Packages:"
+    _log-info "🔹 Uninstalling global npm packages from $input"
+    _log-info "🔹 Using prefix: $npm_prefix"
+    _log-info-2 "🔸 Packages:"
     cat "$input"
     echo ""
 
@@ -104,15 +104,15 @@ function npm-repair() {
         return 1
     }
 
-    _log-info "🔧 Reinstalling npm via Homebrew ($LATEST_NODE)..."
+    _log-info "🔹 Reinstalling npm via Homebrew ($LATEST_NODE)..."
     brew reinstall "$LATEST_NODE" || return 1
     _log-success "✓ Reinstalled npm via Homebrew"
     echo
-    _log-info "🧼 Cleaning up existing global packages..."
+    _log-info "🔹 Cleaning up existing global packages..."
     npm-uninstall-packages || return 1
     _log-success "✓ Cleaned up global npm packages"
     echo
-    _log-info "♻️ Reinstalling global packages..."
+    _log-info "🔹 Reinstalling global packages..."
     npm-install-packages || return 1
     _log-success "✓ Reinstalled global npm packages"
 
@@ -132,7 +132,7 @@ function npm-prune-packages() {
         return 1
     fi
 
-    _log-info "🧹 Checking for npm packages to uninstall..."
+    _log-info "🔹 Checking for npm packages to uninstall..."
 
     local current_pkgs=($(npm list -g --depth=0 --parseable | tail -n +2 | awk -F/ '{print $NF}')) || {
         _log-error "✗ Failed to list npm packages. Please check your npm installation"
@@ -146,7 +146,7 @@ function npm-prune-packages() {
                 _log-error "✗ Uninstalling: $pkg"
                 npm uninstall -g "$pkg"
             else
-                _log-info "⏭️ Skipping: $pkg"
+                _log-info "🔹 Skipping: $pkg"
             fi
         fi
     done
@@ -166,7 +166,7 @@ function npm-setup() {
 # 📋 Lists all globally installed npm packages
 # 💡 Usage: npm-list-packages
 function npm-list-packages() {
-    _log-info "📦 Installed global npm packages:"
+    _log-info-2 "🔸 Installed global npm packages:"
     npm list -g || {
         _log-error "✗ Failed to list npm packages. Please check your npm installation"
         return 1
@@ -182,7 +182,7 @@ function npm-list-packages() {
 function npm-doctor() {
     _log-inline-title "npm Doctor"
 
-    _log-info "🔧 Checking Node installation..."
+    _log-info "🔹 Checking Node installation..."
     if ! command -v node &>/dev/null; then
         _log-warning "⚠️  Node.js is not installed or not in PATH"
         _log-hint "💡 Install with: brew install node"
@@ -192,7 +192,7 @@ function npm-doctor() {
     _log-success "✓ Node.js is installed"
     echo
 
-    _log-info "🔧 Checking npm installation..."
+    _log-info "🔹 Checking npm installation..."
     if ! command -v npm &>/dev/null; then
         _log-warning "⚠️  npm is not installed"
         echo
@@ -205,7 +205,7 @@ function npm-doctor() {
         _log-warning "⚠️  Failed to get npm prefix. Please check your npm installation"
         return 1
     }
-    _log-info "📁 npm global prefix: ${npm_root:-⚠️ Not set}"
+    _log-info "🔹 npm global prefix: ${npm_root:-⚠️ Not set}"
 
     current_registry=$(npm config get registry)
     if [[ "$current_registry" != "https://registry.npmjs.org/" ]]; then
@@ -218,7 +218,7 @@ function npm-doctor() {
         echo
     fi
 
-    _log-info "🔧 Checking if global npm packages are writable"
+    _log-info "🔹 Checking if global npm packages are writable"
     global_path="$npm_root/lib/node_modules"
     if [[ -w "$global_path" ]]; then
         _log-success "✓ Global npm packages are writable"
@@ -229,7 +229,7 @@ function npm-doctor() {
         echo
     fi
 
-    _log-info "🧪 Running basic 'npm doctor' check..."
+    _log-info "🔹 Running basic 'npm doctor' check..."
     npm doctor || _log-warning "⚠️  npm doctor found some issues (see above)"
     echo
 

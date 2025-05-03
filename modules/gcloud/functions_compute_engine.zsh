@@ -250,7 +250,7 @@ function gcloud-compute-engine-cloud-load-balancer-setup() {
 
     _confirm-or-abort "Are you sure you want to set up the Cloud Load Balancer?" "$@" || return 1
 
-    _log-info "⚙️ Starting to set up the Cloud Load Balancer..."
+    _log-info "🔹 Starting to set up the Cloud Load Balancer..."
 
     gcloud services enable compute.googleapis.com networkservices.googleapis.com
 
@@ -310,7 +310,7 @@ function gcloud-compute-engine-cloud-load-balancer-teardown() {
 
     _confirm-or-abort "Are you sure you want to teardown the Cloud Load Balancer?" "$@" || return 1
 
-    _log-info "⚙️ Starting to teardown the Cloud Load Balancer..."
+    _log-info "🔹 Starting to teardown the Cloud Load Balancer..."
 
     # Step 1: Delete Global Forwarding Rule
     gcloud-compute-engine-global-forwarding-rule-delete --quiet || _log-error "✗ Failed to delete global forwarding rule"

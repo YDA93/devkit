@@ -6,21 +6,21 @@
 # 💡 Usage: code-settings
 function code-settings() {
     local SETTINGS_PATH="$HOME/Library/Application Support/Code/User/settings.json"
-    _log-info "⚙️ Opening VS Code settings..."
+    _log-info "🔹 Opening VS Code settings..."
     code "$SETTINGS_PATH"
 }
 
 # 🧩 List installed VS Code extensions
 # 💡 Usage: code-extensions
 function code-extensions() {
-    _log-info "🧩 Installed VS Code extensions:"
+    _log-info "🔹 Installed VS Code extensions:"
     code --list-extensions
 }
 
 # ♻️ Update all installed VS Code extensions
 # 💡 Usage: code-extensions-update
 function code-extensions-update() {
-    _log-info "♻️  Updating all VS Code extensions..."
+    _log-info "🔹 Updating all VS Code extensions..."
     code --update-extensions || {
         _log-error "✗ Failed to update extensions. Please check your VS Code installation"
         return 1
@@ -84,7 +84,7 @@ function code-extensions-restore() {
         return 1
     fi
 
-    _log-info "♻️ Restoring extensions from: $BACKUP_PATH ..."
+    _log-info "🔹 Restoring extensions from: $BACKUP_PATH ..."
     xargs -n1 code --install-extension <"$BACKUP_PATH"
 
     _log-success "✓ Extensions restored successfully!"
@@ -99,7 +99,7 @@ function code-project() {
 
     # If no project is provided, list available projects
     if [[ -z "$PROJECT_NAME" ]]; then
-        _log-info "📂 Available projects in $BASE_PATH:"
+        _log-info-2 "🔸 Available projects in $BASE_PATH:"
         ls -1 "$BASE_PATH"
         return 1
     fi
@@ -109,7 +109,7 @@ function code-project() {
 
     # Check if the directory exists
     if [[ -d "$PROJECT_PATH" ]]; then
-        _log-info "🚀 Opening project: $PROJECT_NAME"
+        _log-info "🔹 Opening project: $PROJECT_NAME"
         code "$PROJECT_PATH"
     else
         _log-error "✗ Project not found: $PROJECT_PATH"
@@ -135,7 +135,7 @@ function code-font-set() {
         return 0
     fi
 
-    _log-info "🖥️  Setting Powerlevel10k terminal font to 'MesloLGS NF'..."
+    _log-info "🔹 Setting Powerlevel10k terminal font to 'MesloLGS NF'..."
     SETTINGS_FILE="$HOME/Library/Application Support/Code/User/settings.json"
     TMP_FILE="${SETTINGS_FILE}.tmp"
     DESIRED_FONT="MesloLGS NF"
@@ -168,7 +168,7 @@ function code-font-unset() {
     if [ ! -d "/Applications/Visual Studio Code.app" ]; then
         return 0
     fi
-    _log-info "🧹 Unsetting Powerlevel10k terminal font in VS Code settings..."
+    _log-info "🔹 Unsetting Powerlevel10k terminal font in VS Code settings..."
     SETTINGS_FILE="$HOME/Library/Application Support/Code/User/settings.json"
     TMP_FILE="${SETTINGS_FILE}.tmp"
 

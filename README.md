@@ -42,9 +42,9 @@ DevKit CLI is packed with powerful commands, organized into core workflows and o
 
 Your everyday essentials — the primary commands that do the heavy lifting:
 
-- **⚙️ devkit-pc-setup**  
+- **⚙️ devkit-setup**  
   Complete macOS development environment setup: Homebrew, Python, Node.js, Flutter, Docker, GCP SDK, and more.
-- **🔄 devkit-pc-update**  
+- **🔄 devkit-update**  
   One command to update system apps and dev tools: Homebrew, Python, Node.js, Flutter, Docker, GCP SDK, and App Store apps.
 - **☁️ gcloud-project-django-setup**  
   Deploy your Django project to Google Cloud Platform — builds, provisions, and deploys services in one step.

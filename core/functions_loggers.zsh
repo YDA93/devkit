@@ -51,6 +51,16 @@ function _log-info() {
     fi
 }
 
+# ℹ️ Prints an informational message (orange tone to match 🔸)
+# 💡 Usage: _log-info "Message"
+function _log-info-2() {
+    if [[ $GUM_AVAILABLE -eq 1 ]]; then
+        gum style --foreground 208 "$@"
+    else
+        echo -e "\033[38;5;208m$@${NO_COLOR}"
+    fi
+}
+
 # 💡 Prints a hint or tip message
 # 💡 Usage: _log-hint "Message"
 function _log-hint() {
@@ -131,8 +141,8 @@ function _log-title() {
 }
 
 # 🖨️ Prints a stylized section title to terminal (Gum version)
-# 💡 Usage: _log-section_title "Title"
-function _log-section_title() {
+# 💡 Usage: _log-section-title "Title"
+function _log-section-title() {
     local title="$1"
 
     if [[ $GUM_AVAILABLE -eq 1 ]]; then
@@ -282,7 +292,7 @@ function _confirm-or-abort() {
         if gum confirm "$message"; then
             return 0
         else
-            _log-info "Aborting action"
+            _log-info "🔹 Aborting action"
             echo
             return 1
         fi

@@ -12,7 +12,7 @@ function python-environment-activate() {
 
     # Activate if available
     if [[ -f "venv/bin/activate" ]]; then
-        _log-info "🔄 Activating virtual environment..."
+        _log-info "🔹 Activating virtual environment..."
         source venv/bin/activate && _log-success "✓ Environment activated: venv"
     else
         _log-error "✗ No virtual environment found at ./venv"
@@ -45,7 +45,7 @@ function python-environment-is-active() {
 # 🐍 Creates a Python virtual environment in ./venv and activates it
 # 💡 Usage: python-environment-create
 function python-environment-create() {
-    _log-info "🔄 Creating virtual environment in ./venv..."
+    _log-info "🔹 Creating virtual environment in ./venv..."
     python -m venv venv || {
         _log-error "✗ Failed to create virtual environment"
         return 1
@@ -64,11 +64,11 @@ function python-environment-delete() {
     fi
 
     if [[ -d venv ]]; then
-        _log-info "🗑️  Deleting existing virtual environment..."
+        _log-info "🔹 Deleting existing virtual environment..."
         rm -rf venv
         _log-success "✓ Environment deleted"
     else
-        _log-info "ℹ️  No virtual environment found to delete"
+        _log-info-2 "🔸 No virtual environment found to delete"
     fi
 }
 
@@ -94,7 +94,7 @@ function python-shell() {
         django-settings "$env" || return 1
     fi
 
-    _log-info "🔄 Opening Django shell..."
+    _log-info "🔹 Opening Django shell..."
     python manage.py shell
 }
 
@@ -133,7 +133,7 @@ function pip-install() {
     fi
 
     if $install_test; then
-        _log-info "🧪 Installing test/dev dependencies from requirements-test.txt..."
+        _log-info "🔹 Installing test/dev dependencies from requirements-test.txt..."
         pip install -r requirements-test.txt || {
             _log-error "✗ Failed to install test dependencies"
             return 1
@@ -142,7 +142,7 @@ function pip-install() {
     fi
 
     if $install_main; then
-        _log-info "📦 Installing main dependencies from requirements.txt..."
+        _log-info "🔹 Installing main dependencies from requirements.txt..."
         pip install -r requirements.txt || {
             _log-error "✗ Failed to install main dependencies"
             return 1
@@ -198,13 +198,13 @@ function pip-update() {
 
     # Run pip-upgrade last
     if $update_main; then
-        _log-info "🔄 Updating main dependencies in requirements.txt..."
+        _log-info "🔹 Updating main dependencies in requirements.txt..."
         pip-upgrade requirements.txt || return 1
         _log-success "✓ Main dependencies updated"
     fi
 
     if $update_test; then
-        _log-info "🔄 Updating test dependencies in requirements-test.txt..."
+        _log-info "🔹 Updating test dependencies in requirements-test.txt..."
         pip-upgrade requirements-test.txt || return 1
         _log-success "✓ Test dependencies updated"
     fi

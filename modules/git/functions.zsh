@@ -7,7 +7,7 @@
 # - Applies essential Git settings (no extras)
 # 💡 Usage: git-setup
 function git-setup() {
-    _log-info "🔧 Setting up Git global configuration..."
+    _log-info "🔹 Setting up Git global configuration..."
 
     full_name=$(_devkit-settings get string full_name)
     email=$(_devkit-settings get string email)
@@ -47,7 +47,7 @@ function git-setup() {
 # - Ensures an SSH key exists and GitHub connection works
 # 💡 Usage: git-doctor
 function git-doctor() {
-    _log-info "🔧 Checking Git..."
+    _log-info "🔹 Checking Git..."
 
     if ! command -v git &>/dev/null; then
         _log-warning "⚠️  Git is not installed"
@@ -57,7 +57,7 @@ function git-doctor() {
     _log-success "✓ Git is installed"
     echo
 
-    _log-info "🔧 Checking Git configuration..."
+    _log-info "🔹 Checking Git configuration..."
     if [[ -z $(git config user.name) || -z $(git config user.email) ]]; then
         _log-warning "⚠️  Git user.name or user.email not configured"
         _log-hint "💡 Set them with:"
@@ -69,7 +69,7 @@ function git-doctor() {
         echo
     fi
 
-    _log-info "📝 Checking for global .gitignore..."
+    _log-info "🔹 Checking for global .gitignore..."
     if git config --get core.excludesfile &>/dev/null; then
         _log-success "✓ Global .gitignore is configured"
         echo
@@ -79,7 +79,7 @@ function git-doctor() {
         echo
     fi
 
-    _log-info "🔧 Checking SSH key..."
+    _log-info "🔹 Checking SSH key..."
     if [[ -f ~/.ssh/id_rsa.pub || -f ~/.ssh/id_ed25519.pub ]]; then
         _log-success "✓ SSH key found"
         echo
@@ -89,7 +89,7 @@ function git-doctor() {
         echo
     fi
 
-    _log-info "🔐 Testing SSH connection to GitHub..."
+    _log-info "🔹 Testing SSH connection to GitHub..."
     if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
         _log-success "✓ SSH connection to GitHub works"
         echo

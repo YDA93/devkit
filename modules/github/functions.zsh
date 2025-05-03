@@ -6,7 +6,7 @@
 # - Shows private and public key pairs with optional comments
 # 💡 Usage: github-ssh-list
 function github-ssh-list() {
-    _log-info "📂 SSH keys in ~/.ssh/:"
+    _log-info-2 "🔸 SSH keys in ~/.ssh/:"
 
     setopt local_options null_glob # Allow empty glob without error
 
@@ -17,10 +17,10 @@ function github-ssh-list() {
         [[ "$priv" == *.pub ]] && continue
         [[ -e "$priv" ]] || continue
 
-        _log-info "🗝️  Private Key: $priv"
+        _log-info-2 "🔸 Private Key: $priv"
         pub="${priv}.pub"
         if [[ -f "$pub" ]]; then
-            _log-info "🔑 Public Key: $pub"
+            _log-info-2 "🔸 Public Key: $pub"
             comment=$(awk '{print $3}' "$pub")
             [[ -n "$comment" ]] && _log-info "   └─ Comment: $comment"
         fi
@@ -50,14 +50,14 @@ function github-ssh-setup() {
     if [[ -f "$key_path" ]]; then
         _log-success "✓ SSH key already exists at $key_path"
     else
-        _log-info "🔑 Generating new SSH key..."
+        _log-info "🔹 Generating new SSH key..."
         ssh-keygen -t ed25519 -C "$github_email" -f "$key_path"
     fi
 
-    _log-info "📋 Your public SSH key:"
+    _log-info-2 "🔸 Your public SSH key:"
     cat "${key_path}.pub"
 
-    _log-info "🛠️  Updating SSH config to use port 443 for GitHub..."
+    _log-info "🔹 Updating SSH config to use port 443 for GitHub..."
     mkdir -p ~/.ssh
     touch ~/.ssh/config
 
@@ -75,13 +75,13 @@ function github-ssh-setup() {
         _log-warning "⚠️  SSH config already contains a block for github.com. Skipping"
     fi
 
-    _log-info "🔐 Starting ssh-agent and adding your key..."
+    _log-info "🔹 Starting ssh-agent and adding your key..."
     eval "$(ssh-agent -s)"
     if ! ssh-add -l | grep -q "$key_path"; then
         ssh-add "$key_path"
         _log-success "✓ SSH key added to agent"
     else
-        _log-info "ℹ️  SSH key already added to agent. Skipping"
+        _log-info "🔹 SSH key already added to agent. Skipping"
     fi
 
     echo
@@ -112,11 +112,11 @@ function github-ssh-setup() {
         return 1
     }
 
-    _log-info "🚀 Testing SSH connection to GitHub..."
+    _log-info "🔹 Testing SSH connection to GitHub..."
     ssh -T git@github.com
 
     echo
-    _log-info "📂 SSH keys currently loaded into your agent:"
+    _log-info-2 "🔸 SSH keys currently loaded into your agent:"
     ssh-add -l
 }
 
@@ -124,7 +124,7 @@ function github-ssh-setup() {
 # - Lists key pairs and allows you to select which to delete
 # 💡 Usage: github-ssh-delete
 function github-ssh-delete() {
-    _log-info "📂 SSH key pairs found in ~/.ssh/:"
+    _log-info-2 "🔸 SSH key pairs found in ~/.ssh/:"
 
     setopt local_options null_glob # 👈 This prevents errors if no matches
 
@@ -174,7 +174,7 @@ function github-ssh-delete() {
 # - Verifies if SSH access to GitHub is working correctly
 # 💡 Usage: github-ssh-connection-test
 function github-ssh-connection-test() {
-    _log-info "🚀 Testing SSH connection to GitHub..."
+    _log-info "🔹 Testing SSH connection to GitHub..."
     ssh -T git@github.com
 }
 
@@ -292,7 +292,7 @@ function github-version-bump() {
         fi
     fi
 
-    _log-info "🔍 Fetching the latest tags from origin..."
+    _log-info "🔹 Fetching the latest tags from origin..."
     git fetch --tags || {
         _log-error "✗ Failed to fetch tags"
         return 1
@@ -303,9 +303,9 @@ function github-version-bump() {
 
     if [[ -z "$latest_tag" ]]; then
         latest_tag="0.0.0"
-        _log-info "ℹ️  No tags found. Starting from version: $latest_tag"
+        _log-info-2 "🔸 No tags found. Starting from version: $latest_tag"
     else
-        _log-info "🔖 Latest version: $latest_tag"
+        _log-info-2 "🔸 Latest version: $latest_tag"
     fi
 
     IFS='.' read -r major minor patch <<<"$latest_tag"
@@ -345,10 +345,10 @@ function github-version-bump() {
 
     # 🧩 Confirm final version before proceeding
     echo ""
-    _log-info "🚀 New version to be created: $new_version"
+    _log-info-2 "🔸 New version to be created: $new_version"
 
     if gum confirm "❓ Do you want to proceed with creating and pushing this tag?"; then
-        _log-info "✓ Proceeding with version $new_version..."
+        _log-info "🔹 Proceeding with version $new_version..."
     else
         _log-error "✗ Operation cancelled"
         return 1
@@ -424,11 +424,11 @@ function github-branch-delete() {
 # 🌲 Lists all local and remote branches
 # 💡 Usage: github-branch-list
 function github-branch-list() {
-    _log-info "📄 Local branches:"
+    _log-info-2 "🔸 Local branches:"
     git branch
 
     echo
-    _log-info "🌐 Remote branches:"
+    _log-info-2 "🔸 Remote branches:"
     git branch -r
 }
 
@@ -462,11 +462,11 @@ function github-reset-to-remote() {
 function github-stash-and-pull() {
     _confirm-or-abort "This will stash your local changes, pull the latest changes from remote, and then reapply your stashed changes. Continue?" "$@" || return 1
 
-    _log-info "📦 Stashing local changes..."
+    _log-info "🔹 Stashing local changes..."
     git stash push -m "Auto stash before pull"
-    _log-info "⬇️ Pulling latest changes..."
+    _log-info "🔹 Pulling latest changes..."
     git pull
-    _log-info "📤 Reapplying stashed changes..."
+    _log-info "🔹 Reapplying stashed changes..."
     git stash pop
 
     _log-success "✓ Stashed changes reapplied after pull"
@@ -531,7 +531,7 @@ function github-sync-fork() {
 # 📊 Shows current Git branch and a short status summary
 # 💡 Usage: github-status-short
 function github-status-short() {
-    _log-info "🔎 Current branch: $(git branch --show-current)"
+    _log-info-2 "🔸 Current branch: $(git branch --show-current)"
     git status -s
 }
 
@@ -576,6 +576,6 @@ function github-open() {
     # Append branch path
     url="$url/tree/$branch"
 
-    _log-info "🌐 Opening $url"
+    _log-info "🔹 Opening $url"
     open "$url"
 }

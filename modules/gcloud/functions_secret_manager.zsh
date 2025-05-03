@@ -74,7 +74,7 @@ function gcloud-secret-manager-env-delete() {
 # - Prompts user to select from available secrets
 # 💡 Usage: gcloud-secret-manager-env-download
 function gcloud-secret-manager-env-download() {
-    _log-info "📃 Fetching available secrets..."
+    _log-info "🔹 Fetching available secrets..."
 
     local temp_file=$(mktemp)
     gcloud secrets list --format="value(name)" 2>/dev/null >"$temp_file"
@@ -97,10 +97,10 @@ function gcloud-secret-manager-env-download() {
         return 1
     fi
 
-    _log-info "🔐 Available secrets:"
+    _log-info-2 "🔸 Available secrets:"
     i=0
     for secret in "${secrets_array[@]}"; do
-        _log-info "$((i + 1)). $secret"
+        _log-info-2 "$((i + 1)). $secret"
         ((i++))
     done
 
@@ -130,7 +130,7 @@ function gcloud-secret-manager-env-download() {
     GCP_SECRET_NAME="$selected_secret"
 
     local output_file=".env"
-    _log-info "📥 Downloading '$GCP_SECRET_NAME' from Secret Manager..."
+    _log-info "🔹 Downloading '$GCP_SECRET_NAME' from Secret Manager..."
 
     if gcloud secrets versions access latest --secret="$GCP_SECRET_NAME" --quiet >"$output_file"; then
         _log-success "✓ .env downloaded and saved to: $output_file"

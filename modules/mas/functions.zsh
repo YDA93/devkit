@@ -17,7 +17,7 @@ function mas-save-apps() {
         chatgpt flutter
     )
 
-    _log-info "💾 Saving App Store apps to $output"
+    _log-info "🔹 Saving App Store apps to $output"
 
     mas list | while read -r id name version; do
         local clean_name=$(echo "$name" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]')
@@ -51,7 +51,7 @@ function mas-install-apps() {
         return 1
     fi
 
-    _log-info "📦 Installing App Store apps from $input"
+    _log-info "🔹 Installing App Store apps from $input"
 
     while read -r app_id app_name; do
         [[ -z "$app_id" || "$app_id" =~ ^# ]] && continue
@@ -91,7 +91,7 @@ function mas-install-from-settings() {
         return 1
     fi
 
-    _log-info "🛍️  Installing selected Mac App Store apps from $settings_file"
+    _log-info "🔹 Installing selected Mac App Store apps from $settings_file"
     echo ""
 
     _get-app-name-from-id() {
@@ -110,7 +110,7 @@ function mas-install-from-settings() {
 
         [[ -z "$app_id" ]] && continue
 
-        _log-info "🛍️  $app_name ($app_id)"
+        _log-info "🔹 Installing $app_name ($app_id) ..."
         install-if-missing "$app_name" "$app_id"
         sleep 2
     done
@@ -126,11 +126,11 @@ function mas-install-from-settings() {
 function mas-maintain() {
     _log-inline-title "App Store Maintenance"
 
-    _log-info "🔍 Checking for App Store updates..."
+    _log-info "🔹 Checking for App Store updates..."
     mas outdated || return 1
     _log-success "✓ App Store apps are up to date"
     echo
-    _log-info "⬆️  Upgrading App Store apps..."
+    _log-info "🔹 Upgrading App Store apps..."
     mas upgrade || return 1
     _log-success "✓ App Store apps updated"
 

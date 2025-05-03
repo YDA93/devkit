@@ -7,7 +7,7 @@
 # - Checks Firebase login status
 # 💡 Usage: firebase-doctor
 function firebase-doctor() {
-    _log-info "🔥 Checking Firebase CLI installation..."
+    _log-info "🔹 Checking Firebase CLI installation..."
 
     if ! command -v firebase &>/dev/null; then
         _log-warning "⚠️  Firebase CLI not found"
@@ -19,7 +19,7 @@ function firebase-doctor() {
     echo
 
     # Check if Node.js is available (since Firebase CLI depends on it)
-    _log-info "🔍 Checking Node.js installation..."
+    _log-info "🔹 Checking Node.js installation..."
     if ! command -v node &>/dev/null; then
         _log-warning "⚠️  Node.js is not installed or not in PATH"
         _log-hint "💡 Firebase CLI requires Node.js to work properly"
@@ -29,7 +29,7 @@ function firebase-doctor() {
     _log-success "✓ Node.js is installed"
     echo
 
-    _log-info "🔐 Checking Firebase login status..."
+    _log-info "🔹 Checking Firebase login status..."
     if firebase login:list | grep -q "@"; then
         _log-success "✓ Logged into Firebase CLI"
         echo
@@ -45,7 +45,7 @@ function firebase-doctor() {
 # 📋 Lists all Firebase projects in your account
 # 💡 Usage: firebase-project-list
 function firebase-project-list() {
-    _log-info "🔍 Fetching Firebase projects..."
+    _log-info "🔹 Fetching Firebase projects..."
     firebase projects:list
 }
 
@@ -56,7 +56,7 @@ function firebase-use-project() {
         _log-error "✗ Usage: firebase-use-project <project-id>"
         return 1
     fi
-    _log-info "🔄 Switching to Firebase project: $1"
+    _log-info "🔹 Switching to Firebase project: $1"
 
     firebase use "$1"
     _log-success "✓ Switched to Firebase project: $1"
@@ -66,7 +66,7 @@ function firebase-use-project() {
 # 🔐 Check Firebase CLI full authentication (account + valid token)
 # 💡 Usage: firebase-login-check
 function firebase-login-check() {
-    _log-info "🔍 Checking Firebase CLI authentication..."
+    _log-info "🔹 Checking Firebase CLI authentication..."
 
     # First, check if an account is configured
     local ACCOUNT=$(firebase login:list 2>/dev/null | grep -Eo "[[:alnum:]_.+-]+@[[:alnum:]_.+-]+")
@@ -180,7 +180,7 @@ function firebase-open-console() {
     fi
 
     local url="https://console.firebase.google.com/project/$project_id/overview"
-    _log-info "🌐 Opening Firebase console: $url"
+    _log-info "🔹 Opening Firebase console: $url"
     open "$url"
     _log-success "✓ Firebase console opened"
     echo
@@ -189,7 +189,7 @@ function firebase-open-console() {
 # 📜 Tails Firebase Functions logs
 # 💡 Usage: firebase-logs
 function firebase-logs() {
-    _log-info "📜 Tailing Firebase Functions logs..."
+    _log-info "🔹 Tailing Firebase Functions logs..."
     firebase functions:log
     _log-success "✓ Firebase Functions logs displayed"
     echo

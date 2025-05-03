@@ -12,25 +12,25 @@
 function xcode-setup() {
 
     # 🔁 Installs Rosetta for Apple Silicon (to run Intel-based apps/tools)
-    _log-info "🔁 Checking for Rosetta installation..."
+    _log-info "🔹 Checking for Rosetta installation..."
     if /usr/bin/pgrep oahd >/dev/null 2>&1; then
         _log-success "✓ Rosetta is already installed"
     else
-        _log-info "🔁 Installing Rosetta..."
+        _log-info "🔹 Installing Rosetta..."
         softwareupdate --install-rosetta --agree-to-license || return 1
         _log-success "✓ Rosetta installed successfully"
     fi
     echo
 
     # 📜 Accept Xcode license, must be before updating CocoaPods
-    _log-info "📜 Accepting Xcode license..."
+    _log-info "🔹 Accepting Xcode license..."
     sudo xcodebuild -license accept || return 1
     _log-success "✓ Xcode license accepted"
     echo
 
     # 🍎 Updates CocoaPods master specs repo (used for dependency resolution)
     if command -v pod >/dev/null 2>&1; then
-        _log-info "📦 Updating CocoaPods specs..."
+        _log-info "🔹 Updating CocoaPods specs..."
         pod repo update || return 1
         _log-success "✓ CocoaPods specs updated"
         echo
@@ -39,7 +39,7 @@ function xcode-setup() {
     fi
 
     # 🔍 Check for Xcode installation
-    _log-info "🔍 Checking for Xcode installation..."
+    _log-info "🔹 Checking for Xcode installation..."
     if ! command -v xcodebuild &>/dev/null; then
         _log-error "✗ Xcode not found. Please install it from the App Store manually or using mas:"
         _log-error "   mas install 497799835  # Xcode"
@@ -50,9 +50,9 @@ function xcode-setup() {
     fi
 
     # 🔍 Check for Xcode Command Line Tools
-    _log-info "🔍 Checking for Xcode Command Line Tools..."
+    _log-info "🔹 Checking for Xcode Command Line Tools..."
     if ! xcode-select -p &>/dev/null; then
-        _log-info "🔧 Installing Xcode Command Line Tools..."
+        _log-info "🔹 Installing Xcode Command Line Tools..."
         xcode-select --install || return 1
         _log-success "✓ Xcode Command Line Tools installed successfully"
     else
@@ -73,19 +73,19 @@ function xcode-setup() {
 # 💡 Usage: xcode-simulator-first-launch
 function xcode-simulator-first-launch() {
     # Set Xcode path (only if needed)
-    _log-info "🔧 Setting Xcode path..."
+    _log-info "🔹 Setting Xcode path..."
     sudo xcode-select -s /Applications/Xcode.app/Contents/Developer || return 1
     _log-success "✓ Xcode path set to /Applications/Xcode.app/Contents/Developer"
     echo
 
     # Run Xcode's first launch tasks (installs tools, accepts licenses)
-    _log-info "🔧 Running Xcode first launch tasks..."
+    _log-info "🔹 Running Xcode first launch tasks..."
     sudo xcodebuild -runFirstLaunch || return 1
     _log-success "✓ Xcode first launch tasks completed"
     echo
 
     # Pre-download the iOS platform support (optional but nice)
-    _log-info "📦 Pre-downloading iOS platform support..."
+    _log-info "🔹 Pre-downloading iOS platform support..."
     xcodebuild -downloadPlatform iOS || return 1
     _log-success "✓ iOS platform support pre-downloaded"
     echo
@@ -97,7 +97,7 @@ function xcode-simulator-first-launch() {
 # 💡 Usage: xcode-doctor
 function xcode-doctor() {
 
-    _log-info "🔧 Checking Xcode installation..."
+    _log-info "🔹 Checking Xcode installation..."
     if ! xcode-select -p &>/dev/null; then
         _log-warning "⚠️  Xcode not properly installed or selected"
         _log-hint "💡 Try: xcode-select --install"
@@ -106,7 +106,7 @@ function xcode-doctor() {
     _log-success "✓ Xcode is properly installed"
     echo
 
-    _log-info "🔧 Checking Xcode Command Line Tools..."
+    _log-info "🔹 Checking Xcode Command Line Tools..."
     if ! command -v xcrun &>/dev/null; then
         _log-warning "⚠️  'xcrun' not found. Xcode CLI tools may not be fully installed"
         return 1
@@ -114,7 +114,7 @@ function xcode-doctor() {
     _log-success "✓ 'xcrun' found"
     echo
 
-    _log-info "📱 Checking iOS simulators..."
+    _log-info "🔹 Checking iOS simulators..."
     if xcrun simctl list devices available | grep -qE "iPhone|iPad"; then
         _log-success "✓ iOS simulators are available"
     else
@@ -123,7 +123,7 @@ function xcode-doctor() {
     fi
     echo
 
-    _log-info "🔧 Checking Rosetta installation..."
+    _log-info "🔹 Checking Rosetta installation..."
     if [[ $(uname -m) == "arm64" ]]; then
         if ! /usr/bin/pgrep oahd &>/dev/null; then
             _log-warning "⚠️  Rosetta is not installed"

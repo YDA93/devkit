@@ -11,7 +11,7 @@ function iterm2-theme-setup() {
 
     font-install-meslo-nerd || return 1
 
-    _log-info "🖥️  Setting up iTerm2 theme..."
+    _log-info "🔹 Setting up iTerm2 theme..."
 
     local source_path="$DEVKIT_MODULES_DIR/iterm2/natural_text_editing.json"
     local target_dir="$HOME/Library/Application Support/iTerm2/DynamicProfiles"
@@ -48,7 +48,7 @@ function iterm2-theme-setup() {
 # 🧹 Uninstalls iTerm2 Theme
 # 💡 Usage: iterm2-theme-uninstall
 function iterm2-theme-uninstall() {
-    _log-info "🧹 Uninstalling iTerm2 theme..."
+    _log-info "🔹 Uninstalling iTerm2 theme..."
     local target_dir="$HOME/Library/Application Support/iTerm2/DynamicProfiles"
     local target_path="$target_dir/natural_text_editing.json"
 
@@ -59,7 +59,7 @@ function iterm2-theme-uninstall() {
             return 1
         }
     else
-        _log-info "✓ No iTerm2 profile found to remove"
+        _log-info-2 "🔸 No iTerm2 profile found to remove"
         return 0
     fi
 
@@ -72,7 +72,7 @@ function iterm2-theme-uninstall() {
 # 🖥️  Set iTerm2’s default profile to Meslo Nerd Font (Regular, 13 pt)
 # 💡  Usage:  iterm2-set-font-meslo-nerd
 function iterm2-set-font-meslo-nerd() {
-    _log-info "🖥️  Setting iTerm2 font to MesloLGS-NF-Regular 11..."
+    _log-info "🔹 Setting iTerm2 font to MesloLGS-NF-Regular 11..."
     # Returns 0 (success) if the first profile uses exactly MesloLGS-NF-Regular 11,
     # otherwise returns 1.
     function check_iterm_font() {

@@ -47,7 +47,9 @@ fi
 
 # 🐍 Python (latest python@)
 if LATEST_PYTHON=$(echo "$DEVKIT_REQUIRED_FORMULA" | grep '^python@' | sort -V | tail -n 1); then
-    export PATH="$HOMEBREW_OPT_PREFIX/$LATEST_PYTHON/libexec/bin:$PATH"
+    # Python 3.11 is the default version
+    # Change python@3.11 to $LATEST_PYTHON if you want to use the latest version
+    export PATH="$HOMEBREW_OPT_PREFIX/python@3.11/libexec/bin:$PATH"
 fi
 
 # 🟢 Node.js (latest node@)

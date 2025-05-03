@@ -16,7 +16,7 @@ function docker-daemon-start() {
         fi
     done
 
-    $quiet || _log-info "⏳ Starting Docker Daemon..."
+    $quiet || _log-info "🔹 Starting Docker Daemon..."
 
     # Start Docker silently
     nohup open -a Docker --args --unattended &>/dev/null &
@@ -24,7 +24,7 @@ function docker-daemon-start() {
 
     # Wait for Docker to become ready
     while ! docker info &>/dev/null; do
-        $quiet || _log-info "⏳ Waiting for Docker to start..."
+        $quiet || _log-info "🔹 Waiting for Docker to start..."
         sleep 5
     done
 
@@ -35,7 +35,7 @@ function docker-daemon-start() {
 # - Stops all Docker processes and starts Docker again
 # 💡 Usage: docker-daemon-restart
 function docker-daemon-restart() {
-    _log-info "♻️  Restarting Docker Desktop..."
+    _log-info "🔹 Restarting Docker Desktop..."
     pkill -f Docker
     sleep 2
     docker-daemon-start
@@ -48,14 +48,14 @@ function docker-daemon-restart() {
 # 🛑 Kills all running Docker containers
 # 💡 Usage: docker-kill-all
 function docker-kill-all() {
-    _log-info "🛑 Killing all running Docker containers..."
+    _log-info "🔹 Killing all running Docker containers..."
     docker ps -q | xargs -r docker kill
 }
 
 # 🧹 Removes stopped containers, unused images, volumes, and networks
 # 💡 Usage: docker-clean-all
 function docker-clean-all() {
-    _log-info "🧹 Cleaning up Docker..."
+    _log-info "🔹 Cleaning up Docker..."
     docker system prune -af --volumes
     _log-success "✓ Docker cleaned"
 }
@@ -67,8 +67,8 @@ function docker-clean-all() {
 # 📋 Displays Docker and Docker Compose versions
 # 💡 Usage: docker-show-versions
 function docker-show-versions() {
-    _log-info "🐳 Docker CLI: $(docker --version | cut -d ' ' -f 3 | tr -d ',')"
-    _log-info "🔧 Compose:    $(docker compose version --short 2>/dev/null || _log-error 'not installed')"
+    _log-info-2 "🔸 Docker CLI: $(docker --version | cut -d ' ' -f 3 | tr -d ',')"
+    _log-info-2 "🔸 Compose:    $(docker compose version --short 2>/dev/null || _log-error 'not installed')"
 }
 
 # ------------------------------------------------------------------------------
@@ -78,35 +78,35 @@ function docker-show-versions() {
 # 📦 Lists all Docker containers (running and stopped)
 # 💡 Usage: docker-list-containers
 function docker-list-containers() {
-    _log-info "📦 All Docker containers:"
+    _log-info-2 "🔸 All Docker containers:"
     docker ps -a --format "table {{.ID}}\t{{.Status}}\t{{.Names}}\t{{.Image}}"
 }
 
 # 🟢 Lists only running Docker containers
 # 💡 Usage: docker-list-running
 function docker-list-running() {
-    _log-info "🟢 Running Docker containers:"
+    _log-info "🔹 Running Docker containers:"
     docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}\t{{.Ports}}"
 }
 
 # 🖼️ Lists all Docker images
 # 💡 Usage: docker-list-images
 function docker-list-images() {
-    _log-info "🖼️ Docker images:"
+    _log-info-2 "🔸 Docker images:"
     docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}"
 }
 
 # 📁 Lists all Docker volumes
 # 💡 Usage: docker-list-volumes
 function docker-list-volumes() {
-    _log-info "📁 Docker volumes:"
+    _log-info-2 "🔸 Docker volumes:"
     docker volume ls
 }
 
 # 🌐 Lists all Docker networks
 # 💡 Usage: docker-list-networks
 function docker-list-networks() {
-    _log-info "🌐 Docker networks:"
+    _log-info-2 "🔸 Docker networks:"
     docker network ls
 }
 

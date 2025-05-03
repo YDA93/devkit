@@ -119,7 +119,7 @@ function gcloud-run-build-and-deploy-initial() {
 
     _confirm-or-abort "Are you sure you want to build the Docker image and deploy the service to Cloud Run for the first time?" "$@" || return 1
 
-    _log-info "⚙️ Starting to build the Docker image and deploy the service to Cloud Run for the first time..."
+    _log-info "🔹 Starting to build the Docker image and deploy the service to Cloud Run for the first time..."
     # Build the image, deploy the service for the first time, and update the service URL environment variable
     gcloud-run-build-image --quiet && gcloud-run-deploy-initial --quiet && gcloud-run-set-service-urls-env --quiet
 }
@@ -131,7 +131,7 @@ function gcloud-run-build-and-deploy-latest() {
 
     _confirm-or-abort "Are you sure you want to build the Docker image and redeploy the service to Cloud Run?" "$@" || return 1
 
-    _log-info "⚙️ Starting to build the Docker image and redeploy the service to Cloud Run..."
+    _log-info "🔹 Starting to build the Docker image and redeploy the service to Cloud Run..."
 
     # Build the image, redeploy the service, and update the service URL environment variable
     gcloud-run-build-image --quiet && gcloud-run-deploy-latest --quiet && gcloud-run-set-service-urls-env --quiet

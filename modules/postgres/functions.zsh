@@ -6,11 +6,11 @@
 function postgres-setup() {
     # 🐘 Initialize PostgreSQL only if not already running or user missing
     if ! psql -U postgres -c '\q' &>/dev/null; then
-        _log-info "⚙️  Setting up PostgreSQL for the first time..."
+        _log-info "🔹 Setting up PostgreSQL for the first time..."
 
         # Start PostgreSQL if not already running
         if ! brew services list | grep -q "^$LATEST_PG.*started"; then
-            _log-info "🔄 Starting PostgreSQL service..."
+            _log-info "🔹 Starting PostgreSQL service..."
             brew services start "$LATEST_PG"
         else
             _log-success "✓ PostgreSQL service is already running"
@@ -18,7 +18,7 @@ function postgres-setup() {
 
         # Create postgres superuser if missing
         if ! psql postgres -c '\du' | cut -d \| -f 1 | grep -qw postgres; then
-            _log-info "➕ Creating default 'postgres' superuser..."
+            _log-info "🔹 Creating default 'postgres' superuser..."
             createuser -s postgres
         else
             _log-success "✓ 'postgres' user already exists"
@@ -95,7 +95,7 @@ function postgres-connect() {
 # 💡 Usage: postgres-doctor
 function postgres-doctor() {
 
-    _log-info "🔧 Checking PostgreSQL installation..."
+    _log-info "🔹 Checking PostgreSQL installation..."
     if ! command -v psql &>/dev/null; then
         _log-warning "⚠️  psql command not found. PostgreSQL might not be installed"
         _log-hint "💡 Install with: brew install postgresql"
@@ -105,7 +105,7 @@ function postgres-doctor() {
     _log-success "✓ PostgreSQL is installed"
     echo
 
-    _log-info "🛠 Checking if PostgreSQL service is running..."
+    _log-info "🔹 Checking if PostgreSQL service is running..."
     if pg_ctl status &>/dev/null || brew services list | grep -E 'postgresql(@[0-9]+)?' &>/dev/null; then
         _log-success "✓ PostgreSQL service appears to be running"
         echo
@@ -115,7 +115,7 @@ function postgres-doctor() {
         echo
     fi
 
-    _log-info "🔑 Checking connection as 'postgres' user..."
+    _log-info "🔹 Checking connection as 'postgres' user..."
     if psql -U postgres -c '\q' &>/dev/null; then
         _log-success "✓ Able to connect as 'postgres'"
         echo
@@ -234,7 +234,7 @@ function postgres-database-create() {
             return 1
         }
 
-        _log-info "🔄 Terminating active sessions for '$db_name'..."
+        _log-info "🔹 Terminating active sessions for '$db_name'..."
         if ! psql -U postgres -h 127.0.0.1 -c \
             "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" 2>/dev/null; then
             _log-error "✗ Error: Failed to terminate active sessions"
@@ -242,7 +242,7 @@ function postgres-database-create() {
             return 1
         fi
 
-        _log-info "💣 Dropping database '$db_name'..."
+        _log-info "🔹 Dropping database '$db_name'..."
         if ! dropdb -U postgres -h 127.0.0.1 "$db_name"; then
             _log-error "✗ Error: Failed to drop database"
             unset PGPASSWORD
@@ -252,7 +252,7 @@ function postgres-database-create() {
         _log-success "✓ Database '$db_name' dropped"
     fi
 
-    _log-info "🚧 Creating new database '$db_name'..."
+    _log-info "🔹 Creating new database '$db_name'..."
     if ! createdb -U postgres -h 127.0.0.1 "$db_name"; then
         _log-error "✗ Error: Failed to create database"
         unset PGPASSWORD
@@ -290,11 +290,11 @@ function postgres-database-delete() {
             exit 1
         }
 
-        _log-info "🔄 Terminating active sessions for '$db_name'..."
+        _log-info "🔹 Terminating active sessions for '$db_name'..."
         psql -U postgres -h localhost -c \
             "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" >/dev/null
 
-        _log-info "💣 Dropping database '$db_name'..."
+        _log-info "🔹 Dropping database '$db_name'..."
         if dropdb -U postgres -h localhost "$db_name"; then
             _log-success "✓ Database '$db_name' has been dropped"
         else

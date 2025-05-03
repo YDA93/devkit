@@ -20,8 +20,8 @@ Run a full setup, update your stack anytime, and keep your dev machine running s
 
 Your main setup and maintenance commands:
 
-- 🔧 **`devkit-pc-setup`** — Full environment bootstrap: prompts for your details, installs core tools (Git, Homebrew, MAS apps, Node.js, Xcode, Flutter), and guides app setup.
-- 🔄 **`devkit-pc-update`** — Update system and dev stack: Homebrew, Python, Google Cloud SDK, Flutter, Node.js, CocoaPods, MAS apps, Rosetta 2, and DevKit itself.
+- 🔧 **`devkit-setup`** — Full environment bootstrap: prompts for your details, installs core tools (Git, Homebrew, MAS apps, Node.js, Xcode, Flutter), and guides app setup.
+- 🔄 **`devkit-update`** — Update system and dev stack: Homebrew, Python, Google Cloud SDK, Flutter, Node.js, CocoaPods, MAS apps, Rosetta 2, and DevKit itself.
 - 🧪 **`devkit-doctor`** — Run a full environment check: verifies critical tools, configurations, and $PATH health.
 
 ---
@@ -30,8 +30,7 @@ Your main setup and maintenance commands:
 
 Quick system-level helpers:
 
-- 🌐 **`devkit-pc-ip-address`** — Show local Wi-Fi IP
-- 🌍 **`devkit-pc-public-ip`** — Show public IP
+- 🌐 **`devkit-pc-ip-address`** — Show local Wi-Fi IP & public IP
 - 📡 **`devkit-pc-ping`** — Test internet (Google DNS)
 - 📴 **`devkit-pc-shutdown`** — Shut down Mac
 - 🔁 **`devkit-pc-restart`** — Restart Mac
@@ -54,13 +53,13 @@ Mostly auto-called by core commands, but handy for manual use.
 
 ### 🔍 Diagnostics & Updates
 
-- 📋 **`devkit-check-tools`** — Print versions of essential tools, warn about missing ones.
-- 📥 **`devkit-update`** — Self-update DevKit from GitHub, auto-install latest version.
+- 📋 **`devkit-tools-check`** — Print versions of essential tools, warn about missing ones.
+- 📥 **`devkit-cli-update`** — Self-update DevKit from GitHub, auto-install latest version.
 
 ### 🔧 Configuration & Environment Checks
 
 - 🧰 **`devkit-settings-setup`** — Configure user info and install preferences (MAS apps, Homebrew, etc.).
-- 🔎 **`devkit-is-setup`** — Quick check to verify critical tools are ready. Add `--quiet` for scripts.
+- 🔎 **`devkit-setup-check`** — Quick check to verify critical tools are ready. Add `--quiet` for scripts.
 
 ---
 

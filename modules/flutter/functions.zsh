@@ -1,32 +1,232 @@
 # ------------------------------------------------------------------------------
+# 🚀 Flutter Project Build Commands
+# ------------------------------------------------------------------------------
+
+# 🏗️ Run code generation using build_runner (e.g., for JSON serialization, Freezed classes, etc.)
+# 📦 Deletes conflicting outputs to ensure clean generation
+# 💡 Usage: flutter-build-runner
+function flutter-build-runner() {
+    _log-info "🔹 Running build_runner to rebuild generated files..."
+
+    dart run build_runner build --delete-conflicting-outputs || {
+        _log-error "✗ build_runner failed to build generated files"
+        return 1
+    }
+
+    _log-success "✓ build_runner completed successfully"
+}
+
+# 🏗️ Build a production-ready Android app bundle with obfuscation and symbol splitting
+# ☁️ Automatically uploads Crashlytics symbols to Firebase for de-obfuscation
+# 💡 Usage: flutter-build-android
+function flutter-build-android() {
+    _log-info "🔹 Building production-ready Android app bundle..."
+
+    flutter build appbundle --obfuscate --split-debug-info=./symbols/ || {
+        _log-error "✗ Failed to build Android app bundle"
+        return 1
+    }
+
+    _log-info "🔹 Uploading Crashlytics symbols..."
+    flutter-firebase-upload-crashlytics-symbols || {
+        _log-error "✗ Failed to upload Crashlytics symbols"
+        return 1
+    }
+
+    _log-success "✓ Android app built and symbols uploaded successfully"
+}
+
+# 🧊 Build an iOS app using precompiled SKSL shaders for faster startup performance
+# 💡 Usage: flutter-build-ios-warm-up
+function flutter-build-ios-warm-up() {
+    _log-info "🔹 Starting iOS warm-up build with precompiled SKSL shaders..."
+
+    flutter build ipa --bundle-sksl-path flutter_01_ios.sksl.json || {
+        _log-error "✗ iOS warm-up build failed"
+        return 1
+    }
+
+    _log-success "✓ iOS warm-up build completed successfully"
+}
+
+# 🧊 Build an Android app using precompiled SKSL shaders for smoother launch experience
+# 💡 Usage: flutter-build-android-warm-up
+function flutter-build-android-warm-up() {
+    _log-info "🔹 Starting Android warm-up build with precompiled SKSL shaders..."
+
+    flutter build appbundle --bundle-sksl-path flutter_01_android.sksl.json || {
+        _log-error "✗ Android warm-up build failed"
+        return 1
+    }
+
+    _log-success "✓ Android warm-up build completed successfully"
+}
+
+# ------------------------------------------------------------------------------
+# 🧩 Flutter Development Utilities
+# ------------------------------------------------------------------------------
+
+# 🧩 Open the iOS project in Xcode for manual editing or platform-specific configuration
+# 💡 Usage: flutter-xcode-open
+function flutter-xcode-open() {
+    _log-info "🔹 Opening iOS project in Xcode..."
+
+    open ios/Runner.xcworkspace || {
+        _log-error "✗ Failed to open iOS project in Xcode"
+        return 1
+    }
+
+    _log-success "✓ iOS project opened in Xcode"
+}
+
+# 📱 Launch the iOS Simulator app
+# 💡 Usage: flutter-ios-simulator-open
+function flutter-ios-simulator-open() {
+    _log-info "🔹 Launching iOS Simulator..."
+
+    open -a Simulator || {
+        _log-error "✗ Failed to launch iOS Simulator"
+        return 1
+    }
+
+    _log-success "✓ iOS Simulator launched"
+}
+
+# 📋 List all available iOS devices (simulators and physical)
+# 💡 Usage: flutter-ios-devices
+function flutter-ios-devices() {
+    _log-info "🔹 Listing available iOS devices..."
+
+    xcrun simctl list devices || {
+        _log-error "✗ Failed to list iOS devices"
+        return 1
+    }
+
+    _log-success "✓ iOS devices listed"
+}
+
+# 🤖 List all connected Android devices and emulators
+# 💡 Usage: flutter-android-devices
+function flutter-android-devices() {
+    _log-info "🔹 Listing available Android devices..."
+
+    adb devices || {
+        _log-error "✗ Failed to list Android devices"
+        return 1
+    }
+
+    _log-success "✓ Android devices listed"
+}
+
+# 🛠️ Launch the Flutter DevTools suite (performance, inspector, logs, memory, etc.)
+# 💡 Usage: flutter-devtools
+function flutter-devtools() {
+    _log-info "🔹 Launching Flutter DevTools..."
+
+    flutter pub global run devtools || {
+        _log-error "✗ Failed to launch Flutter DevTools"
+        return 1
+    }
+
+    _log-success "✓ Flutter DevTools launched"
+}
+
+# 🧪 Analyze your Dart codebase for static analysis issues, lints, and hints
+# 💡 Usage: flutter-analyze
+function flutter-analyze() {
+    _log-info "🔹 Analyzing Dart code for issues..."
+
+    flutter analyze || {
+        _log-error "✗ Dart code analysis failed"
+        return 1
+    }
+
+    _log-success "✓ Dart code analysis completed successfully"
+}
+
+# 📦 Check which Flutter or Dart dependencies are outdated in your project
+# 💡 Usage: flutter-outdated
+function flutter-outdated() {
+    _log-info "🔹 Checking for outdated Flutter/Dart packages..."
+
+    flutter pub outdated || {
+        _log-error "✗ Failed to check for outdated packages"
+        return 1
+    }
+
+    _log-success "✓ Outdated package check completed"
+}
+
+# ⬆️ Upgrade all Flutter and Dart dependencies to their latest allowed versions
+# 💡 Usage: flutter-upgrade
+function flutter-upgrade() {
+    _log-info "🔹 Upgrading Flutter/Dart dependencies to latest allowed versions..."
+
+    flutter pub upgrade || {
+        _log-error "✗ Failed to upgrade dependencies"
+        return 1
+    }
+
+    _log-success "✓ Dependencies upgraded successfully"
+}
+
+# 🧹 Automatically apply safe, recommended fixes for Dart issues and deprecations
+# 💡 Usage: flutter-dart-fix
+function flutter-dart-fix() {
+    _log-info "🔹 Applying recommended Dart fixes..."
+
+    dart fix --apply || {
+        _log-error "✗ Failed to apply Dart fixes"
+        return 1
+    }
+
+    _log-success "✓ Dart fixes applied successfully"
+}
+
+# ------------------------------------------------------------------------------
 # 🔥 FlutterFire Initialization & Integration
 # ------------------------------------------------------------------------------
 
-# 🔥 Initializes Firebase and FlutterFire CLI for the project
+# 🔥 Activate the FlutterFire CLI globally using Dart's pub global activate
+# 💡 Usage: flutter-flutterfire-activate
+function flutter-flutterfire-activate() {
+    _log-info "🔹 Activating FlutterFire CLI..."
+    dart pub global activate flutterfire_cli || {
+        _log-error "✗ Failed to activate FlutterFire CLI"
+        return 1
+    }
+    _log-success "✓ FlutterFire CLI activated"
+}
+
+# 🔧 Configure your Flutter app with Firebase (sets up native platforms & services)
+# 💡 Usage: flutter-flutterfire-configure
+function flutter-flutterfire-configure() {
+    _log-info "🔹 Configuring Firebase project..."
+    flutterfire configure || {
+        _log-error "✗ FlutterFire configuration failed"
+        return 1
+    }
+    _log-success "✓ Firebase project configured successfully"
+}
+
+# 🚀 Initialize Firebase for the Flutter project (login, activate CLI, configure project)
 # 💡 Usage: flutter-flutterfire-init
 function flutter-flutterfire-init() {
-    _log-info "Logging into Firebase CLI..."
+    _log-info "🔹 Logging into Firebase CLI..."
     firebase login || {
         _log-error "✗ Firebase login failed. Please log in to Firebase CLI"
         return 1
     }
     echo
 
-    _log-info "Initializing Firebase in the project..."
-    flutter-flutterfire-activate || {
-        _log-error "✗ FlutterFire CLI activation failed"
-        return 1
-    }
+    flutter-flutterfire-activate || return 1
     echo
 
-    _log-info "Configuring Firebase for the project..."
-    flutterfire configure || {
-        _log-error "✗ FlutterFire configuration failed"
-        return 1
-    }
+    flutter-flutterfire-configure || return 1
 }
 
-# 🌱 Creates and activates a new Python virtual environment (for Firebase functions)
+# 🌱 Create and activate a new Python virtual environment for Firebase Functions
+# 🐍 Uses Python 3.12 to create `venv/` and activates it
 # 💡 Usage: flutter-firebase-environment-create
 function flutter-firebase-environment-create() {
     python3.12 -m venv venv || {
@@ -43,7 +243,7 @@ function flutter-firebase-environment-create() {
     }
 }
 
-# 🧹 Deletes existing env and creates a fresh one, then updates pip
+# 🧹 Delete existing Python virtual environment, create a fresh one, and update pip
 # 💡 Usage: flutter-firebase-environment-setup
 function flutter-firebase-environment-setup() {
     python-environment-delete || {
@@ -60,7 +260,7 @@ function flutter-firebase-environment-setup() {
     }
 }
 
-# ♻️ Rebuilds Firebase functions environment from scratch
+# ♻️ Rebuild the Firebase Functions environment from scratch
 # 💡 Usage: flutter-firebase-update-functions
 function flutter-firebase-update-functions() {
     if [ ! -d "firebase/functions" ]; then
@@ -85,7 +285,7 @@ function flutter-firebase-update-functions() {
     }
 }
 
-# 🚀 Uploads obfuscation symbols to Firebase Crashlytics
+# 🚀 Upload obfuscation symbols to Firebase Crashlytics for deobfuscating stack traces
 # 💡 Usage: flutter-firebase-upload-crashlytics-symbols
 function flutter-firebase-upload-crashlytics-symbols() {
     local SYMBOLS_PATH="./symbols"
@@ -112,9 +312,9 @@ function flutter-firebase-upload-crashlytics-symbols() {
     fi
 
     # Run upload
-    _log-info "🚀 Uploading symbols to Firebase Crashlytics..."
-    _log-info "🆔 App ID: $APP_ID"
-    _log-info "📁 Symbols Path: $SYMBOLS_PATH"
+    _log-info "🔹 Uploading symbols to Firebase Crashlytics..."
+    _log-info-2 "🔸 App ID: $APP_ID"
+    _log-info-2 "🔸 Symbols Path: $SYMBOLS_PATH"
     echo ""
 
     firebase crashlytics:symbols:upload --app="$APP_ID" "$SYMBOLS_PATH"
@@ -133,7 +333,6 @@ function flutter-firebase-upload-crashlytics-symbols() {
 # 🔍 Gets the latest available Android build-tools version
 # 💡 Usage: _android-latest-build-tools
 function _android-latest-build-tools() {
-    _log-info "🔍 Fetching latest Android build-tools version..."
     sdkmanager --list 2>/dev/null |
         awk '/^ +build-tools;[0-9]/ { gsub(/^ +| +$/, "", $1); split($1, parts, ";"); print parts[2] }' |
         grep -Ev 'rc|beta|alpha' |
@@ -143,7 +342,7 @@ function _android-latest-build-tools() {
 # ☕️ Symlinks Homebrew-installed OpenJDK to macOS Java VirtualMachines
 # 💡 Usage: java-symlink-latest
 function java-symlink-latest() {
-    _log-info "☕️ Checking for Homebrew OpenJDK installation..."
+    _log-info "🔹 Checking for Homebrew OpenJDK installation..."
     local brew_jdk_path="$HOMEBREW_OPT_PREFIX/openjdk/libexec/openjdk.jdk"
 
     if [[ ! -d "$brew_jdk_path" ]]; then
@@ -159,7 +358,7 @@ function java-symlink-latest() {
     local target="/Library/Java/JavaVirtualMachines/openjdk-${version}.jdk"
 
     if [[ ! -d "$target" ]]; then
-        _log-info "☕️ Symlinking OpenJDK $version to $target..."
+        _log-info "🔹 Symlinking OpenJDK $version to $target..."
         sudo ln -sfn "$brew_jdk_path" "$target" || {
             _log-error "✗ Failed to create symlink at $target"
             echo
@@ -178,6 +377,7 @@ function flutter-android-sdk-setup() {
 
     echo
 
+    _log-info "🔹 Fetching latest Android build-tools version..."
     local latest_build_tools
     latest_build_tools=$(_android-latest-build-tools)
 
@@ -211,17 +411,30 @@ function flutter-android-sdk-setup() {
 # 🎨 Flutter App Visuals
 # ------------------------------------------------------------------------------
 
+# 🎨 Regenerate app launcher icons from configuration in `pubspec.yaml`
+# 💡 Usage: flutter-update-icon
+function flutter-update-icon() {
+    _log-info "🔹 Regenerating app launcher icons using flutter_launcher_icons..."
+
+    dart run flutter_launcher_icons || {
+        _log-error "✗ Failed to regenerate app launcher icons"
+        return 1
+    }
+
+    _log-success "✓ App launcher icons updated successfully"
+}
+
 # 🌊 Updates splash screen assets using flutter_native_splash
 # 💡 Usage: flutter-update-splash
 function flutter-update-splash() {
-    _log-info "Removing existing splash screen..."
+    _log-info "🔹 Removing existing splash screen..."
     dart run flutter_native_splash:remove || {
         _log-error "✗ Failed to remove existing splash screen"
         return 1
     }
     echo
 
-    _log-info "Creating new splash screen..."
+    _log-info "🔹 Creating new splash screen..."
     dart run flutter_native_splash:create || {
         _log-error "✗ Failed to create new splash screen"
         return 1
@@ -283,21 +496,21 @@ function flutter-adb-connect() {
     PORT=$2
 
     # Step 1: List the devices
-    _log-info "Listing connected devices..."
+    _log-info "🔹 Listing connected devices..."
     adb devices || {
         _log-error "✗ Failed to list devices. Ensure adb is installed and running"
         return 1
     }
 
     # Step 2: Connect to the device using adb
-    _log-info "Connecting to device at $IP_ADDRESS:$PORT..."
+    _log-info "🔹 Connecting to device at $IP_ADDRESS:$PORT..."
     adb connect "$IP_ADDRESS:$PORT" || {
         _log-error "✗ Failed to connect to $IP_ADDRESS:$PORT. Ensure the device is reachable"
         return 1
     }
 
     # Step 3: Verify the connection
-    _log-info "Verifying connection..."
+    _log-info "🔹 Verifying connection..."
     adb devices || {
         _log-error "✗ Failed to verify connection. Ensure adb is installed and running"
         return 1
@@ -312,7 +525,7 @@ function flutter-adb-connect() {
     REPLACE_PATTERN="$IP_ADDRESS:$PORT"
 
     # Update launch.json in place with the new port
-    _log-info "Updating .vscode/launch.json with new port..."
+    _log-info "🔹 Updating .vscode/launch.json with new port..."
     sed -i '' -E "s/$SEARCH_PATTERN/$REPLACE_PATTERN/g" .vscode/launch.json || {
         _log-error "✗ Failed to update .vscode/launch.json. Ensure the file exists and is writable"
         return 1
@@ -341,7 +554,7 @@ function flutter-delete-unused-strings() {
     declare -a arb_files=("app_ar.arb" "app_en.arb") # List your .arb files here
 
     # Run l10nization check-unused and capture the output of unused translations
-    _log-info "Checking for unused translations..."
+    _log-info "🔹 Checking for unused translations..."
     l10nization check-unused | awk '/The list of unused translations:/{flag=1; next} flag' >"$temp_file"
 
     # Trim leading and trailing blank lines from the temp_file
@@ -350,12 +563,12 @@ function flutter-delete-unused-strings() {
 
     # Verify if unused keys were found
     if [ ! -s "$temp_file" ]; then
-        _log-info "No unused translations found"
+        _log-info-2 "🔸 No unused translations found"
         rm "$temp_file"
         return
     fi
 
-    _log-info "Unused translations found. Starting cleanup process..."
+    _log-info "🔹 Unused translations found. Starting cleanup process..."
 
     # Read the temp file line by line
     while IFS= read -r key; do
@@ -380,7 +593,7 @@ function flutter-delete-unused-strings() {
 # 🧹 Clears Pod, Flutter, and Ccache caches
 # 💡 Usage: flutter-cache-reset
 function flutter-cache-reset() {
-    _log-info "Clearing cache of Pod..."
+    _log-info "🔹 Clearing cache of Pod..."
     cd ios || {
         _log-error "✗ Failed to change directory to ios"
         return 1
@@ -393,13 +606,13 @@ function flutter-cache-reset() {
         _log-error "✗ Failed to change directory back to root"
         return 1
     }
-    _log-info "Clearing cache of Flutter..."
+    _log-info "🔹 Clearing cache of Flutter..."
     flutter pub cache repair || {
         _log-error "✗ Failed to repair Flutter pub cache"
         return 1
     }
 
-    _log-info "Clearing cache of Ccache..."
+    _log-info "🔹 Clearing cache of Ccache..."
     ccache -z || {
         _log-error "✗ Failed to Resets the cache statistics"
         return 1
@@ -419,11 +632,11 @@ function flutter-ios-reinstall-podfile() {
         _log-error "✗ Failed to change directory to ios"
         return 1
     }
-    _log-info "Removing existing Podfile.lock..."
+    _log-info "🔹 Removing existing Podfile.lock..."
     rm Podfile.lock || {
-        _log-info "No Podfile.lock found. Skipping removal"
+        _log-info "🔹 No Podfile.lock found. Skipping removal"
     }
-    _log-info "Reinstalling pods..."
+    _log-info "🔹 Reinstalling pods..."
     pod install --repo-update || {
         _log-error "✗ Failed to install pods"
         return 1
@@ -438,28 +651,28 @@ function flutter-ios-reinstall-podfile() {
 # 🧽 Runs a full Flutter clean and updates dependencies
 # 💡 Usage: flutter-clean
 function flutter-clean() {
-    _log-info "Cleaning Flutter project..."
+    _log-info "🔹 Cleaning Flutter project..."
     flutter clean || {
         _log-error "✗ Failed to clean Flutter project"
         return 1
     }
     echo
 
-    _log-info "Updating Flutter dependencies..."
+    _log-info "🔹 Updating Flutter dependencies..."
     flutter pub upgrade || {
         _log-error "✗ Failed to upgrade Flutter packages"
         return 1
     }
     echo
 
-    _log-info "Checking for outdated packages..."
+    _log-info "🔹 Checking for outdated packages..."
     flutter pub outdated || {
         _log-error "✗ Failed to check for outdated packages"
         return 1
     }
     echo
 
-    _log-info "Upgrading major versions of packages..."
+    _log-info "🔹 Upgrading major versions of packages..."
     flutter pub upgrade --major-versions || {
         _log-error "✗ Failed to upgrade major versions of packages"
         return 1
@@ -476,10 +689,7 @@ function flutter-clean() {
 # 💡 Usage: flutter-maintain
 function flutter-maintain() {
     {
-        flutter-flutterfire-activate || {
-            _log-error "✗ Failed to activate FlutterFire CLI"
-            return 1
-        }
+        flutter-flutterfire-activate || return 1
 
         flutter-firebase-update-functions
         flutter-update-fontawesome
@@ -496,13 +706,40 @@ function flutter-maintain() {
             _log-error "✗ Failed to update splash screen"
             return 1
         }
-        flutter-build-runner || {
-            _log-error "✗ Failed to run build_runner"
-            return 1
-        }
+        flutter-build-runner || return 1
         flutter-clean || {
             _log-error "✗ Failed to clean Flutter project"
             return 1
         }
     } | tee -a ./flutter-maintain.log
+}
+
+# ------------------------------------------------------------------------------
+# 🧪 Flutter Testing Utilities
+# ------------------------------------------------------------------------------
+
+# ✅ Run all Flutter unit and widget tests
+# 💡 Usage: flutter-test
+function flutter-test() {
+    _log-info "🔹 Running all Flutter unit tests..."
+
+    flutter test || {
+        _log-error "✗ Unit tests failed"
+        return 1
+    }
+
+    _log-success "✓ All unit tests passed"
+}
+
+# 📊 Run all Flutter tests and generate a code coverage report
+# 💡 Usage: flutter-test-coverage
+function flutter-test-coverage() {
+    _log-info "🔹 Running Flutter tests with coverage report..."
+
+    flutter test --coverage || {
+        _log-error "✗ Tests or coverage report generation failed"
+        return 1
+    }
+
+    _log-success "✓ Tests completed with coverage report"
 }

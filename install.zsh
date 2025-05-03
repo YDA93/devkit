@@ -107,4 +107,4 @@ fi
 echo "🎉 Installation complete!"
 
 # Apply the changes immediately and run initial setup
-source ~/.zshrc && devkit-pc-setup
+source ~/.zshrc && devkit-setup

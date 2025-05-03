@@ -12,7 +12,7 @@ function _devkit-settings-init() {
     done
 
     if [[ ! -f "$CLI_SETTINGS_FILE" ]]; then
-        [[ "$quiet" != true ]] && _log-info "🛠️  Initializing settings file at $CLI_SETTINGS_FILE"
+        [[ "$quiet" != true ]] && _log-info "🔹 Initializing settings file at $CLI_SETTINGS_FILE"
         echo '{}' >"$CLI_SETTINGS_FILE"
         [[ "$quiet" != true ]] && _log-success "✓ Created new settings file"
     fi
@@ -27,7 +27,7 @@ function _devkit-settings-reset() {
         rm "$CLI_SETTINGS_FILE"
         _log-success "✓ Deleted settings file: $CLI_SETTINGS_FILE"
     else
-        _log-info "ℹ️  No settings file to delete"
+        _log-info-2 "🔸 No settings file to delete"
     fi
 
     # Reinitialize the settings file
@@ -128,7 +128,7 @@ function _devkit-settings() {
 # 💡 Usage: devkit-settings-setup
 function devkit-settings-setup() {
     # Get user inputs for settings
-    _log-info "🔧 Please provide your details and select the apps you want to install"
+    _log-info-2 "🔸 Please provide your details and select the apps you want to install"
 
     # Set up user details
     _devkit-settings-user-setup

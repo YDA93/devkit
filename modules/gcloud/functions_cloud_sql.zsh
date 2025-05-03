@@ -242,7 +242,7 @@ function gcloud-sql-proxy-and-django-setup() {
         -e 'do script "cd '"$cwd"' && gcloud-sql-proxy-start"' \
         -e 'end tell'
 
-    _log-info "⏳ Waiting for Cloud SQL Proxy to start on port $GCP_SQL_PROXY_PORT..."
+    _log-info "🔹 Waiting for Cloud SQL Proxy to start on port $GCP_SQL_PROXY_PORT..."
 
     # Retry logic to check if the proxy is running
     local retries=15 # Max wait time (15 seconds)

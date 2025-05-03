@@ -14,7 +14,7 @@ function django-project-start() {
     local projectname=$1
 
     # Create project directory
-    _log-info "Creating project directory '$projectname'..."
+    _log-info "🔹 Creating project directory '$projectname'..."
     mkdir "$projectname" && cd "$projectname" || return
 
     # Create the Python environment
@@ -24,11 +24,11 @@ function django-project-start() {
     python-environment-activate || return 1
 
     # Install Django
-    _log-info "Installing Django..."
+    _log-info "🔹 Installing Django..."
     pip install django || return 1
 
     # Start Django project
-    _log-info "Starting Django project '$projectname'..."
+    _log-info "🔹 Starting Django project '$projectname'..."
     django-admin startproject "$projectname" . || return 1
 
     _log-success "✓ Django project '$projectname' created and ready!"
@@ -42,7 +42,7 @@ function django-app-start() {
         return 1
     fi
 
-    _log-info "Creating Django app '$1'..."
+    _log-info "🔹 Creating Django app '$1'..."
     app_name=$1 # First Aurgment
     python manage.py startapp $app_name
     _log-success "✓ Django app '$app_name' created successfully!"
@@ -92,7 +92,7 @@ function django-secret-key-generate() {
     print(''.join(secrets.choice(safe_chars) for _ in range(50)))
     ")
 
-    _log-info "🔑 Generating new Django SECRET_KEY..."
+    _log-info "🔹 Generating new Django SECRET_KEY..."
     environment-variable-set "DJANGO_SECRET_KEY" "$raw_key"
 }
 
@@ -103,14 +103,14 @@ function django-secret-key-generate() {
 # 🛠️ Wrapper for makemigrations (passes through args)
 # 💡 Usage: django-migrate-make [args]
 function django-migrate-make() {
-    _log-info "🛠️ Running makemigrations..."
+    _log-info "🔹 ️Running makemigrations..."
     python manage.py makemigrations $@
 }
 
 # 🧱 Wrapper for migrate (passes through args)
 # 💡 Usage: django-migrate [args]
 function django-migrate() {
-    _log-info "🧱 Running migrate..."
+    _log-info "🔹 Running migrate..."
     python manage.py migrate $@
 }
 
@@ -126,7 +126,7 @@ function django-migrate-initial() {
 
     # 2. Handle URLs
     # Store the original content of the urls.py
-    _log-info "Commenting out URLs temporarily to avoid import issues while running migrations..."
+    _log-info "🔹 Commenting out URLs temporarily to avoid import issues while running migrations..."
     local original_content=$(cat ./project/urls.py)
     # Comment out the entire content of the file
     sed -i '' 's/^/# /' ./project/urls.py
@@ -134,17 +134,17 @@ function django-migrate-initial() {
     echo "urlpatterns = []" >>./project/urls.py
 
     # 3. Run makemigrations
-    _log-info "Running makemigrations..."
+    _log-info "🔹 Running makemigrations..."
     python "$PWD"/manage.py makemigrations || return 1
     # 4. Create cache table
-    _log-info "Creating cache table..."
+    _log-info "🔹 Creating cache table..."
     python "$PWD"/manage.py createcachetable || return 1
     # 5. Run migrate
-    _log-info "Running migrations..."
+    _log-info "🔹 Running migrations..."
     python "$PWD"/manage.py migrate || return 1
 
     # 6. Restore original URLs
-    _log-info "Restoring original project URLs..."
+    _log-info "🔹 Restoring original project URLs..."
     echo "$original_content" >./project/urls.py
     _log-success "✓ Initial migration cycle complete"
 }
@@ -161,11 +161,11 @@ function django-migrate-and-cache-delete() {
     cd "$project_directory"
 
     # Delete migration files in Django apps (excluding venv)
-    _log-info "Deleting all Django migration files..."
+    _log-info "🔹 Deleting all Django migration files..."
     find . -path "*/migrations/*.py" -not -name "__init__.py" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); _log-success "✓ Deleted $app_name -> $(basename "{}")"; rm "{}"' \; 2>/dev/null || true
 
     # Delete migration cache in Django apps (excluding venv)
-    _log-info "Deleting all Django __pycache__ folders..."
+    _log-info "🔹 Deleting all Django __pycache__ folders..."
     find . -type d -name "__pycache__" -not -path "./venv/*" -exec sh -c 'app_name=$(basename "$(dirname "$(dirname "{}")")"); [ "$app_name" != "." ] && _log-success "✓ Deleted $app_name -> $(basename "$(dirname "{}")")/__pycache__" || _log-success "Deleted $(basename "$(dirname "{}")")/__pycache__"; rm -r "{}"' \; 2>/dev/null || true
 
     _log-success "✓ Deleted all Django migration files and __pycache__ folders (excluding venv)"
@@ -233,11 +233,11 @@ function django-database-init() {
 # 💡 Usage: django-data-backup
 function django-data-backup() {
     if ! _confirm-or-abort "Do you want to back up Django data?"; then
-        _log-info "ℹ️ Skipping data backup..."
+        _log-info "🔹 Skipping data backup..."
         return 0
     fi
 
-    _log-info "📤 Performing Django data backup using 'dumpdata'..."
+    _log-info "🔹 Performing Django data backup using 'dumpdata'..."
     python "$PWD/manage.py" dumpdata \
         --natural-foreign --natural-primary --indent 2 >data.json || return 1
 
@@ -255,11 +255,11 @@ function django-data-restore() {
     local backup_file=""
 
     if [[ "$backup_performed" = true ]]; then
-        _log-info "♻️  Restoring from default backup (data.json)..."
+        _log-info "🔹 Restoring from default backup (data.json)..."
         backup_file="data.json"
     else
         if ! _confirm-or-abort "Do you want to restore data from a backup file?"; then
-            _log-info "ℹ️ Skipping data restore..."
+            _log-info "🔹 Skipping data restore..."
             return 0
         fi
 
@@ -276,16 +276,16 @@ function django-data-restore() {
         fi
     fi
 
-    _log-info "📥 Restoring Django data from '$backup_file'..."
+    _log-info "🔹 Restoring Django data from '$backup_file'..."
     python "$PWD/manage.py" loaddata "$backup_file" --traceback || return 1
     _log-success "✓ Data restoration complete"
 
-    _log-info "🔁 Resetting database sequences..."
+    _log-info "🔹 Resetting database sequences..."
     apps=$(python "$PWD/manage.py" shell -c \
         "from django.apps import apps; print('\n'.join([app.label for app in apps.get_app_configs()]))")
 
     echo "$apps" | while IFS= read -r app; do
-        _log-info "🔧 Resetting sequences for $app..."
+        _log-info "🔹 Resetting sequences for $app..."
         python "$PWD/manage.py" sqlsequencereset "$app" |
             python "$PWD/manage.py" dbshell
     done
@@ -302,7 +302,7 @@ function django-data-restore() {
 # - Skips venv and static files
 # 💡 Usage: django-translations-make
 function django-translations-make() {
-    _log-info "🌐 Creating .po files for Arabic translations..."
+    _log-info "🔹 Creating .po files for Arabic translations..."
     echo -e $(django-admin makemessages -l ar --ignore="venv/*" --ignore="static/*")" in main directory"
     # Loop through directories
     for d in */; do
@@ -323,7 +323,7 @@ function django-translations-make() {
 # - Recursively processes all subdirectories with a `locale/`
 # 💡 Usage: django-translations-compile
 function django-translations-compile() {
-    _log-info "🛠️ Compiling translation .po files into .mo format..."
+    _log-info "🔹 Compiling translation .po files into .mo format..."
     # Loop through directories
     for d in */; do
         # Go to directory
@@ -347,10 +347,10 @@ function django-translations-compile() {
 # 💡 Usage: django-run-server [port]
 function django-run-server() {
     if [ $# -eq 0 ]; then
-        _log-info "Starting Django server on port 8000..."
+        _log-info "🔹 Starting Django server on port 8000..."
         python manage.py runserver 0.0.0.0:8000
     else
-        _log-info "Starting Django server on port $1..."
+        _log-info "🔹 Starting Django server on port $1..."
         python manage.py runserver 0.0.0.0:$@
     fi
 }
@@ -365,7 +365,7 @@ function django-upload-env-to-github-secrets() {
         return 1
     }
 
-    _log-info "🔐 Uploading entire .env file to secret: ENVIRONMENT_VARIABLES"
+    _log-info "🔹 Uploading entire .env file to secret: ENVIRONMENT_VARIABLES"
 
     # Upload .env file content directly as multiline secret
     gh secret set ENVIRONMENT_VARIABLES --repo "$REPO" <.env || {
@@ -375,7 +375,7 @@ function django-upload-env-to-github-secrets() {
 
     _log-success "✓ Uploaded ENVIRONMENT_VARIABLES to $REPO"
 
-    _log-info "🔐 Uploading GCP_CREDENTIALS to GitHub secrets..."
+    _log-info "🔹 Uploading GCP_CREDENTIALS to GitHub secrets..."
 
     # Get GCP_CREDENTIALS using your custom command
     local GCP_CREDS
@@ -404,15 +404,15 @@ function django-upload-env-to-github-secrets() {
 # - Accepts optional test path (e.g., app/tests/test_views.py::TestView::test_get)
 # 💡 Usage: django-run-pytest [path/to/test.py::TestClass::test_method]
 function django-run-pytest() {
-    _log-info "🧪 Running pytest with coverage..."
+    _log-info "🔹 Running pytest with coverage..."
     django-settings test
 
     # Replace '/' with '.', remove '.py::', and replace '::' with '.'
     modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
     if [[ -n "$modified_arg" ]]; then
-        _log-info "Testing: $modified_arg"
+        _log-info "🔹 Testing: $modified_arg"
     else
-        _log-info "Testing: All"
+        _log-info "🔹 Testing: All"
     fi
 
     coverage run -m pytest -v -n auto $modified_arg
@@ -424,15 +424,15 @@ function django-run-pytest() {
 # - Accepts optional test path in pytest-like format
 # 💡 Usage: django-run-test [path/to/test.py::TestClass::test_method]
 function django-run-test() {
-    _log-info "🧪 Running Django tests..."
+    _log-info "🔹 Running Django tests..."
     django-settings test
 
     # Replace '/' with '.', remove '.py::', and replace '::' with '.'
     modified_arg=$(echo $1 | sed 's/\//./g' | sed 's/.py::/./' | sed 's/::/./')
     if [[ -n "$modified_arg" ]]; then
-        _log-info "Testing: $modified_arg"
+        _log-info "🔹 Testing: $modified_arg"
     else
-        _log-info "Testing: All"
+        _log-info "🔹 Testing: All"
     fi
 
     python manage.py test $modified_arg
@@ -451,7 +451,7 @@ function django-find-cron-urls() {
     local project_root=${1:-.}
     local settings_file="$project_root/project/settings/base.py"
 
-    _log-info "🚀 Searching for cron jobs in internal apps..."
+    _log-info "🔹 Searching for cron jobs in internal apps..."
 
     # 🔍 Extract INTERNAL_APPS values from base.py (e.g. "logs", "store", ...)
     local apps=($(sed -n '/INTERNAL_APPS *= *\[/,/]/p' "$settings_file" |

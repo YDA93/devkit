@@ -43,4 +43,4 @@ Install, prune, back up, and restore your Homebrew environment with simple, stre
 
 ---
 
-> 🚀 Pro tip: Use `devkit-pc-update` regularly to keep your dev environment healthy and up to date.
+> 🚀 Pro tip: Use `devkit-update` regularly to keep your dev environment healthy and up to date.

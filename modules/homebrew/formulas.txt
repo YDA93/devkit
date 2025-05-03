@@ -3,6 +3,7 @@ expect
 git
 gh
 python@3.11
+python@3.12
 ccache
 ruby
 cocoapods

@@ -6,10 +6,10 @@ function terminal-theme-setup() {
         return 1
     }
 
-    _log-info "🖥️  Applying Terminal theme and font: 'MesloLGS NF'..."
+    _log-info "🔹 Applying Terminal theme and font: 'MesloLGS NF'..."
     local THEME_FILE="$DEVKIT_MODULES_DIR/iterm2/cool-night.terminal"
 
-    _log-info "🎨 Importing Terminal theme \"$THEME_FILE\"..."
+    _log-info "🔹 Importing Terminal theme \"$THEME_FILE\"..."
     open "$THEME_FILE" || {
         _log-error "✗ Failed to open Terminal theme file: $THEME_FILE"
         return 1
@@ -19,7 +19,7 @@ function terminal-theme-setup() {
     local THEME_NAME
     THEME_NAME=$(basename "$THEME_FILE" .terminal)
 
-    _log-info "📌 Setting \"$THEME_NAME\" as default and startup profile..."
+    _log-info "🔹 Setting \"$THEME_NAME\" as default and startup profile..."
     defaults write com.apple.Terminal "Default Window Settings" -string "$THEME_NAME" || {
         _log-error "✗ Failed to set Default Window Settings"
         return 1
@@ -33,7 +33,7 @@ function terminal-theme-setup() {
     # Close the current Terminal window quietly
     (osascript -e 'tell application "Terminal" to close first window' &>/dev/null &)
     sleep 1
-    _log-info "🔄 Applying theme to the current Terminal window..."
+    _log-info "🔹 Applying theme to the current Terminal window..."
     (osascript -e 'tell application "Terminal" to set current settings of front window to settings set "cool-night"' &>/dev/null &)
 
     _log-success "✓ Terminal theme and font successfully applied!"
@@ -45,10 +45,10 @@ function terminal-factory-reset() {
     local PLIST="$HOME/Library/Preferences/com.apple.Terminal.plist"
     local SAVED_STATE="$HOME/Library/Saved Application State/com.apple.Terminal.savedState"
 
-    _log-info "🗑️ Removing Terminal preferences..."
+    _log-info "🔹 Removing Terminal preferences..."
     rm -f "$PLIST"
 
-    _log-info "🧼 Removing saved Terminal window state..."
+    _log-info "🔹 Removing saved Terminal window state..."
     rm -rf "$SAVED_STATE"
 
     _log-success "✓ Terminal has been reset to factory defaults"
@@ -62,7 +62,7 @@ function terminal-factory-reset() {
 # 🖥️ Set Terminal font to MesloLGS NF
 # 💡 Usage: terminal-set-font-meslo-nerd
 function terminal-set-font-meslo-nerd() {
-    _log-info "🖥️  Setting Terminal font to 'MesloLGS NF'..."
+    _log-info "🔹 Setting Terminal font to 'MesloLGS NF'..."
     if ! font-is-installed-meslo-nerd; then
         font-install-meslo-nerd || {
             _log-error "✗ Failed to install Meslo Nerd Font"
@@ -115,7 +115,7 @@ function font-is-installed-meslo-nerd() {
 # 🖥️ Installs the Meslo Nerd Font for Powerlevel10k
 # 💡 Usage: font-install-meslo-nerd
 function font-install-meslo-nerd() {
-    _log-info "⬇️  Installing Meslo Nerd Font for Powerlevel10k..."
+    _log-info "🔹 Installing Meslo Nerd Font for Powerlevel10k..."
     local FONT_DIR="$HOME/Library/Fonts"
     local BASE_URL="https://github.com/romkatv/powerlevel10k-media/raw/master"
     local FILES=(
@@ -159,7 +159,7 @@ function font-install-meslo-nerd() {
 # 🧹 Uninstalls the Meslo Nerd Font for Powerlevel10k
 # 💡 Usage: font-uninstall-meslo-nerd
 function font-uninstall-meslo-nerd() {
-    _log-info "🧹 Uninstalling Meslo Nerd Font for Powerlevel10k..."
+    _log-info "🔹 Uninstalling Meslo Nerd Font for Powerlevel10k..."
     local FONT_DIR="$HOME/Library/Fonts"
     local FILES=(
         "MesloLGS NF Regular.ttf"
