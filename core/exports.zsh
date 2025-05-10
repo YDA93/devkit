@@ -89,3 +89,11 @@ export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platfo
 if command -v ngrok &>/dev/null; then
     eval "$(ngrok completion)"
 fi
+
+# Enable zsh-autosuggestions
+# Enable zsh-syntax-highlighting
+for plugin in \
+    /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
+    /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh; do
+    [ -f "$plugin" ] && source "$plugin"
+done

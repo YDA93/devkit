@@ -1,2 +1,4 @@
 powerlevel10k
 weasyprint
+zsh-autosuggestions
+zsh-syntax-highlighting
