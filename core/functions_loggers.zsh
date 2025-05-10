@@ -262,7 +262,7 @@ function _run-or-abort() {
     local success_msg="$2"
     shift 2
 
-    echo "$description..."
+    _log-info "$description..."
     "$@"
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then

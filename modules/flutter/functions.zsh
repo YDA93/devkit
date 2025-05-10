@@ -371,7 +371,7 @@ function java-symlink-latest() {
 # ⚙️ Sets up Android SDK and accepts licenses
 # 💡 Usage: flutter-android-sdk-setup
 function flutter-android-sdk-setup() {
-    _run-or-abort "☕️ Symlinking OpenJDK" \
+    _run-or-abort "🔹 Symlinking OpenJDK" \
         "✓ OpenJDK symlinked." \
         java-symlink-latest || return 1
 
@@ -381,7 +381,7 @@ function flutter-android-sdk-setup() {
     local latest_build_tools
     latest_build_tools=$(_android-latest-build-tools)
 
-    _run-or-abort "📦 Installing Android SDK packages (build-tools:$latest_build_tools)" \
+    _run-or-abort "🔹 Installing Android SDK packages (build-tools:$latest_build_tools)" \
         "" \
         sdkmanager \
         "platforms;android-35" \
@@ -393,13 +393,13 @@ function flutter-android-sdk-setup() {
     _log-success "✓ Android SDK packages installed"
     echo
 
-    _run-or-abort "📜 Accepting Android SDK licenses (non-interactive)" \
+    _run-or-abort "🔹 Accepting Android SDK licenses (non-interactive)" \
         "" \
         bash -c "yes | sdkmanager --licenses" || return 1
     _log-success "✓ Android SDK licenses accepted"
     echo
 
-    _run-or-abort "📜 Accepting Flutter Android licenses (interactive)" \
+    _run-or-abort "🔹 Accepting Flutter Android licenses (interactive)" \
         "" \
         flutter doctor --android-licenses || return 1
     _log-success "✓ Flutter Android licenses accepted"

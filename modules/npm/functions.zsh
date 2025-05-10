@@ -45,7 +45,9 @@ function npm-install-packages() {
     _log-info "🔹 Installing global npm packages from $input"
     _log-info "🔹 Using prefix: $npm_prefix"
     _log-info-2 "🔸 Packages:"
-    cat "$input"
+    while IFS= read -r line; do
+        _log-info-2 "    • $line"
+    done <"$input"
     echo ""
 
     NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm install -g <"$input" || {
@@ -81,7 +83,9 @@ function npm-uninstall-packages() {
     _log-info "🔹 Uninstalling global npm packages from $input"
     _log-info "🔹 Using prefix: $npm_prefix"
     _log-info-2 "🔸 Packages:"
-    cat "$input"
+    while IFS= read -r line; do
+        _log-info-2 "    • $line"
+    done <"$input"
     echo ""
 
     NPM_CONFIG_PREFIX="$npm_prefix" xargs -n 1 npm uninstall -g <"$input" || {
