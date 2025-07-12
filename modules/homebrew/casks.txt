@@ -1,8 +1,8 @@
 visual-studio-code
 android-studio
 android-platform-tools
-docker
+docker-desktop
 flutter
 ngrok
 pgadmin4
-google-cloud-sdk
+gcloud-cli
